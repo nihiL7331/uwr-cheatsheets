@@ -288,3 +288,118 @@ let a = 2 and b = a + 38 in (* BŁĄÐ!: Niezwiązana zmienna 'a'!*)
 Jak wspomnieliśmy wyżej, istnieje lukier syntaktyczny na definiowanie funkcji.
 
 Zamiast ```ml let add = fun a b -> a + b``` możemy zapisać ```ml let add a b = a + b```. Zauważmy, że związanie ```ml let add a = fun b -> a + b``` również odnosi się do tej samej funkcji.
+
+
+== 3. Funkcje i warunki
+
+=== Funkcje rekurencyjne
+
+Funkcje mogą być rekurencyjne. Aby skorzystać z identyfikatora funkcji, należy zastąpić ```ml let``` parą słów ```ml let rec```:
+
+```ml
+let rec fib x =
+  fib (x - 1) + fib (x - 2)
+```
+
+Aby funkcja ta uległa kiedyś terminacji, musimy dodać przypadek bazowy funkcji. Użyjemy do tego instrukcji warunkowej `if`. Działa ona jak w każdym innym języku programowania.
+
+```ml
+let rec fib x =
+  if x = 0 || x = 1 then
+    1
+  else
+    fib (x - 1) + fib (x - 2)
+```
+
+Funkcje mogą być wzajemne rekurencyjne. Wtedy należy dwa związania rekurencyjne ```ml let rec``` połączyć w jedno słowem kluczowym ```ml and```:
+
+```ml
+let rec fun_a a =
+  if a = 0 then 42
+  else fun_b (a/2)
+
+and
+fun_b b =
+  if b = 0 then 13
+  else fun_a (b/2)
+```
+
+=== Funkcje z akumulatorem
+
+Akumulatorem nazywamy argument który jest stanem funkcji przekazywanym w głąb rekurencyjnych wywołań funkcji. Na początku jest inicjalizowany elementem neutralnym danej operacji, np. $1$ dla mnożenia, $0$ dla dodawania.
+
+```ml
+let rec factorial x acc =
+  if x = 0 then acc
+  else factorial (x-1) (x*acc)
+
+let fac_10 = factorial 10 1
+```
+
+Funkcje mogą być rekurencyjne *ogonowo*, tzn. wywołują inną funkcję (lub siebie samą) wyłącznie ze zmodyfikowanymi argumentami, bez wykorzystywania wartości otrzymanej przez wywoływaną funkcję. Funkcje rekurencyjne ogonowo są o wiele bardziej wydajne od tych nie ogonowych, ponieważ OCaml jest w stanie zwolnić stos wywołań funkcji podmieniając obecnie wykonywaną funkcję na tą, do której ciała wskakuje.
+
+```ml
+(* Funkcja nie ogonowa *)
+let rec factorial x =
+  if x = 0 then 1
+  (* tutaj wynik factorial jest jeszcze mnożony przez x *)
+  else x * factorial (x-1)
+```
+
+Funkcją rekurencyjnie ogonową jest funkcja z akumulatorem przykład wyżej.
+
+=== Pattern Matching
+
+Pozwala na dopasowywanie wzorców do danego wyrażenia i warunkową ewaluację wyrażeń. Kolejne wzorce wypisujemy po znaku pałki (|). Wzorce te są porównywane do wyrażenia od góry do dołu.
+
+```ml
+let is_zero x =
+  match x with
+  | 0 -> true
+  | _ -> false
+```
+
+`_` służy jako wildcard, dopasowywuje każdy przypadek który został.
+
+Czasami kolejność ułożenia wzorców może mieć znaczenie, jeśli któryś jest słabszy niż inny. Szczególnie funkcja poniżej zawsze będzie zwracać `false`, ponieważ do `_` matchuje się każde wyrażenie.
+
+```ml
+let is_zero x =
+  match x with
+  | _ -> false
+  | 0 -> true
+```
+
+Matching można rozumieć jako taki `switch` z `C`, lub `match` z `Pythona`, albo też jako bardzo rozbudowany `if`.
+
+Matching poza kontrolą warunkową programu pozwala nam dekonstruować struktury danych.
+
+```ml
+let hd xs =
+  match xs with
+  | x :: xs -> x
+```
+
+OCaml poinformuje nas, że `match` w powyższym kodzie nie jest wyczerpujący. Tak faktycznie jest, ponieważ typem `::` jest `'a -> 'a list -> 'a list`, więc wymaga on `'a`. Jeśli lista jest pusta (`[]`), to OCaml nie znajdzie żadnego elementu który mógłby scons-ować, by otrzymać listę pustą, zatem musimy ten przypadek również rozpatrzeć:
+
+```ml
+let hd xs =
+  match xs with
+  | x :: xs -> x
+  | [] -> failwith "wywołano hd na pustej liście"
+```
+
+`failwith` wyrzuca wyjątek, korzystamy z niego szczególnie jeśli jakiś przypadek jest nieosiągalny, lub nie jesteśmy w stanie spełnić oczekiwań użytkownika, tak jak u góry biorąc głowę z pustej listy. Wkrótce poznamy typ `'a option` i drugi przypadek będzie obsłużony w inny sposób.
+
+Nic nie stoi na przeszkodzie, aby matchować na bardziej złożonych wyrażeniach. Np. jeśli dany element jest równy jakiemuś wyrażeniu.
+
+Poniższa funkcja sprawdza, czy przekazana lista składa się wyłącznie z powtarzającej sekwencji `1;2;3`.
+
+```ml
+let rec is_123 xs =
+  match xs with
+  | 1 :: 2 :: 3 :: rest -> is_123 rest
+  | [] -> true
+  | _ -> false
+```
+
