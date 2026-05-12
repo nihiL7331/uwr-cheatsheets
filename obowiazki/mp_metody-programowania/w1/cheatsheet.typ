@@ -206,10 +206,10 @@ _ : int = [| 4; 2; 1 |].(2) (* -> 1 *)
 *Deklaracja typu:* typ elementów po czym następuje `list`
 
 *Konstruktory:*
-- wykorzystanie operatora cons typu `'a -> 'a list -> 'a list`, który dokłada element z lewej strony na początek listy. Złożoność: O(1).
+- wykorzystanie operatora cons typu ```ml 'a -> 'a list -> 'a list```, który dokłada element z lewej strony na początek listy. Złożoność: O(1).
 - elementy oddzielone średnikiem (;), obłożone nawiasami kwadratowymi ([])
 
-*Destruktor:* wykorzystywanie operatora `cons` czyli `::`.
+*Destruktor:* wykorzystywanie operatora `cons` czyli ```ml ::```.
 
 Przykłady:
 ```ml
@@ -220,13 +220,13 @@ _ : int = match [ 4; 2; 1 ] with four :: rest -> four
 
 === Funkcje
 
-Funkcja jest podstawowym typem wartości w OCamlu. Typ określamy jako `'a -> 'b`. Funkcje można składać, wykorzystując popularny lukier syntaktyczny przez wymianę argumentów po spacji, np. `fun a b -> a + b`, to tak naprawdę `fun a -> fun b -> a + b`.
+Funkcja jest podstawowym typem wartości w OCamlu. Typ określamy jako ```ml 'a -> 'b```. Funkcje można składać, wykorzystując popularny lukier syntaktyczny przez wymianę argumentów po spacji, np. ```ml fun a b -> a + b```, to tak naprawdę ```ml fun a -> fun b -> a + b```.
 
 *Deklaracja typu:* typ argumentu -> typ wyjścia
 
 *Konstruktor:* lambda, składnia: `fun <argument> -> <wyrażenie>`
 
-*Destruktor:* wywołanie funkcji na argumencie typu `'a`.
+*Destruktor:* wywołanie funkcji na argumencie typu ```ml 'a```.
 
 Przykłady:
 ```ml
@@ -243,9 +243,9 @@ Przykłady:
   |_ 7
 ```
 
-Funkcje można definiować za pomocą skróconej składni `let`:
+Funkcje można definiować za pomocą skróconej składni ```ml let```:
 
-`let add a b = a + b` zamiast `let add = fun a b -> a + b`.
+```ml let add a b = a + b``` zamiast ```ml let add = fun a b -> a + b```.
 
 == 2. Wiązanie zmiennych
 
