@@ -246,3 +246,45 @@ Przykłady:
 Funkcje można definiować za pomocą skróconej składni `let`:
 
 `let add a b = a + b` zamiast `let add = fun a b -> a + b`.
+
+== 2. Wiązanie zmiennych
+
+Wiązanie odbywa za pomocą słowa kluczowego ```ml let```.
+
+np.
+```ml let a = 5```
+
+Aby zawęzić zakres danej zmiennej, możemy użyć słowa kluczowego ```ml in```, w ten sposób:
+
+```ml
+let a = 5 in a + 10 (* wyewaluuje się do 15 *)
+
+let b = c + 10 (* BŁĄD! Niezwiązana zmienna 'c'! *)
+```
+
+Możemy zagnieżdżać wiązania:
+
+```ml
+let a = 2 in
+  let b = 40 in
+    let c = a + b in
+      c
+
+(* całe to wyrażenie wyewaluuje się do 42 *)
+```
+
+oraz wiązać wiele zmiennych jednocześnie
+
+```ml
+let a = 2 and b = 40 in
+  a + b
+
+let a = 2 and b = a + 38 in (* BŁĄÐ!: Niezwiązana zmienna 'a'!*)
+  a + b
+
+(* Wyjaśnienie: wyrażenie a + 38 nadal jest w tym samym zakresie (scope) co samo let, więc żadne 'a' nie zostało jeszcze związane. *)
+```
+
+Jak wspomnieliśmy wyżej, istnieje lukier syntaktyczny na definiowanie funkcji.
+
+Zamiast ```ml let add = fun a b -> a + b``` możemy zapisać ```ml let add a b = a + b```. Zauważmy, że związanie ```ml let add a = fun b -> a + b``` również odnosi się do tej samej funkcji.
