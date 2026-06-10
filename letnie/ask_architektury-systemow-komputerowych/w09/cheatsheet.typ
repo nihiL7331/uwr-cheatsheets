@@ -221,6 +221,96 @@
   )
 ]
 
+#from(2)[
+  == Bity, bajty i typy danych
+  $1B = 8"b", "hex" = 4"b" => 1 B in ["0x00"; "0xFF"]$. Np. $15213 = "0x3B6D"$.
+  #v(-2pt)
+  #table(
+    columns: (auto, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
+    stroke: none,
+    align: center,
+    row-gutter: 0.2em,
+    table.header(
+      [*Typ*], `char`, `short`, `int`, `long`, `float`, `double`, `void*`
+    ),
+    table.hline(stroke: rgb("333333")),
+    text(fill: rgb("8b949e"))[*x86-64*], [1], [2], [4], [8], [4], [8], [8],
+  )
+
+  #colbreak()
+  == Kodowanie liczb i konwersja
+  #align(center)[
+    $"B2U"(X) = sum_(i=0)^(w-1) x_i 2^i wide "B2T"(X) = -x_(w-1) 2^(w-1) + sum_(i=0)^(w-2) x_i 2^i$ \
+    $"T2U"(x) = x < 0 ? x + 2^w : x wide "U2T"(u) = u > "TMax" ? u - 2^w : u$
+  ]
+  *Skróty:* `B` = bity, `U` = unsigned, `T` = ze znakiem (kod U2). Stąd `B2U` = bity $arrow.r$ unsigned, podobnie `U2T`, `UMax`, `TMax`, `UAdd`, `TAdd`.
+  #table(
+    columns: (auto, auto, 1fr),
+    stroke: none,
+    row-gutter: 0.3em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Stała*],
+      text(fill: rgb("8b949e"))[*Bity*],
+      text(fill: rgb("8b949e"))[*Wartość*],
+    ),
+    table.hline(stroke: rgb("333333")),
+    [*UMax*], `11...1`, [$2^w - 1$],
+    [*TMax*], `01...1`, [$2^(w-1) - 1$ (`INT_MAX`)],
+    [*TMin*], `10...0`, [$-2^(w-1)$ (`INT_MIN`)],
+    [*$-1$*], `11...1`, [te same bity co UMax],
+  )
+  *Promocja w C:* `unsigned` i `int` w jednym wyrażeniu/porównaniu (`< > ==`) $arrow.r$ `int` promowany do `unsigned` (bity bez zmian, $-1 arrow.r$ UMax).
+
+  == Rozszerzanie, obcinanie i przesunięcia
+  #table(
+    columns: (auto, 1fr),
+    stroke: none,
+    row-gutter: 0.4em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Rozszerz. 0* (`zext`)], [`unsigned`: dopisuje $0$ z góry],
+    [*Rozszerz. znak* (`sext`)], [`signed`: powiela bit znaku (MSB)],
+    [*Obcięcie* (`trunc`)], [$u mod 2^w$; może zmienić znak],
+    `x << k`, [$x dot 2^k$ (sgn./uns.)],
+    `u >> k`, [$floor(u \/ 2^k)$ — logiczne (zera)],
+    `x >> k`, [arytmetyczne (kopia MSB), zaokr. do $-oo$],
+    [$x \/ 2^k$ do $0$], `(x + (1<<k)-1) >> k`,
+  )
+  Strength red.: `x*24` $arrow.r$ `(x<<5)-(x<<3)`.
+
+  == Operacje, overflow i endianness
+  #table(
+    columns: (auto, 1fr),
+    stroke: none,
+    row-gutter: 0.4em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*UAdd*], [$(u+v) mod 2^w$; carry ignorowane],
+    [*TAdd*], [bitowo = UAdd; różne znaki nie przepełniają],
+    [*Nadmiar (+)*], [$u,v>0$, a wynik $<0$ (wynik $-2^w$)],
+    [*Nadmiar (−)*], [$u,v<0$, a wynik $>=0$ (wynik $+2^w$)],
+    [*Negacja U2*], [`-x = ~x+1`; `-TMin=TMin`, `-0=0`],
+    [*Wykr. nadmiaru* (`s=x+y`)], `((s^x)&(s^y))>>(w-1)`,
+    [*Maska / abs*], `m=x>>31; abs=(x^m)-m`,
+  )
+  *Pamięć:* adres wskazuje najmłodszy bajt słowa. Napis = `char[]` ASCII + `0x00` (niezależny od endianness).
+  #table(
+    columns: (auto, 1fr, auto),
+    stroke: none,
+    row-gutter: 0.3em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Schemat*],
+      text(fill: rgb("8b949e"))[*Najniższy adres*],
+      text(fill: rgb("8b949e"))[*`0x0123`*],
+    ),
+    table.hline(stroke: rgb("333333")),
+    [*Big Endian*], [MSB], `[01][23]`,
+    [*Little Endian*], [LSB], `[23][01]`,
+  )
+]
+
 #reg-pair("rax", "rbx")
 #reg-pair("rcx", "rdx")
 #reg-pair("rsi", "rdi")
