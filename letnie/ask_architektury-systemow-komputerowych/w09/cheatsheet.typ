@@ -311,6 +311,87 @@
   )
 ]
 
+#from(3)[
+  #colbreak()
+
+  == Zmiennoprzecinkowe (IEEE 754)
+  #align(center)[
+    $V = (-1)^s times M times 2^E wide "Bias" = 2^(k-1) - 1$
+  ]
+  #v(-2pt)
+  #table(
+    columns: (auto, auto, auto, auto, 1fr),
+    stroke: none,
+    align: center,
+    row-gutter: 0.2em,
+    table.header([*Format*], [*bity*], [*s*], [*exp ($k$)*], [*frac ($n$)*]),
+    table.hline(stroke: rgb("333333")),
+    [*Single* (`float`)], [32], [1], [8 (Bias=127)], [23],
+    [*Double* (`double`)], [64], [1], [11 (Bias=1023)], [52],
+  )
+
+  === Kategorie wartości
+  #table(
+    columns: (22%, 18%, 1fr),
+    stroke: none,
+    row-gutter: 0.4em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Kategoria*],
+      text(fill: rgb("8b949e"))[*`exp`*],
+      text(fill: rgb("8b949e"))[*Własności*],
+    ),
+    table.hline(stroke: rgb("333333")),
+
+    [*Znormalizowane*],
+    [`!= 0...0` \ `!= 1...1`],
+    [$E = "exp" - "Bias"$. Ukryta jedynka: $M = 1."frac"$. Najgęściej ułożone wokół 0.],
+
+    [*Zdenormaliz.*],
+    [`== 0...0`],
+    [$E = 1 - "Bias"$. Brak jedynki: $M = 0."frac"$. Reprezentują $+0.0$ i $-0.0$ ($"frac"=0$) oraz liczby bardzo bliskie zera (stopniowy underflow).],
+
+    [*Specjalne*],
+    [`== 1...1`],
+    [Gdy $"frac" == 0$, to $+oo$ lub $-oo$ (nadmiar/dzielenie przez 0). Gdy $"frac" != 0$, to `NaN` (np. $sqrt(-1)$, $oo - oo$).],
+  )
+
+  === Zaokrąglanie GRS i Round-to-Even
+  Domyślny tryb to *Round-to-Even* (zapobiega błędowi statycznemu przy sumowaniu).
+  #align(center)[
+    #box(fill: rgb("1a1a1a"), inset: 6pt, radius: 2pt, stroke: rgb("333333"))[
+      `... x x G ` #text(fill: rgb("D73A49"), weight: "bold")[ `|` ] ` R S S S ...`
+    ] \
+    #text(
+      fill: rgb("8b949e"),
+      size: 0.8em,
+    )[`G` – ostatni zachowany, `R` – pierwszy usunięty, `S` – OR reszty]
+  ]
+  #v(-4pt)
+  #table(
+    columns: (auto, auto, 1fr),
+    stroke: none,
+    row-gutter: 0.3em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Warunek*],
+      text(fill: rgb("8b949e"))[*Ułamek*],
+      text(fill: rgb("8b949e"))[*Akcja*],
+    ),
+    table.hline(stroke: rgb("333333")),
+    `R=0`, $< 0.5$, [W dół (odcięcie)],
+    `R=1, S=1`, $> 0.5$, [W górę (+1 do `G`)],
+    `R=1, S=0`, $= 0.5$, [*Do parzystej:* w górę gdy `G=1`, w dół gdy `G=0`],
+  )
+
+  === Własności matematyczne i rzutowanie
+  - *Brak łączności:* $(a+b)+c != a+(b+c)$, przez zaokrąglenia i utratę danych.
+  - *Brak rozdzielności:* $a(b+c) != a b + a c$.
+  - *Rzutowanie `int` $arrow.r$ `float`:* Może stracić precyzję (zaokrągla zgodnie z trybem).
+  - *Rzutowanie `int` $arrow.r$ `double`:* Dokładne i bezstratne (bo $52$ bity mantysy $> 32$ bity inta).
+  - *Rzutowanie `float/double` $arrow.r$ `int`:* Obcina ułamek w stronę 0. Jeśli poza zakresem lub `NaN` $arrow.r$ z reguły zwraca `TMin` (`0x80000000`).
+]
+
 #reg-pair("rax", "rbx")
 #reg-pair("rcx", "rdx")
 #reg-pair("rsi", "rdi")
