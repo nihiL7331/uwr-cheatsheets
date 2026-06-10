@@ -51,6 +51,10 @@
 
 #show math.equation: set text(size: 1.15em)
 
+#let LECTURE-NUM-FROM = int(sys.inputs.at("od", default: "1"))
+#let LECTURE-NUM-TO = int(sys.inputs.at("do", default: "13"))
+#let from(n, body) = if LECTURE-NUM-TO >= n and n >= LECTURE-NUM-FROM { body }
+
 #let split-reg16(r16, r8_h, r8_l, clr) = {
   box(
     fill: rgb("3F3F3F44"),
@@ -152,7 +156,7 @@
 
 = Architektury systemów komputerowych: Reference
 *Data:* #datetime.today().display() \
-*Zakres:* Do wykładu 9 włącznie
+*Zakres:* #LECTURE-NUM-FROM - #LECTURE-NUM-TO
 
 == 1. Rejestry x86\_64
 #reg-pair("rax", "rbx")
