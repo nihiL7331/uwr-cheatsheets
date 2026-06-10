@@ -19,12 +19,16 @@
 
 #show: rest => columns(2, rest)
 
+#set heading(numbering: (..n) => {
+  let n = n.pos()
+  if n.len() == 2 { numbering("1.", n.last()) }
+})
 #show heading.where(level: 2): it => block(
   width: 100%,
   fill: rgb("1e1e1e"),
   inset: 8pt,
   stroke: (left: 3pt + rgb("2188FF")),
-  [*#it.body*],
+  [*#counter(heading).display(it.numbering) #it.body*],
 )
 
 #show raw: set text(font: "BigBlueTerm437 Nerd Font Mono")
