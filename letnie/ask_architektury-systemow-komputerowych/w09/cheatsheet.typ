@@ -158,7 +158,69 @@
 *Data:* #datetime.today().display() \
 *Zakres:* #LECTURE-NUM-FROM - #LECTURE-NUM-TO
 
-== 1. Rejestry x86\_64
+#from(1)[
+  == Logika cyfrowa
+  #table(
+    columns: (25%, 32%, 1fr),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Układ*],
+      text(fill: rgb("8b949e"))[*Formuła / sygnatura*],
+      text(fill: rgb("8b949e"))[*Opis*],
+    ),
+    table.hline(stroke: rgb("333333")),
+
+    table.cell(
+      colspan: 3,
+      fill: rgb("1a1a1a"),
+      align: center,
+    )[*Sumatory*],
+    [*Półsumator*],
+    [#raw("s = x ^ y") \ #raw("c = x & y")],
+    [Dodaje dwa bity. `s` to suma, `c` to bit przeniesienia (carry).],
+    [*Pełny sumator (FA)*],
+    [#raw("s = x ^ y ^ ci") \ #raw("co=x&y|ci&(x^y)")],
+    [Jak półsumator, ale przyjmuje też przeniesienie wejściowe `ci`.],
+    [*Sumator n-bitowy*],
+    [$n times$ FA],
+    [Kaskada (ripple-carry): wyjście $C_(i)$ trafia na wejście kolejnego FA. Ostatnie `co` to *Carry Out* całości.],
+
+    table.hline(stroke: rgb("222222")),
+    table.cell(
+      colspan: 3,
+      fill: rgb("1a1a1a"),
+      align: center,
+    )[*Układy kombinacyjne*],
+    [*Dekoder*],
+    [$n arrow.r 2^n$],
+    [Wejście koduje liczbę $k$. Na wyjściu zapalony jest *tylko* bit nr $k$.],
+    [*Multiplekser*],
+    [$2^n + n arrow.r 1$],
+    [$2^n$ bitów danych + $n$ bitów sterujących $S$. Na wyjście przechodzi $S$-ty bit danych.],
+    [*ALU*],
+    [$A, B, f arrow.r C$],
+    [Dekoder na bitach $f$ wybiera operację (np. $A+B$, $A|B$, $A\&B$); multipleksowanie wyników bramkami AND/OR.],
+
+    table.hline(stroke: rgb("222222")),
+    table.cell(
+      colspan: 3,
+      fill: rgb("1a1a1a"),
+      align: center,
+    )[*Układy sekwencyjne (pamięć)*],
+    [*Przerzutnik S-R*],
+    [#raw("S") - set, #raw("R") - reset],
+    [Przechowuje 1 bit ($Q$). `S=1` ustawia $Q=1$, `R=1` zeruje, `S=R=0` trzyma stan. Zbudowany z dwóch sprzężonych `NOR`-ów.],
+    [*Sterowany poziomem*],
+    [aktywny gdy #raw("CLK") $= 1$],
+    [Wejścia `S`/`R` bramkowane AND-em z zegarem. Stan zmienia się tylko przy `CLK=1`.],
+    [*Sterowany zboczem*],
+    [zbocze $1 arrow.r 0$],
+    [Dwa przerzutniki poziomowe w kaskadzie (master-slave), drugi z zanegowanym zegarem. Stan przepisuje się w *momencie* zmiany zegara.],
+  )
+]
+
 #reg-pair("rax", "rbx")
 #reg-pair("rcx", "rdx")
 #reg-pair("rsi", "rdi")
