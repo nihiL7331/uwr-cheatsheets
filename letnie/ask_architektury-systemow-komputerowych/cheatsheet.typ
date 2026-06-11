@@ -240,6 +240,7 @@
   == Kodowanie liczb i konwersja
   #align(center)[
     $"B2U"(X) = sum_(i=0)^(w-1) x_i 2^i wide "B2T"(X) = -x_(w-1) 2^(w-1) + sum_(i=0)^(w-2) x_i 2^i$ \
+    #v(0.5em)
     $"T2U"(x) = x < 0 ? x + 2^w : x wide "U2T"(u) = u > "TMax" ? u - 2^w : u$
   ]
   *Skróty:* `B` = bity, `U` = unsigned, `T` = ze znakiem (kod U2). Stąd `B2U` = bity $arrow.r$ unsigned, podobnie `U2T`, `UMax`, `TMax`, `UAdd`, `TAdd`.
