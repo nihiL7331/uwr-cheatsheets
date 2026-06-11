@@ -995,6 +995,76 @@
   )
 ]
 
+#from(12)[
+  #colbreak()
+  == Pamięć podręczna
+
+  === Parametry i pojemność
+  $S = 2^s$ (liczba zbiorów), $E$ (liczba linii w zbiorze), $B = 2^b$ (bajtów na blok danych) \
+  Całkowity rozmiar pamięci podręcznej (bez tagów): $C = S times E times B$
+
+  === Podział adresu sprzętowego
+  #align(center)[
+    #box(stroke: 1pt + rgb("333333"), radius: 2pt, clip: true)[
+      #grid(
+        columns: (auto, auto, auto),
+        box(fill: rgb("D73A4944"), inset: 6pt, stroke: (
+          right: 1pt + rgb("333333"),
+        ))[*Tag*],
+        box(fill: rgb("2188FF44"), inset: 6pt, stroke: (
+          right: 1pt + rgb("333333"),
+        ))[*Indeks*],
+        box(fill: rgb("28A74544"), inset: 6pt)[*Offset*],
+      )
+    ]
+  ]
+  - *Tag:* Identyfikator bloku. Sprawdzany w czasie $O(1)$ dla linii w danym zbiorze.
+  - *Indeks:* Wskazuje sprzętowo na zbiór.
+  - *Offset:* Wskazuje na konkretny bajt wewnątrz bloku danych.
+  - *Valid bit:* Określa, czy linia ma w ogóle poprawne dane (1) czy śmieci (0).
+
+  === Asocjatywność
+  #table(
+    columns: (auto, 1fr),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Direct-mapped*],
+    [$E=1$. Adres pasuje do *dokładnie jednej* linii. Szybkie, ale podatne na ciągłe wyrzucanie nawzajem adresów o tym samym indeksie.],
+    [*E-way assoc.*],
+    [$E>1$. Blok ma przypisany zbiór ($s$), ale w jego obrębie może zająć *dowolną* linię. Wymaga strategii wywalania starych danych (np. LRU).],
+    [*Fully assoc.*],
+    [$S=1$. Jeden gigantyczny zbiór, linia może trafić *gdziekolwiek*. Bardzo drogie sprzętowo.],
+  )
+
+  === Polityki zapisu
+  #table(
+    columns: (1fr, 1fr),
+    stroke: none,
+    column-gutter: 10pt,
+    align: top,
+    table.cell(
+      fill: rgb("1a1a1a"),
+      stroke: (top: 2pt + rgb("2188FF")),
+      inset: 8pt,
+    )[
+      *Write-hit* \
+      - *Write-through:* Równoczesny zapis do cache i do RAM, strasznie wolne. \
+      - *Write-back:* Opóźnia zapis do RAM. Zapisuje tylko do cache i zapala *dirty bit*. RAM zostaje uaktualniony *dopiero*, gdy linia jest wyrzucana.
+    ],
+    table.cell(
+      fill: rgb("1a1a1a"),
+      stroke: (top: 2pt + rgb("28A745")),
+      inset: 8pt,
+    )[
+      *Write-miss* \
+      - *Write-allocate:* Najpierw wciąga brakujący blok z RAM do cache, a dopiero potem go tam nadpisuje. Tworzy parę z Write-back. \
+      - *No-write-allocate:* Ignoruje cache całkowicie i zapisuje prosto do RAM. Tworzy parę z Write-through.
+    ],
+  )
+]
+
 #from(4)[
   #colbreak()
   == Katalog instrukcji (AT&T)
