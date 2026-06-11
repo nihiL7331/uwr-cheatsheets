@@ -391,6 +391,7 @@
 ]
 
 #from(4)[
+  #colbreak()
   == Rejestry x86\_64
   #reg-pair("rax", "rbx")
   #reg-pair("rcx", "rdx")
@@ -628,6 +629,7 @@
 ]
 
 #from(4)[
+  #colbreak()
   == Katalog instrukcji (AT&T)
   #table(
     columns: (30%, 30%, 1fr),
