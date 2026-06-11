@@ -223,7 +223,6 @@
 
 #from(2)[
   == Bity, bajty i typy danych
-  $1B = 8"b", "hex" = 4"b" => 1 B in ["0x00"; "0xFF"]$. Np. $15213 = "0x3B6D"$.
   #v(-2pt)
   #table(
     columns: (auto, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
