@@ -790,7 +790,6 @@
 ]
 
 #from(10)[
-  #colbreak()
   == Linkowanie i konsolidacja
 
   === Fazy budowania programu
