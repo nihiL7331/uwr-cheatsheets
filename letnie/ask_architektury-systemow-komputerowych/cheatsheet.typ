@@ -834,7 +834,7 @@
     $D arrow.l D "op" S$,
     [Skalarne dodawanie / odejmowanie podwójnej precyzji.],
     raw("xorpd / xorps S, D"),
-    $D arrow.l D^S$,
+    $D arrow.l D \^ S$,
     [Bitowy XOR na rejestrach XMM. Używany jako `xorpd %xmm0, %xmm0` do szybkiego zerowania rejestru.],
     raw("ucomisd S1, S2"),
     $"S2" - "S1"$,
