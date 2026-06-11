@@ -56,7 +56,7 @@
 )
 
 #let LECTURE-NUM-FROM = int(sys.inputs.at("od", default: "1"))
-#let LECTURE-NUM-TO = int(sys.inputs.at("do", default: "13"))
+#let LECTURE-NUM-TO = int(sys.inputs.at("do", default: "15"))
 #let from(n, body) = if LECTURE-NUM-TO >= n and n >= LECTURE-NUM-FROM { body }
 
 #let split-reg16(r16, r8_h, r8_l, clr) = {
