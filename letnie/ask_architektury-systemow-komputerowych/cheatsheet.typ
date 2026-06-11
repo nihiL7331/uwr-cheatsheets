@@ -1033,9 +1033,9 @@
     [*Direct-mapped*],
     [$E=1$. Adres pasuje do *dokładnie jednej* linii. Szybkie, ale podatne na ciągłe wyrzucanie nawzajem adresów o tym samym indeksie.],
     [*E-way assoc.*],
-    [$E>1$. Blok ma przypisany zbiór ($s$), ale w jego obrębie może zająć *dowolną* linię. Wymaga strategii wywalania starych danych (np. LRU).],
+    [$E>1$. Blok ma przypisany zbiór, ale w jego obrębie może zająć *dowolną* linię. Wymaga strategii usuwania starych danych (np. LRU).],
     [*Fully assoc.*],
-    [$S=1$. Jeden gigantyczny zbiór, linia może trafić *gdziekolwiek*. Bardzo drogie sprzętowo.],
+    [$S=1$. Jeden zbiór, linia może trafić *gdziekolwiek*. Bardzo drogie sprzętowo.],
   )
 
   === Polityki zapisu
@@ -1063,6 +1063,44 @@
       - *No-write-allocate:* Ignoruje cache całkowicie i zapisuje prosto do RAM. Tworzy parę z Write-through.
     ],
   )
+]
+
+#from(13)[
+  #colbreak()
+  == Pamięć wirtualna
+
+  === Role pamięci wirtualnej
+  + *Cache dla dysku:* DRAM to pamięć podręczna dla danych na dysku. System operacyjny przesyła dane blokami zwanymi *stronami*.
+  + *Zarządzanie:* Każdy proces dostaje własną, idealnie liniową przestrzeń adresową. Upraszcza to linkowanie (kod/sterta zawsze startują od tych samych adresów).
+  + *Ochrona:* Każdy wpis w tablicy stron (PTE) ma bity uprawnień (read/write/exec). Blokuje to dostęp procesów do pamięci jądra lub cudzych danych.
+
+  === Translacja adresów (VA $arrow.r$ PA)
+  #align(center)[
+    #grid(
+      columns: (1fr, 1fr),
+      gutter: 10pt,
+      box(fill: rgb("1a1a1a"), inset: 8pt, stroke: (top: 2pt + rgb("2188FF")))[
+        *Adres Wirtualny (VA)* \
+        `VPN` (Page Num) | `VPO` (Offset)
+      ],
+      box(fill: rgb("1a1a1a"), inset: 8pt, stroke: (top: 2pt + rgb("28A745")))[
+        *Adres Fizyczny (PA)* \
+        `PPN` (Page Num) | `PPO` (Offset)
+      ],
+    )
+  ]
+  - *VPO = PPO:* Offset *nigdy się nie zmienia* przy translacji.
+  - Sprzętowy układ MMU zamienia `VPN` na `PPN` używając *tablicy stron*.
+
+  === Tablice stron i TLB
+  - *Page fault:* Próba dostępu do strony, której nie ma w RAM. Zgłasza wyjątek, a OS wstrzymuje proces i wczytuje stronę z dysku.
+  - *Wielopoziomowe tablice stron:* Drzewo tablic. Rozwiązuje problem marnowania RAM-u, bo pozwala na zaalokowanie tylko tych gałęzi, które są faktycznie używane.
+  - *Translation Lookaside Buffer:* Mały, szybki sprzętowy cache dla MMU umieszczony wewnątrz procesora. Przechowuje ostatnie tłumaczenia (`VPN` $arrow.r$ `PPN`), eliminując powolny odczyt tablicy stron z pamięci dla każdego żądania.
+
+  === VIPT (Virtually Indexed, Physically Tagged)
+  Zwykle procesor musi przetłumaczyć adres, zanim zacznie szukać danych w L1. Ale jeśli L1 jest małe, cały indeks (`CI`) mieści się w offsecie strony (`VPO`).
+
+  Skoro `VPO` jest identyczne z `PPO`, procesor wysyła bity wirtualnego indeksu prosto do L1 *równolegle* do wysłania `VPN` do sprzętowego TLB. Gdy TLB kończy translację i zwraca fizyczny tag (`CT`), L1 ma już przygotowany wiersz gotowy do weryfikacji. Skraca to czas dostępu.
 ]
 
 #from(4)[
