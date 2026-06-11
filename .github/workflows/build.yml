@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          lfs: true
 
       - name: Typst
         uses: typst-community/setup-typst@v5
@@ -18,6 +20,11 @@ jobs:
 
       - name: List available fonts
         run: typst fonts --font-path fonts/ --variants
+
+      - name: Debug fonts
+        run: |
+          git ls-files fonts/
+          file fonts/* fonts/**/* 2>/dev/null | grep -v directory
 
       - name: Compile
         run: |
@@ -31,7 +38,10 @@ jobs:
 
             mkdir -p "$OUT_DIR"
 
-            typst compile --input od=1 --input do=$i -f pdf --font-path fonts/ "$SRC_FILE" "$OUT_DIR/cheatsheet.pdf"
+            typst compile --ignore-system-fonts --input od=1 --input do=$i \
+              -f pdf --font-path fonts/ "$SRC_FILE" "$OUT_DIR/cheatsheet.pdf" \
+              2> >(tee /tmp/warn.log >&2)
+            if grep -q "unknown font family" /tmp/warn.log; then exit 1; fi
           done
 
       - name: Commit
