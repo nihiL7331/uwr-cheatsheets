@@ -292,7 +292,6 @@
     [*Wykr. nadmiaru* (`s=x+y`)], `((s^x)&(s^y))>>(w-1)`,
     [*Maska / abs*], `m=x>>31; abs=(x^m)-m`,
   )
-  *Pamięć:* adres wskazuje najmłodszy bajt słowa. Napis = `char[]` ASCII + `0x00` (niezależny od endianness).
   #table(
     columns: (auto, 1fr, auto),
     stroke: none,
