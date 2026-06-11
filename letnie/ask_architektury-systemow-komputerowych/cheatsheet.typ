@@ -777,6 +777,118 @@
   )
 ]
 
+#from(10)[
+  #colbreak()
+  == Linkowanie i konsolidacja
+
+  === Fazy budowania programu
+  #align(center)[
+    #box(
+      fill: rgb("1a1a1a"),
+      inset: 6pt,
+      stroke: (top: 2pt + rgb("333333")),
+      radius: 2pt,
+    )[
+      #show math.equation: set text(fill: rgb("e4e4e4"))
+      #text(fill: rgb("28A745"), weight: "bold")[cpp] (Preprocesor) $arrow.r$
+      #text(fill: rgb("28A745"), weight: "bold")[cc1] (Kompilator) $arrow.r$
+      #text(fill: rgb("28A745"), weight: "bold")[as] (Asembler) $arrow.r$
+      #text(fill: rgb("D73A49"), weight: "bold")[ld] (Linker)
+    ]
+  ]
+
+  === Formaty plików obiektowych (ELF)
+  - *Relokowalne (`.o`):* Kod i dane gotowe do połączenia z innymi plikami `.o`.
+  - *Wykonywalne (`a.out`):* Sklejone, gotowe do załadowania do pamięci i uruchomienia.
+  - *Współdzielone (`.so`):* Linkowane dynamicznie podczas ładowania lub działania.
+
+  #table(
+    columns: (28%, 72%),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    raw(".text"), [Skompilowany kod maszynowy.],
+    raw(".rodata"),
+    [Dane tylko do odczytu (np. `"Witaj"` w `printf("Witaj")`, tablice `switch`).],
+    raw(".data"),
+    [Zainicjowane zmienne globalne i statyczne (np. `int x = 5;`).],
+    raw(".bss"),
+    [Niezainicjowane zmienne globalne/statyczne, nie zajmują miejsca w pliku.],
+    raw(".symtab"),
+    [Tablica symboli (informacje o funkcjach i zmiennych globalnych).],
+    raw(".rel.text / .data"),
+    [Informacje dla linkera, gdzie i jak wstawić ostateczne adresy w kodzie/danych podczas relokacji.],
+  )
+
+  === Symbol resolution
+  Linker rozróżnia 3 typy symboli:
+  - *Globalne*: zdefiniowane tu, używane tam,
+  - *Zewnętrzne*: `extern`, używane tu, zdefiniowane gdzie indziej, oraz
+  - *Lokalne*: z C-owym słowem `static`. \
+  #text(
+    fill: rgb("8b949e"),
+    size: 0.8em,
+  )[*Uwaga:* Zmienne lokalne na stosie *NIE* są w ogóle widoczne dla linkera]
+
+  #align(center)[
+    #box(
+      fill: rgb("251414"),
+      inset: 8pt,
+      stroke: (left: 3pt + rgb("D73A49")),
+      width: 100%,
+      align(left)[
+        *Silne (Strong):* Funkcje i zainicjowane zmienne globalne (np. `int foo = 5;`). \
+        *Słabe (Weak):* Niezainicjowane zmienne globalne (np. `int foo;`).
+      ],
+    )
+  ]
+
+  #table(
+    columns: (auto, 1fr),
+    stroke: none,
+    row-gutter: 0.4em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Reguła 1*],
+    [Wiele silnych symboli $arrow.r$ *błąd linkowania* (Multiple definition).],
+    [*Reguła 2*],
+    [1 silny + $n$ słabych $arrow.r$ linker wybiera *silny* (słabe podpinają się pod niego).],
+    [*Reguła 3*],
+    [Wiele słabych $arrow.r$ linker wybiera *dowolny* (`gcc -fno-common` zakazuje takich sytuacji).],
+  )
+
+  === Relokacja
+  Po rozwiązaniu symboli linker łączy sekcje `.text` / `.data` z wielu plików `.o` w jeden wielki blok. Przydziela im finalne adresy (run-time), a następnie modyfikuje wszystkie odniesienia w kodzie maszynowym do zmiennych i funkcji na podstawie wpisów z `.rel`.
+
+  === Biblioteki
+  #table(
+    columns: (1fr, 1fr),
+    stroke: none,
+    column-gutter: 10pt,
+    align: top,
+    table.cell(
+      fill: rgb("1a1a1a"),
+      stroke: (top: 2pt + rgb("2188FF")),
+      inset: 8pt,
+    )[
+      *Statyczne (`.a`)* \
+      Zbiór plików `.o`. Linker kopiuje do pliku wykonywalnego *tylko te moduły*, które są faktycznie używane. \
+      Wada jest to, ze każda aplikacja ma własną kopię w RAM. Zmiana wymusza rekompilację. \
+      *Kolejność flag `gcc`:* Biblioteki `.a` podaje sie na samym końcu komendy.
+    ],
+    table.cell(
+      fill: rgb("1a1a1a"),
+      stroke: (top: 2pt + rgb("28A745")),
+      inset: 8pt,
+    )[
+      *Dynamiczne (`.so`)* \
+      Kod ładowany do pamięci raz. Pliki wykonywalne otrzymują tylko adresy podczas działania (przez GOT). \
+      W porownaniu do `.a` znacznie mniejsze pliki binarne, łatwe aktualizacje.
+    ],
+  )
+]
+
 #from(4)[
   #colbreak()
   == Katalog instrukcji (AT&T)
