@@ -1212,6 +1212,7 @@
 
 #from(4)[
   #colbreak()
+  #colbreak() // stupid but works ig???
   == Katalog instrukcji (AT&T)
   #table(
     columns: (30%, 30%, 1fr),
