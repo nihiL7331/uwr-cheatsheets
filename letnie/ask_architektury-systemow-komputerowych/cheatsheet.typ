@@ -632,7 +632,23 @@
 #from(7)[
   #colbreak()
   == Architektura CPU
-  Przetwarzanie instrukcji dzieli się na 5 faz: *Fetch* (pobranie), *Decode* (dekodowanie/odczyt z rejestru), *Execute* (ALU), *Memory* (pamięć), *Write-back* (zapis do rejestru).
+
+  === Fazy przetwarzania instrukcji
+  #align(center)[
+    #box(
+      fill: rgb("1a1a1a"),
+      inset: 6pt,
+      stroke: (top: 2pt + rgb("333333")),
+      radius: 2pt,
+    )[
+      #show math.equation: set text(fill: rgb("e4e4e4"))
+      #text(fill: rgb("2188FF"), weight: "bold")[Fetch] $arrow.r$
+      #text(fill: rgb("2188FF"), weight: "bold")[Decode] $arrow.r$
+      #text(fill: rgb("2188FF"), weight: "bold")[Execute] $arrow.r$
+      #text(fill: rgb("2188FF"), weight: "bold")[Memory] $arrow.r$
+      #text(fill: rgb("2188FF"), weight: "bold")[Write]
+    ]
+  ]
 
   === Pipelining i hazardy
   Nakładanie faz na siebie znacznie zwiększa throughput. Prowadzi to jednak do konfliktów (hazardów):
