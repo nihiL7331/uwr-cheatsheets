@@ -696,6 +696,87 @@
   - *Optymalizacja:* Układanie pól w strukturze od największego do najmniejszego minimalizuje marnowanie pamięci na padding.
 ]
 
+#from(9)[
+  == Układ pamięci
+
+  === Mapa pamięci procesu
+  #align(center)[
+    #table(
+      columns: (auto, 1fr),
+      stroke: 1pt + rgb("333333"),
+      align: left,
+      table.cell(fill: rgb("1a1a1a"))[*Stack*],
+      [Rośnie w dół. Zmienne lokalne, adresy powrotu (limit ~8MB).],
+      table.cell(fill: rgb("1a1a1a"))[*Shared libs*],
+      [Współdzielone biblioteki (np. `libc.so`).],
+      table.cell(fill: rgb("1a1a1a"))[*Sterta*],
+      [Rośnie w górę. Dynamiczna alokacja (`malloc`, `new`).],
+      table.cell(fill: rgb("1a1a1a"))[*Data*],
+      [Zmienne globalne i statyczne (zainicjowane i niezainicjowane).],
+      table.cell(fill: rgb("1a1a1a"))[*Text*],
+      [Read-only. Binarny kod wykonywalny programu.],
+    )
+  ]
+
+  === Zagrożenia i mechanizmy obronne
+  #table(
+    columns: (25%, 75%),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Buffer overflow*],
+    [Brak sprawdzania granic tablic. Nadpisuje zawartość stosu (np. stary `%rbp` i *adres powrotu*), pozwalając na przejęcie sterowania.],
+    [*ROP (Gadżety)*],
+    [Return-Oriented Programming. Wykorzystanie legalnych, krótkich skrawków kodu zakończonych `ret` do ominięcia blokady wykonywania.],
+    [*Stack canaries*],
+    [Losowa wartość wstawiana tuż przed adresem powrotu. Przed `ret` weryfikowana instrukcjami `xor` i `je`. Jeśli uszkodzona $arrow.r$ `abort()`.],
+    [*NX / ASLR*],
+    [*NX:* Stos i sterta dostają zakaz wykonywania kodu. \
+      *ASLR:* Losowanie bazowych adresów obszarów pamięci przy każdym starcie.],
+  )
+
+  === Unie
+  Wszystkie pola unii współdzielą *ten sam adres początkowy* (offset 0). Alokacja równa jest rozmiarowi *największego elementu*. Używane głównie do manipulacji na poziomie bitów z ominięciem systemu typów (np. odczyt bitów typu `float` jako `int`).
+]
+
+#from(9)[
+  == Optymalizacje i ich ograniczenia
+  Kompilator nie zoptymalizuje kodu, jeśli istnieje szansa, że zmieni to zachowanie programu (np. dla specyficznych argumentów).
+
+  === Optymalizacyjne blokady
+  #table(
+    columns: (25%, 75%),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Aliasing pamięci*],
+    [Dwa wskaźniki (np. `*p`, `*q`) mogą wskazywać na to samo. Kompilator nie schowa sumy w rejestrze, tylko wymusza odczyt/zapis do RAM. Mozna wykorzystac słowo kluczowe `restrict`.],
+    [*Wywołania funkcji*],
+    [Funkcja w pętli może mieć ukryte efekty uboczne (np. licznik globalny). Kompilator jej nie wyrzuci poza pętlę. *Rozwiązanie:* Inlining (wklejenie kodu) lub makra.],
+    [*Arytmetyka `float`-ow*],
+    [Brak łączności: $(a+b)+c != a+(b+c)$. Kompilator *nigdy* nie zmieni kolejności działań na `float`-ach w trosce o utratę precyzji/zaokrąglenia.],
+  )
+
+  === Podstawowe techniki optymalizacji
+  #table(
+    columns: (30%, 1fr),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Code motion*],
+    [Wyrzucenie obliczeń niezmienników (np. `x * y`) całkowicie poza pętlę.],
+    [*Strength reduction*],
+    [Zamiana kosztownych instrukcji na tańsze (np. `x * 64` $arrow.r$ `x << 6`, lub iterowanie za pomocą wskaźnika zamiast mnożenia indeksu przez rozmiar).],
+    [*Share subexpr.*],
+    [Wykrywanie i jednokrotne obliczanie powtarzających się fragmentów równań.],
+    [*Loop unrolling*],
+    [Rozwinięcie pętli (np. przeskok co 2 iteracje). Zmniejsza narzut związany z instrukcjami pętli i pozwala procesorowi na równoległość.],
+  )
+]
+
 #from(4)[
   #colbreak()
   == Katalog instrukcji (AT&T)
