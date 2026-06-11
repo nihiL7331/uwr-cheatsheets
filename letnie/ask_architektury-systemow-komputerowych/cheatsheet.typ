@@ -510,70 +510,79 @@
   ]
 ]
 
-// #from(5)[
-//   #colbreak()
-//   == Flagi stanu i Sterowanie (Control)
-//   #reg-desc(`ZF`, [Zero. Wynik to 0 (np. argumenty są równe).])
-//   #reg-desc(`SF`, [Sign. Wynik jest ujemny (MSB = 1).])
-//   #reg-desc(`CF`, [Carry. Przepełnienie dla liczb *bez znaku* (unsigned).])
-//   #reg-desc(`OF`, [Overflow. Przepełnienie dla liczb *ze znakiem* (signed).])
-//
-//   #table(
-//     columns: (30%, 30%, 1fr),
-//     stroke: none,
-//     row-gutter: 0.5em,
-//     align: horizon,
-//     table.hline(stroke: rgb("333333")),
-//     raw("cmp S1, S2"),
-//     $"S2" - "S1"$,
-//     [Ustawia flagi jak odejmowanie, nie zapisuje wyniku.],
-//     raw("test S1, S2"),
-//     $"S2 & S1"$,
-//     [Ustawia flagi jak *AND* (np. test czy rejestr jest zerem).],
-//     raw("jX dest"),
-//     $"if"(X) "%rip" arrow.l "dest"$,
-//     [Skok warunkowy (X = warunek).],
-//     raw("setX D"),
-//     $"if"(X) D arrow.l 1$,
-//     [Ustawia bajt (np. `%al`) na 0 lub 1 na podstawie flag.],
-//     raw("cmovX S, D"),
-//     $"if"(X) D arrow.l S$,
-//     [Warunkowe kopiowanie (optymalizacja zamiast skoku).],
-//   )
-//
-//   === Sufiksy warunkowe (dla `jX`, `setX`, `cmovX`)
-//   #table(
-//     columns: (20%, 25%, 1fr),
-//     stroke: none,
-//     row-gutter: 0.4em,
-//     align: horizon,
-//     table.header(
-//       text(fill: rgb("8b949e"))[*Sufiks*],
-//       text(fill: rgb("8b949e"))[*Synonim*],
-//       text(fill: rgb("8b949e"))[*Znaczenie*],
-//     ),
-//     table.hline(stroke: rgb("333333")),
-//     raw("e") / raw("z"), [], [Equal / Zero (równe / wynik to $0$)],
-//     raw("ne") / raw("nz"), [], [Not Equal / Not Zero (nierówne)],
-//     raw("s"), [], [Sign (wynik ujemny, `SF=1`)],
-//     table.hline(stroke: rgb("222222")),
-//     table.cell(
-//       colspan: 3,
-//       fill: rgb("1a1a1a"),
-//       align: center,
-//     )[*Liczby ze znakiem (signed)*],
-//     raw("g") / raw("ge"), [], [Greater / Greater or Equal],
-//     raw("l") / raw("le"), [], [Less / Less or Equal],
-//     table.hline(stroke: rgb("222222")),
-//     table.cell(
-//       colspan: 3,
-//       fill: rgb("1a1a1a"),
-//       align: center,
-//     )[*Liczby bez znaku (unsigned)*],
-//     raw("a") / raw("ae"), raw("nc"), [Above / Above or Equal (No Carry)],
-//     raw("b") / raw("be"), raw("c"), [Below / Below or Equal (Carry)],
-//   )
-// ]
+#from(5)[
+  #colbreak()
+  == Flagi stanu i Sterowanie (Control)
+  #reg-desc(`ZF`, [Zero. Wynik to 0 (np. argumenty są równe).])
+  #reg-desc(`SF`, [Sign. Wynik jest ujemny (MSB = 1).])
+  #reg-desc(`CF`, [Carry. Przepełnienie dla liczb *bez znaku* (unsigned).])
+  #reg-desc(`OF`, [Overflow. Przepełnienie dla liczb *ze znakiem* (signed).])
+
+  #table(
+    columns: (30%, 30%, 1fr),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    raw("cmp S1, S2"),
+    $"S2" - "S1"$,
+    [Ustawia flagi jak odejmowanie, nie zapisuje wyniku.],
+    raw("test S1, S2"),
+    $"S2 & S1"$,
+    [Ustawia flagi jak *AND* (np. test czy rejestr jest zerem).],
+    raw("jX dest"),
+    $"if"(X) "%rip" arrow.l "dest"$,
+    [Skok warunkowy (X = warunek).],
+    raw("setX D"),
+    $"if"(X) D arrow.l 1$,
+    [Ustawia bajt (np. `%al`) na 0 lub 1 na podstawie flag.],
+    raw("cmovX S, D"),
+    $"if"(X) D arrow.l S$,
+    [Warunkowe kopiowanie (optymalizacja zamiast skoku).],
+  )
+
+  === Sufiksy warunkowe (dla `jX`, `setX`, `cmovX`)
+  #table(
+    columns: (20%, 25%, 1fr),
+    stroke: none,
+    row-gutter: 0.4em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Sufiks*],
+      text(fill: rgb("8b949e"))[*Synonim*],
+      text(fill: rgb("8b949e"))[*Znaczenie*],
+    ),
+    table.hline(stroke: rgb("333333")),
+    `e / z`, [], [Equal / Zero (równe / wynik to $0$)],
+    `ne / nz`, [], [Not Equal / Not Zero (nierówne)],
+    `s`, [], [Sign (wynik ujemny, `SF=1`)],
+    table.hline(stroke: rgb("222222")),
+    table.cell(
+      colspan: 3,
+      fill: rgb("1a1a1a"),
+      align: center,
+    )[*Liczby ze znakiem (signed)*],
+    `g / ge`, [], [Greater / Greater or Equal],
+    `l / le`, [], [Less / Less or Equal],
+    table.hline(stroke: rgb("222222")),
+    table.cell(
+      colspan: 3,
+      fill: rgb("1a1a1a"),
+      align: center,
+    )[*Liczby bez znaku (unsigned)*],
+    `a / ae`, `nc`, [Above / Above or Equal (No Carry)],
+    `b / be`, `c`, [Below / Below or Equal (Carry)],
+  )
+
+  === Translacja struktur kontrolnych (C $arrow.r$ ASM)
+  - *if-else:* Realizowane przez skoki (`jX`) lub `cmovX`. `cmovX` unika kar za błędną predykcję skoku, ale oblicza zawsze obie ścieżki. Nie używa się go, gdy operacje są kosztowne obliczeniowo lub mają efekty uboczne (np. `x++`).
+  - *Pętle do-while:* Ciało pętli jest na początku, na końcu znajduje się test i warunkowy skok w górę (`if(war) goto loop`).
+  - *Pętle while:*
+    1. *Jump-to-middle* (`-Og`): początkowy skok omija ciało pętli prosto do testu na końcu.
+    2. *Do-while conversion* (`-O1`): początkowy strażnik (`if(!war) goto done`), po którym następuje zwykła pętla typu do-while.
+  - *Pętle for:* Kompilator konwertuje je na pętle `while` według schematu: `init; while(war){ body; update it }`.
+  - *Switch:* Używa *tablic skoków* dla osiągnięcia czasu skoku $O(1)$ przy `case`. Realizowane przez pośredni skok z adresowaniem skalowanym: `jmp *.L4(,%rdi,8)`. Pominięcie `break` w języku C odpowiada fizycznemu brakowi instrukcji skoku kończącej dany blok w ASM (fall-through do kodu poniżej).
+]
 //
 // #from(6)[
 //   == Konwencja wywoływań (System V AMD64 ABI)
