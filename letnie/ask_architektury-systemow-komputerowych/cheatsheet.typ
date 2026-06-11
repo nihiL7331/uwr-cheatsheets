@@ -717,12 +717,15 @@
   ]
 ]
 
-#v(2pt)
-#align(center)[
-  #text(fill: rgb("8b949e"), size: 0.75em, style: "italic")[
-    *Uwaga o sufiksach:* Instrukcje przyjmują sufiks określający rozmiar danych: \
-    `b` ($8$-bit), `w` ($16$-bit), `l` ($32$-bit), `q` ($64$-bit). \
-    Np. `movl` kopiuje $32$ bity (i automatycznie zeruje górną połowę 64-bitowego rejestru!).
+
+#from(4)[
+  #v(2pt)
+  #align(center)[
+    #text(fill: rgb("8b949e"), size: 0.75em, style: "italic")[
+      *Uwaga o sufiksach:* Instrukcje przyjmują sufiks określający rozmiar danych: \
+      `b` ($8$-bit), `w` ($16$-bit), `l` ($32$-bit), `q` ($64$-bit). \
+      Np. `movl` kopiuje $32$ bity (i automatycznie zeruje górną połowę 64-bitowego rejestru!).
+    ]
   ]
 ]
 
