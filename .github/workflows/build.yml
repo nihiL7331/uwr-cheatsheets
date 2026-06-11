@@ -16,6 +16,9 @@ jobs:
         with:
           typst-version: 0.14.2
 
+      - name: List available fonts
+        run: typst fonts --font-path fonts/ --variants
+
       - name: Compile
         run: |
           BASE_DIR="letnie/ask_architektury-systemow-komputerowych"
