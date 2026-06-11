@@ -508,13 +508,27 @@
   )
 
   === Translacja struktur kontrolnych (C $arrow.r$ ASM)
-  - *if-else:* Realizowane przez skoki (`jX`) lub `cmovX`. `cmovX` unika kar za błędną predykcję skoku, ale oblicza zawsze obie ścieżki. Nie używa się go, gdy operacje są kosztowne obliczeniowo lub mają efekty uboczne (np. `x++`).
-  - *Pętle do-while:* Ciało pętli jest na początku, na końcu znajduje się test i warunkowy skok w górę (`if(war) goto loop`).
-  - *Pętle while:*
-    1. *Jump-to-middle* (`-Og`): początkowy skok omija ciało pętli prosto do testu na końcu.
-    2. *Do-while conversion* (`-O1`): początkowy strażnik (`if(!war) goto done`), po którym następuje zwykła pętla typu do-while.
-  - *Pętle for:* Kompilator konwertuje je na pętle `while` według schematu: `init; while(war){ body; update it }`.
-  - *Switch:* Używa *tablic skoków* dla osiągnięcia czasu skoku $O(1)$ przy `case`. Realizowane przez pośredni skok z adresowaniem skalowanym: `jmp *.L4(,%rdi,8)`. Pominięcie `break` w języku C odpowiada fizycznemu brakowi instrukcji skoku kończącej dany blok w ASM (fall-through do kodu poniżej).
+  - *if-else:* `jX` (skok) lub `cmovX` (liczy obie ścieżki, unika kar za predykcję). \
+    *Uwaga:* `cmovX` psuje się przy drogich operacjach, wyłuskaniu wskaźników (`*p`) i efektach ubocznych (`x++`).
+  - *`switch`:* Tablice skoków $arrow.r$ czas $O(1)$. Skok pośredni: `jmp *.L4(,%rdi,8)`. Brak `break` $=>$ *fall-through*.
+  - *Pętla `for`:* Zawsze redukowana do pętli `while`: `init; while(cond) { body; update; }`
+
+  #v(2pt)
+  *Wzorce asemblerowe dla pętli:*
+  #table(
+    columns: (1fr, 1fr, 1fr),
+    stroke: none,
+    row-gutter: 0.2em,
+    table.header(
+      text(fill: rgb("8b949e"))[*`do-while`*],
+      text(fill: rgb("8b949e"))[*`while` (Jump-to-mid)*],
+      text(fill: rgb("8b949e"))[*`while` (Guarded)*],
+    ),
+    table.hline(stroke: rgb("333333")),
+    [`loop:` \ `  Body` \ `  if(T) goto loop`],
+    [`  goto test` \ `loop:` \ `  Body` \ `test:` \ `  if(T) goto loop`],
+    [`  if(!T) goto done` \ `loop:` \ `  Body` \ `  if(T) goto loop` \ `done:`],
+  )
 ]
 
 #from(6)[
