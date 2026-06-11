@@ -392,6 +392,287 @@
   - *Rzutowanie `float/double` $arrow.r$ `int`:* Obcina ułamek w stronę 0. Jeśli poza zakresem lub `NaN` $arrow.r$ z reguły zwraca `TMin` (`0x80000000`).
 ]
 
+#from(4)[
+  == Instrukcja `leaq` (Load Effective Address)
+  Instrukcja *obliczeniowa*, nie pamięciowa. Ładuje *obliczony adres*, a nie wartość z pamięci: `leaq Src, Dst` $arrow.r$ `Dst = addr(Src)`.
+
+  *Zastosowania:*
+  1. *Pobieranie adresu zmiennej:* C-owe `p = &x[i]`.
+  2. *Szybka arytmetyka bez flag:* Obliczenia $x + k dot y$ dla stałych $k in {1, 2, 4, 8}$.
+  *Przykład:* Optymalizacja `x * 12`:
+  ```asm
+  leaq (%rdi, %rdi, 2), %rax  ; t = x + 2*x = 3*x
+  salq $2, %rax ; return t << 2 (czyli 3*x * 4 = 12*x)
+  ```
+
+  == Rejestry x86\_64
+  #reg-pair("rax", "rbx")
+  #reg-pair("rcx", "rdx")
+  #reg-pair("rsi", "rdi")
+  #reg-pair("rbp", "rsp", clr2: rgb("D73A49"))
+  #reg-pair("r8", "r9")
+  #v(2pt)
+  #align(center)[
+    #text(fill: rgb("8b949e"), size: 0.75em, style: "italic")[
+      *Uwaga:* Rejestry od %r10 do %r15 używają schematu: \
+      #raw("%r10"), #raw("%r10d"), #raw("%r10w"), #raw("%r10b").
+    ]
+  ]
+
+  === Podział ról rejestrów
+  #reg-desc(
+    `%rax`,
+    [Akumulator. Główny rejestr arytmetyczny. Przechowuje *wartość zwracaną*.],
+  )
+  #reg-desc(
+    `%rdi, %rsi, %rdx, %rcx, %r8, %r9`,
+    [Kolejno: *od 1. do 6. argumentu funkcji*. Caller-saved.],
+  )
+  #reg-desc(`%rsp`, [Wskaźnik stosu (SP). Wskazuje wierzchołek ramki.])
+  #reg-desc(`%rbp`, [Wskaźnik bazy (BP). Początek ramki stosu. Callee-saved.])
+  #reg-desc(
+    `%rbx, %r12-%r15`,
+    [Ogólnego przeznaczenia. Wszystkie *callee-saved*.],
+  )
+  #reg-desc(`%rip`, [Wskaźnik instrukcji (Program Counter).])
+]
+
+// #from(5)[
+//   === Rejestry wektorowe (zmiennoprzecinkowe)
+//   #reg-desc(
+//     `%xmm0 do %xmm15`,
+//     [128-bitowe rejestry. `%xmm0` to wartość zwracana (`float`/`double`). Pierwsze 8 to argumenty. Caller-saved.],
+//   )
+//   #reg-desc(
+//     `%ymm0 do %ymm15`,
+//     [256-bitowe rozszerzenie rejestrów XMM. Dzielą z nimi najmłodsze 128 bitów.],
+//   )
+// ]
+
+#from(4)[
+  == Tryby adresowania (operandy)
+  #v(0.5em)
+  #grid(
+    columns: (35%, 25%, 1fr),
+    gutter: 10pt,
+    text(fill: rgb("8b949e"))[*Tryb*],
+    text(fill: rgb("8b949e"))[*Format*],
+    text(fill: rgb("8b949e"))[*Obliczanie adresu*],
+  )
+  #line(length: 100%, stroke: rgb("333333"))
+  #v(0.5em)
+
+  #addr-row("Natychmiastowy (Imm)", "$Imm", [`Imm`])
+  #addr-row("Rejestrowy (Reg)", "%Ra", [`%Ra`])
+  #addr-row("Bezpośredni (Mem)", "Imm", [`M[Imm]`])
+  #addr-row("Pośredni (Mem)", "(%Rb)", [`M[%Rb]`])
+  #addr-row("Z przesunięciem", "D(%Rb)", [`M[%Rb + D]`])
+  #addr-row("Skalowany (Ind/scaled)", "D(%Rb, %Ri, S)", [`M[%Rb+%Ri*S+D]`])
+  #addr-row("Skalowany (baseless)", "(, %Ri, S)", [`M[%Ri * S]`])
+
+  #v(2pt)
+  #align(center)[
+    #text(fill: rgb("8b949e"), size: 0.75em, style: "italic")[
+      *Legenda:* `Imm`/`D` to stała liczbowa, `%Ra`/`%Rb` to rejestr bazowy, \
+      `%Ri` to rejestr indeksowy, a `S` to skala (tylko: 1, 2, 4 lub 8).
+    ]
+  ]
+
+  #colbreak()
+  == Podstawowe instrukcje i arytmetyka (AT&T)
+  #table(
+    columns: (30%, 30%, 1fr),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Opcode*],
+      text(fill: rgb("8b949e"))[*Efekt*],
+      text(fill: rgb("8b949e"))[*Opis*],
+    ),
+    table.hline(stroke: rgb("333333")),
+
+    raw("mov S, D"), $D arrow.l S$, [Kopiuje wartość z S do D.],
+    raw("lea S, D"),
+    $D arrow.l "addr"(S)$,
+    [Oblicza adres S (bez czytania pamięci).],
+    raw("add S, D"), $D arrow.l D + S$, [Dodawanie (ustawia flagi).],
+    raw("sub S, D"), $D arrow.l D - S$, [Odejmowanie (ustawia flagi).],
+    raw("imul S, D"), $D arrow.l D * S$, [Mnożenie liczb ze znakiem.],
+    raw("sal / shl k, D"),
+    $D limits(<<)= k$,
+    [Przesunięcie w lewo (mnożenie przez $2^k$).],
+    raw("sar k, D"),
+    $D limits(>>)= k$,
+    [Arytmetyczne w prawo (dzielenie). *Kopiuje znak*.],
+    raw("shr k, D"), $D limits(>>)= k$, [Logiczne w prawo. Dopełnia zerami.],
+    raw("and / or S, D"),
+    $D arrow.l D "& / |" S$,
+    [Operacje bitowe (ustawiają flagi).],
+    raw("xor S, D"),
+    $D arrow.l D "^" S$,
+    [Często używane jako `xor %rax, %rax` do zerowania.],
+  )
+  #v(2pt)
+  #align(center)[
+    #text(fill: rgb("8b949e"), size: 0.75em, style: "italic")[
+      *Uwaga o sufiksach:* Instrukcje przyjmują sufiks określający rozmiar danych: \
+      `b` ($8$-bit), `w` ($16$-bit), `l` ($32$-bit), `q` ($64$-bit). \
+      Np. `movl` kopiuje $32$ bity (i automatycznie zeruje górną połowę 64-bitowego rejestru!).
+    ]
+  ]
+]
+
+// #from(5)[
+//   #colbreak()
+//   == Flagi stanu i Sterowanie (Control)
+//   #reg-desc(`ZF`, [Zero. Wynik to 0 (np. argumenty są równe).])
+//   #reg-desc(`SF`, [Sign. Wynik jest ujemny (MSB = 1).])
+//   #reg-desc(`CF`, [Carry. Przepełnienie dla liczb *bez znaku* (unsigned).])
+//   #reg-desc(`OF`, [Overflow. Przepełnienie dla liczb *ze znakiem* (signed).])
+//
+//   #table(
+//     columns: (30%, 30%, 1fr),
+//     stroke: none,
+//     row-gutter: 0.5em,
+//     align: horizon,
+//     table.hline(stroke: rgb("333333")),
+//     raw("cmp S1, S2"),
+//     $"S2" - "S1"$,
+//     [Ustawia flagi jak odejmowanie, nie zapisuje wyniku.],
+//     raw("test S1, S2"),
+//     $"S2 & S1"$,
+//     [Ustawia flagi jak *AND* (np. test czy rejestr jest zerem).],
+//     raw("jX dest"),
+//     $"if"(X) "%rip" arrow.l "dest"$,
+//     [Skok warunkowy (X = warunek).],
+//     raw("setX D"),
+//     $"if"(X) D arrow.l 1$,
+//     [Ustawia bajt (np. `%al`) na 0 lub 1 na podstawie flag.],
+//     raw("cmovX S, D"),
+//     $"if"(X) D arrow.l S$,
+//     [Warunkowe kopiowanie (optymalizacja zamiast skoku).],
+//   )
+//
+//   === Sufiksy warunkowe (dla `jX`, `setX`, `cmovX`)
+//   #table(
+//     columns: (20%, 25%, 1fr),
+//     stroke: none,
+//     row-gutter: 0.4em,
+//     align: horizon,
+//     table.header(
+//       text(fill: rgb("8b949e"))[*Sufiks*],
+//       text(fill: rgb("8b949e"))[*Synonim*],
+//       text(fill: rgb("8b949e"))[*Znaczenie*],
+//     ),
+//     table.hline(stroke: rgb("333333")),
+//     raw("e") / raw("z"), [], [Equal / Zero (równe / wynik to $0$)],
+//     raw("ne") / raw("nz"), [], [Not Equal / Not Zero (nierówne)],
+//     raw("s"), [], [Sign (wynik ujemny, `SF=1`)],
+//     table.hline(stroke: rgb("222222")),
+//     table.cell(
+//       colspan: 3,
+//       fill: rgb("1a1a1a"),
+//       align: center,
+//     )[*Liczby ze znakiem (signed)*],
+//     raw("g") / raw("ge"), [], [Greater / Greater or Equal],
+//     raw("l") / raw("le"), [], [Less / Less or Equal],
+//     table.hline(stroke: rgb("222222")),
+//     table.cell(
+//       colspan: 3,
+//       fill: rgb("1a1a1a"),
+//       align: center,
+//     )[*Liczby bez znaku (unsigned)*],
+//     raw("a") / raw("ae"), raw("nc"), [Above / Above or Equal (No Carry)],
+//     raw("b") / raw("be"), raw("c"), [Below / Below or Equal (Carry)],
+//   )
+// ]
+//
+// #from(6)[
+//   == Konwencja wywoływań (System V AMD64 ABI)
+//   #align(center)[
+//     #box(fill: rgb("1a1a1a"), inset: 6pt, stroke: (top: 2pt + rgb("333333")))[
+//       #show regex("%"): set text(fill: white)
+//       #show math.equation: set text(fill: rgb("e4e4e4"))
+//       #text(fill: rgb("D73A49"))[
+//         `%rdi` $arrow.r$ `%rsi` $arrow.r$ `%rdx` $arrow.r$ `%rcx` $arrow.r$ `%r8` $arrow.r$ `%r9`
+//       ]
+//     ] \
+//     #text(
+//       fill: rgb("8b949e"),
+//       size: 0.75em,
+//       style: "italic",
+//     )[Argumenty 7+: Na stosie od końca. Wynik: Zawsze w `%rax`.]
+//   ]
+//
+//   #table(
+//     columns: (1fr, 1fr),
+//     stroke: none,
+//     column-gutter: 10pt,
+//     table.cell(
+//       fill: rgb("1a1a1a"),
+//       stroke: (top: 2pt + rgb("D73A49")),
+//       inset: 8pt,
+//     )[
+//       *Caller-saved* (Można niszczyć) \
+//       #v(4pt)
+//       #hregs(
+//         rgb("D73A49"),
+//       )[`%rax`, `%rdi`, `%rsi`, `%rdx`, `%rcx`, `%r8`-`%r11`]
+//     ],
+//     table.cell(
+//       fill: rgb("1a1a1a"),
+//       stroke: (top: 2pt + rgb("28A745")),
+//       inset: 8pt,
+//     )[
+//       *Callee-saved* (Musi przywrócić) \
+//       #v(4pt)
+//       #hregs(rgb("28A745"))[`%rbx`, `%rbp`, `%r12`-`%r15`]
+//     ],
+//   )
+//
+//   === Instrukcje stosu i procedur
+//   #table(
+//     columns: (30%, 30%, 1fr),
+//     stroke: none,
+//     row-gutter: 0.5em,
+//     align: horizon,
+//     table.hline(stroke: rgb("333333")),
+//     raw("push S"), $"%rsp" -= 8 \ M["%rsp"] arrow.l S$, [Odkłada na stos.],
+//     raw("pop D"),
+//     $D arrow.l M["%rsp"] \ "%rsp" += 8$,
+//     [Zdejmuje ze stosu do D.],
+//     raw("call dest"),
+//     $"push" "%rip" \ "%rip" arrow.l "dest"$,
+//     [Skok do funkcji (zapisuje adres powrotu).],
+//     raw("ret"), $"pop" "%rip"$, [Powrót z funkcji.],
+//     raw("leave"),
+//     $"%rsp" arrow.l "%rbp" \ "pop" "%rbp"$,
+//     [Sprząta ramkę stosu.],
+//   )
+// ]
+//
+// #from(7)[
+//   == Struktury, Wyrównanie i Bezpieczeństwo
+//   + *Wyrównanie pola ($K$):* Zmienna $K$-bajtowa pod adresem $\pmod K = 0$.
+//   + *Rozmiar całkowity:* Całkowity `sizeof` struktury musi być podzielny przez największe wyrównanie w strukturze ($K_max$).
+//
+//   #table(
+//     columns: (25%, 75%),
+//     stroke: none,
+//     row-gutter: 0.5em,
+//     align: horizon,
+//     table.hline(stroke: rgb("333333")),
+//     [*Buffer overflow*],
+//     [Zapis poza limit bufora. Nadpisuje sąsiadującą pamięć (np. adres powrotu).],
+//     [*Stack canaries*],
+//     [Losowa wartość ułożona przed adresem powrotu. Weryfikowana przed `ret`.],
+//     [*ROP (Gadżety)*],
+//     [Łączenie legalnych instrukcji kończących się `ret` w celu ominięcia zabezpieczeń (np. Nonexec code segments).],
+//   )
+// ]
+
+== Rejestry x86\_64
 #reg-pair("rax", "rbx")
 #reg-pair("rcx", "rdx")
 #reg-pair("rsi", "rdi")
@@ -447,13 +728,13 @@
 )
 
 #colbreak()
-== 2. Flagi stanu (Rejestr `%rflags`)
+== Flagi stanu (Rejestr `%rflags`)
 #reg-desc(`ZF`, [Zero. Wynik to 0 (np. argumenty są równe).])
 #reg-desc(`SF`, [Sign. Wynik jest ujemny (MSB = 1).])
 #reg-desc(`CF`, [Carry. Przepełnienie dla liczb *bez znaku* (unsigned).])
 #reg-desc(`OF`, [Overflow. Przepełnienie dla liczb *ze znakiem* (signed).])
 
-== 3. Tryby adresowania (operandy)
+== Tryby adresowania (operandy)
 #v(0.5em)
 #grid(
   columns: (35%, 25%, 1fr),
@@ -493,7 +774,7 @@
   ]
 ]
 
-== 4. Konwencja wywoływań (System V AMD64 ABI)
+== Konwencja wywoływań (System V AMD64 ABI)
 #align(center)[*Przekazywanie argumentów*]
 #align(center)[
   #box(fill: rgb("1a1a1a"), inset: 6pt, stroke: (top: 2pt + rgb("333333")))[
@@ -570,7 +851,7 @@
 )
 
 #colbreak()
-== 5. Struktury i wyrównanie
+== Struktury i wyrównanie
 + *Wyrównanie pola ($K$):* Zmienna $K$-bajtowa pod adresem $\pmod K = 0$.
 + *Rozmiar całkowity:* Całkowity `sizeof` struktury musi być podzielny przez największe wyrównanie w strukturze ($K_max$).
 ```c
@@ -583,7 +864,7 @@ struct {
 } // K_max = 4. Rozmiar: 1+3+4+2+2 = 12 bajtów.
 ```
 
-== 6. Najważniejsze instrukcje (AT&T)
+== Najważniejsze instrukcje (AT&T)
 #table(
   columns: (30%, 30%, 1fr),
   stroke: none,
@@ -720,7 +1001,7 @@ struct {
 ]
 
 #colbreak()
-== 7. Sufiksy warunkowe (dla `jX`, `setX`, `cmovX`)
+== Sufiksy warunkowe (dla `jX`, `setX`, `cmovX`)
 #table(
   columns: (20%, 25%, 1fr),
   stroke: none,
@@ -766,7 +1047,7 @@ struct {
   raw("be"), [], [Below or Equal (mniejsze równe: `<=`)],
 )
 
-== 8. Optymalizacje i atrybuty
+== Optymalizacje i atrybuty
 #table(
   columns: (25%, 75%),
   stroke: none,
@@ -806,7 +1087,7 @@ struct {
   [Funkcja bez skutków ubocznych (`const` dodatkowo nie czyta zmiennych globalnych).],
 )
 
-== 9. Bezpieczeństwo kodu i exploity
+== Bezpieczeństwo kodu i exploity
 #table(
   columns: (25%, 75%),
   stroke: none,
