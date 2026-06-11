@@ -560,7 +560,6 @@
 ]
 
 #from(6)[
-  #colbreak()
   == Procedury i stos
   Stos rośnie *w dół* (niższe adresy); `%rsp` wskazuje *wierzchołek* (najniższy zajęty adres). `push` zmniejsza `%rsp` o 8, `pop` zwiększa o 8.
   - `call dest`: odkłada adres powrotu na stos i skacze do `dest`.
@@ -646,7 +645,6 @@
 ]
 
 #from(7)[
-  #colbreak()
   == Architektura CPU
 
   === Fazy przetwarzania instrukcji
