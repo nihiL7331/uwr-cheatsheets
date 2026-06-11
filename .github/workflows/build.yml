@@ -28,7 +28,7 @@ jobs:
 
             mkdir -p "$OUT_DIR"
 
-            typst compile --input od=1 --input do=$i -f pdf "$SRC_FILE" "$OUT_DIR/cheatsheet.pdf"
+            typst compile --input od=1 --input do=$i -f pdf --font-path fonts/ "$SRC_FILE" "$OUT_DIR/cheatsheet.pdf"
           done
 
       - name: Commit
