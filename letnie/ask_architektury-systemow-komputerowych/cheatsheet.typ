@@ -50,6 +50,7 @@
 )
 
 #show math.equation: set text(size: 1.15em)
+#show math.equation: set text(font: "New Computer Modern Math")
 
 #let LECTURE-NUM-FROM = int(sys.inputs.at("od", default: "1"))
 #let LECTURE-NUM-TO = int(sys.inputs.at("do", default: "13"))
