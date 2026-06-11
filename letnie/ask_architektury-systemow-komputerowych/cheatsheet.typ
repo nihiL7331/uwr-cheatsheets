@@ -423,17 +423,17 @@
   #reg-desc(`%rip`, [Wskaźnik instrukcji (Program Counter).])
 ]
 
-// #from(5)[
-//   === Rejestry wektorowe (zmiennoprzecinkowe)
-//   #reg-desc(
-//     `%xmm0 do %xmm15`,
-//     [128-bitowe rejestry. `%xmm0` to wartość zwracana (`float`/`double`). Pierwsze 8 to argumenty. Caller-saved.],
-//   )
-//   #reg-desc(
-//     `%ymm0 do %ymm15`,
-//     [256-bitowe rozszerzenie rejestrów XMM. Dzielą z nimi najmłodsze 128 bitów.],
-//   )
-// ]
+#from(7)[
+  === Rejestry wektorowe (zmiennoprzecinkowe)
+  #reg-desc(
+    `%xmm0 do %xmm15`,
+    [128-bitowe rejestry. `%xmm0` to wartość zwracana (`float`/`double`). Pierwsze 8 to argumenty. Caller-saved.],
+  )
+  #reg-desc(
+    `%ymm0 do %ymm15`,
+    [256-bitowe rozszerzenie rejestrów XMM. Dzielą z nimi najmłodsze 128 bitów.],
+  )
+]
 
 #from(4)[
   == Tryby adresowania (operandy)
@@ -627,6 +627,34 @@
   *Sprzątanie przez `leave`:* Zastępuje `movq %rbp, %rsp` i `popq %rbp` w jednej instrukcji.
 ]
 
+#from(7)[
+  #colbreak()
+  == Architektura CPU, Potokowość i OoO
+  Przetwarzanie instrukcji dzieli się na 5 faz: *Fetch* (pobranie), *Decode* (dekodowanie/odczyt z rejestru), *Execute* (ALU), *Memory* (pamięć), *Write-back* (zapis do rejestru).
+
+  === Potokowość (Pipelining) i Hazardy
+  Nakładanie faz na siebie znacznie zwiększa throughput. Prowadzi to jednak do konfliktów (hazardów):
+  #table(
+    columns: (25%, 75%),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Danych*],
+    [Odczyt po zapisie. Wynik instrukcji nie jest w rejestrze, a kolejna już go potrzebuje. \
+      *Rozwiązanie:* Forwarding/bypassing (przekazanie z ALU prosto na wejście następnej operacji) lub wstrzymanie (stall/bubble).],
+    [*Sterowania*],
+    [Instrukcja skoku wymusza odgadnięcie następnego adresu. \
+      *Rozwiązanie:* Branch prediction. Błąd kosztuje wyczyszczenie potoku (branch misprediction penalty).],
+  )
+
+  === Wykonywanie poza kolejnością (Out-of-Order)
+  Nowoczesne procesory nie wykonują instrukcji sekwencyjnie.
+  - *Superskalarność:* Zdolność do wykonania wielu instrukcji w jednym cyklu zegara (posiadanie wielu jednostek wykonawczych).
+  - *Register renaming:* Dynamiczne mapowanie rejestrów logicznych (`%rax`) na wiele rejestrów fizycznych. Eliminuje fałszywe zależności (nadpisywanie tego samego rejestru).
+  - *Reorder buffer:* Gwarantuje, że instrukcje, choć liczone asynchronicznie, są ostatecznie zatwierdzane w oryginalnej kolejności programu, by zachować spójność.
+]
+
 #from(4)[
   #colbreak()
   == Katalog instrukcji (AT&T)
@@ -717,6 +745,29 @@
   ]
 ]
 
+#from(7)[
+  === Operacje wektorowe
+  Rozszerzenie AVX. Przedrostek `v` (nie niszczy źródeł), używa 3 argumentów (S1, S2, dest).
+  #table(
+    columns: (30%, 30%, 1fr),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    raw("vmovaps / ups S, D"),
+    $D arrow.l S$,
+    [Kopiuje wektor. `a` (aligned - szybkie, pamięć dzieli się przez wyrównanie), `u` (unaligned).],
+    raw("vaddps / pd S1, S2, D"),
+    $D arrow.l "S2" + "S1"$,
+    [Dodawanie wielokrotne (packed). `ps` (single-float), `pd` (double).],
+    raw("vmulps / pd S1, S2, D"),
+    $D arrow.l "S2" * "S1"$,
+    [Mnożenie wektorowe.],
+    raw("vfmadd231ps S1, S2, D"),
+    $D arrow.l "S2" * "S1" + D$,
+    [*Fused Multiply-Add*. Mnoży i dodaje do `D` w jednym kroku.],
+  )
+]
 
 #from(4)[
   #v(2pt)
