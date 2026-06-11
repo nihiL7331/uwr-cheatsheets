@@ -475,60 +475,36 @@
   #reg-desc(`CF`, [Carry. Przepełnienie dla liczb *bez znaku* (unsigned).])
   #reg-desc(`OF`, [Overflow. Przepełnienie dla liczb *ze znakiem* (signed).])
 
-  #table(
-    columns: (30%, 30%, 1fr),
-    stroke: none,
-    row-gutter: 0.5em,
-    align: horizon,
-    table.hline(stroke: rgb("333333")),
-    raw("cmp S1, S2"),
-    $"S2" - "S1"$,
-    [Ustawia flagi jak odejmowanie, nie zapisuje wyniku.],
-    raw("test S1, S2"),
-    $"S2 & S1"$,
-    [Ustawia flagi jak *AND* (np. test czy rejestr jest zerem).],
-    raw("jX dest"),
-    $"if"(X) "%rip" arrow.l "dest"$,
-    [Skok warunkowy (X = warunek).],
-    raw("setX D"),
-    $"if"(X) D arrow.l 1$,
-    [Ustawia bajt (np. `%al`) na 0 lub 1 na podstawie flag.],
-    raw("cmovX S, D"),
-    $"if"(X) D arrow.l S$,
-    [Warunkowe kopiowanie (optymalizacja zamiast skoku).],
-  )
-
   === Sufiksy warunkowe (dla `jX`, `setX`, `cmovX`)
   #table(
-    columns: (20%, 25%, 1fr),
+    columns: (20%, 1fr),
     stroke: none,
     row-gutter: 0.4em,
     align: horizon,
     table.header(
       text(fill: rgb("8b949e"))[*Sufiks*],
-      text(fill: rgb("8b949e"))[*Synonim*],
       text(fill: rgb("8b949e"))[*Znaczenie*],
     ),
     table.hline(stroke: rgb("333333")),
-    `e / z`, [], [Equal / Zero (równe / wynik to $0$)],
-    `ne / nz`, [], [Not Equal / Not Zero (nierówne)],
-    `s`, [], [Sign (wynik ujemny, `SF=1`)],
+    `e / z`, [Equal / Zero (równe / wynik to $0$)],
+    `ne / nz`, [Not Equal / Not Zero (nierówne)],
+    `s`, [Sign (wynik ujemny, `SF=1`)],
     table.hline(stroke: rgb("222222")),
     table.cell(
-      colspan: 3,
+      colspan: 2,
       fill: rgb("1a1a1a"),
       align: center,
     )[*Liczby ze znakiem (signed)*],
-    `g / ge`, [], [Greater / Greater or Equal],
-    `l / le`, [], [Less / Less or Equal],
+    `g / ge`, [Greater / Greater or Equal],
+    `l / le`, [Less / Less or Equal],
     table.hline(stroke: rgb("222222")),
     table.cell(
-      colspan: 3,
+      colspan: 2,
       fill: rgb("1a1a1a"),
       align: center,
     )[*Liczby bez znaku (unsigned)*],
-    `a / ae`, `nc`, [Above / Above or Equal (No Carry)],
-    `b / be`, `c`, [Below / Below or Equal (Carry)],
+    `a / ae`, [Above / Above or Equal (No Carry)],
+    `b / be`, [Below / Below or Equal (Carry)],
   )
 
   === Translacja struktur kontrolnych (C $arrow.r$ ASM)
