@@ -31,7 +31,7 @@
   [*#counter(heading).display(it.numbering) #it.body*],
 )
 
-#show raw: set text(font: "BigBlueTerm437 Nerd Font Mono")
+#show raw: set text(font: "BigBlueTerm437 Nerd Font Mono", fallback: false)
 #show strong: set text(fill: white, weight: 700)
 
 #show raw.where(block: true): block.with(
@@ -49,8 +49,11 @@
   radius: 2pt,
 )
 
-#show math.equation: set text(size: 1.15em)
-#show math.equation: set text(font: "New Computer Modern Math")
+#show math.equation: set text(
+  font: "New Computer Modern Math",
+  fallback: false,
+  size: 1.15em,
+)
 
 #let LECTURE-NUM-FROM = int(sys.inputs.at("od", default: "1"))
 #let LECTURE-NUM-TO = int(sys.inputs.at("do", default: "13"))
