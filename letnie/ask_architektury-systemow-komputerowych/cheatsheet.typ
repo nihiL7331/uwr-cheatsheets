@@ -673,6 +673,35 @@
   - *Reorder buffer:* Gwarantuje, że instrukcje, choć liczone asynchronicznie, są ostatecznie zatwierdzane w oryginalnej kolejności programu, by zachować spójność.
 ]
 
+#from(8)[
+  == Tablice i struktury
+  === Reprezentacja tablic w pamięci
+  #table(
+    columns: (auto, auto, 1fr),
+    stroke: none,
+    row-gutter: 0.4em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Typ*],
+      text(fill: rgb("8b949e"))[*Deklaracja*],
+      text(fill: rgb("8b949e"))[*Adres*],
+    ),
+    table.hline(stroke: rgb("333333")),
+    [Jednowymiarowa], `T A[L]`, [$&A[i] = x_A + i times "sizeof"(T)$],
+    [Wielowymiarowa],
+    `T A[R][C]`,
+    [$&A[i][j] = x_A + (i times C + j) times "sizeof"(T)$],
+    [Wielopoziomowa],
+    `T *A[L]`,
+    [Adres elementu: $M[x_A + i times 8] + j times "sizeof"(T)$ \ (Wymaga dwóch odczytów z pamięci)],
+  )
+
+  === Wyrównanie danych i padding
+  - *Zasada ogólna:* Obiekt o rozmiarze $K$ bajtów musi znajdować się pod adresem podzielnym przez $K$, czyli $\pmod K = 0$.
+  - *Wyrównanie struktur:* Każde pole struktury jest wyrównywane do własnego rozmiaru $K$. Łączny rozmiar całej struktury musi być podzielny przez największe wewnętrzne wyrównanie. W razie potrzeby kompilator dodaje padding na końcu.
+  - *Optymalizacja:* Układanie pól w strukturze od największego do najmniejszego minimalizuje marnowanie pamięci na padding.
+]
+
 #from(4)[
   #colbreak()
   == Katalog instrukcji (AT&T)
@@ -784,6 +813,32 @@
     raw("vfmadd231ps S1, S2, D"),
     $D arrow.l "S2" * "S1" + D$,
     [*Fused Multiply-Add*. Mnoży i dodaje do `D` w jednym kroku.],
+  )
+]
+
+#from(8)[
+  === Operacje zmiennoprzecinkowe
+  #table(
+    columns: (30%, 30%, 1fr),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    raw("movsd / movss S, D"),
+    $D arrow.l S$,
+    [Kopiuje wartość skalarną (`double` / `float`) między rejestrami XMM lub pamięcią.],
+    raw("movapd / movaps S, D"),
+    $D arrow.l S$,
+    [Kopiuje wyrównany wektor zmiennoprzecinkowy.],
+    raw("addsd / subsd S, D"),
+    $D arrow.l D "op" S$,
+    [Skalarne dodawanie / odejmowanie podwójnej precyzji.],
+    raw("xorpd / xorps S, D"),
+    $D arrow.l D^S$,
+    [Bitowy XOR na rejestrach XMM. Używany jako `xorpd %xmm0, %xmm0` do szybkiego zerowania rejestru.],
+    raw("ucomisd S1, S2"),
+    $"S2" - "S1"$,
+    [Porównuje wartości typu `double` i ustawia odpowiednio flagi `ZF, PF, CF` w rejestrze `%rflags`.],
   )
 ]
 
