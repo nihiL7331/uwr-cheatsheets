@@ -1103,6 +1103,66 @@
   Skoro `VPO` jest identyczne z `PPO`, procesor wysyła bity wirtualnego indeksu prosto do L1 *równolegle* do wysłania `VPN` do sprzętowego TLB. Gdy TLB kończy translację i zwraca fizyczny tag (`CT`), L1 ma już przygotowany wiersz gotowy do weryfikacji. Skraca to czas dostępu.
 ]
 
+#from(15)[
+  #colbreak()
+  == Wyjątkowe przepływy (ECF) i procesy
+  Zjawiska na poziomie sprzętu/OS zakłócające sekwencyjny przepływ sterowania.
+
+  === Klasy wyjątków
+  #table(
+    columns: (22%, 18%, 25%, 1fr),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Klasa*],
+      text(fill: rgb("8b949e"))[*Typ*],
+      text(fill: rgb("8b949e"))[*Powrót do...*],
+      text(fill: rgb("8b949e"))[*Przykład*],
+    ),
+    table.hline(stroke: rgb("333333")),
+    [*Interrupt*],
+    [Asynch.],
+    [Następnej instr.],
+    [Timer, I/O, klawiatura],
+    [*Trap*],
+    [Synch.],
+    [Następnej instr.],
+    [Celowe wywołanie: `syscall`, breakpoint],
+    [*Fault*],
+    [Synch.],
+    [Ponawia *bieżącą* instr.],
+    [Page fault (brak strony), segfault],
+    [*Abort*],
+    [Synch.],
+    [Nie wraca],
+    [Krytyczny błąd sprzętowy pamięci],
+  )
+
+  === Wywołania systemowe
+  #align(center)[
+    #box(
+      fill: rgb("1a1a1a"),
+      inset: 6pt,
+      stroke: (top: 2pt + rgb("D73A49")),
+      radius: 2pt,
+    )[
+      #show regex("%"): set text(fill: white)
+      #show math.equation: set text(fill: rgb("e4e4e4"))
+      #text(fill: rgb("D73A49"))[
+        `%rdi` $arrow.r$ `%rsi` $arrow.r$ `%rdx` $arrow.r$ `%r10` $arrow.r$ `%r8` $arrow.r$ `%r9`
+      ]
+    ] \
+    #text(
+      fill: rgb("8b949e"),
+      size: 0.75em,
+      style: "italic",
+    )[*Uwaga:* W `syscall` 4. argument to `%r10`]
+  ]
+  - *ID:* Musi być załadowane do `%rax` przed wykonaniem skoku (np. `0`=read, `1`=write, `57`=fork).
+  - *Wynik:* Zwracany w `%rax` (wartości ujemne od -4095 do -1 oznaczają błąd `errno`).
+]
+
 #from(4)[
   #colbreak()
   == Katalog instrukcji (AT&T)
