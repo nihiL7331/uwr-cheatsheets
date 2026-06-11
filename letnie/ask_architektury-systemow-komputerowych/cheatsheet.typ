@@ -392,18 +392,6 @@
 ]
 
 #from(4)[
-  == Instrukcja `leaq` (Load Effective Address)
-  Instrukcja *obliczeniowa*, nie pamięciowa. Ładuje *obliczony adres*, a nie wartość z pamięci: `leaq Src, Dst` $arrow.r$ `Dst = addr(Src)`.
-
-  *Zastosowania:*
-  1. *Pobieranie adresu zmiennej:* C-owe `p = &x[i]`.
-  2. *Szybka arytmetyka bez flag:* Obliczenia $x + k dot y$ dla stałych $k in {1, 2, 4, 8}$.
-  *Przykład:* Optymalizacja `x * 12`:
-  ```asm
-  leaq (%rdi, %rdi, 2), %rax  ; t = x + 2*x = 3*x
-  salq $2, %rax ; return t << 2 (czyli 3*x * 4 = 12*x)
-  ```
-
   == Rejestry x86\_64
   #reg-pair("rax", "rbx")
   #reg-pair("rcx", "rdx")
