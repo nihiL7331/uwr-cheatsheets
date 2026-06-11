@@ -889,6 +889,112 @@
   )
 ]
 
+#from(11)[
+  #colbreak()
+  == Dynamiczna alokacja
+
+  === Rodzaje fragmentacji
+  #table(
+    columns: (25%, 75%),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Wewnętrzna*],
+    [Przydzielony blok jest *większy* niż zażądane dane.],
+    [*Zewnętrzna*],
+    [Na stercie jest wystarczająco dużo wolnego miejsca w sumie, ale jest *rozrzucone*.],
+  )
+
+  === Budowa bloku
+  #align(center)[
+    #box(
+      fill: rgb("1a1a1a"),
+      inset: 8pt,
+      stroke: 1pt + rgb("333333"),
+      radius: 2pt,
+    )[
+      #grid(
+        columns: (1fr, 1.5fr, 1fr),
+        gutter: 4pt,
+        align: center,
+        box(
+          fill: rgb("3b82f644"),
+          stroke: (left: 2pt + rgb("3b82f6")),
+          inset: 4pt,
+          width: 100%,
+          [*Header* \ Rozmiar + $a$],
+        ),
+        box(
+          fill: rgb("22c55e44"),
+          stroke: (left: 2pt + rgb("22c55e")),
+          inset: 4pt,
+          width: 100%,
+          [*Dane* \ + Padding],
+        ),
+        box(
+          fill: rgb("ef444444"),
+          stroke: (left: 2pt + rgb("ef4444")),
+          inset: 4pt,
+          width: 100%,
+          [*Footer* \ (Boundary tag)],
+        ),
+      )
+    ]
+  ]
+
+  === Polityki przydziału i łączenia
+  - *First fit:* Szuka od początku, bierze pierwszy pasujący blok (szybki, ale mocno fragmentuje początek sterty).
+  - *Next fit:* Szuka od miejsca ostatniego przydziału (szybszy, ale gorsza fragmentacja pamięci).
+  - *Best fit:* Przeszukuje listę i wybiera blok o rozmiarze najbliższym żądanemu (najlepsze wykorzystanie pamięci, najwolniejszy algorytm).
+  - *Coalescing:* Łączenie sąsiednich wolnych bloków przy `free()`. Użycie footer-ow pozwala na sprawdzenie w czasie $O(1)$ w tył, czy poprzedni blok też jest wolny.
+
+  == Hierarchia pamięci i lokalność
+
+  === SRAM vs DRAM
+  #table(
+    columns: (1fr, 1fr),
+    stroke: none,
+    column-gutter: 10pt,
+    align: top,
+    table.cell(
+      fill: rgb("1a1a1a"),
+      stroke: (top: 2pt + rgb("2188FF")),
+      inset: 8pt,
+    )[
+      *SRAM* \
+      Bardzo szybka, droga. Przechowuje stan dopóki jest zasilanie (nie wymaga odświeżania).
+    ],
+    table.cell(
+      fill: rgb("1a1a1a"),
+      stroke: (top: 2pt + rgb("28A745")),
+      inset: 8pt,
+    )[
+      *DRAM* \
+      Wolniejsza, tania, bardzo pojemna. Wymaga ciągłego odświeżania.
+    ],
+  )
+
+  === Lokalnośc
+  - *Czasowa:* Jeśli dane były użyte, prawdopodobnie zaraz będą użyte ponownie (np. zmienna licznika w pętli).
+  - *Przestrzenna:* Jeśli użyto adresu $x$, bardzo prawdopodobne, że zaraz użyte będą adresy $x+1, x+2$ (np. iteracja po tablicy, wiersz po wierszu).
+
+  === Rodzaje chybien
+  #table(
+    columns: (25%, 75%),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Cold (compulsory)*],
+    [Blok jest pobierany z RAM *po raz pierwszy*.],
+    [*Capacity*],
+    [Working set programu jest fizycznie *większy* niż całkowita pojemność pamięci cache.],
+    [*Conflict*],
+    [Miejsce w cache jest wolne, ale różne bloki pamięci mapują się na *ten sam set* w cache'u i nawzajem się wypierają.],
+  )
+]
+
 #from(4)[
   #colbreak()
   == Katalog instrukcji (AT&T)
