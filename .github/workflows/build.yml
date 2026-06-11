@@ -30,7 +30,7 @@ jobs:
         run: |
           BASE_DIR="letnie/ask_architektury-systemow-komputerowych"
           SRC_FILE="$BASE_DIR/cheatsheet.typ"
-          MAX_LECTURE=13
+          MAX_LECTURE=15
 
           for i in $(seq 1 $MAX_LECTURE); do
             FOLDER_NUM=$(printf "%02d" $i)
