@@ -149,13 +149,30 @@
     columns: (35%, 25%, 1fr),
     gutter: 10pt,
     align: (left, left, left),
-    [*#name*], raw(synt), calc,
+    [*#name*], synt, calc,
   )
   v(0.4em)
 }
 #let hregs(clr, body) = [
   #show regex("[%,\-]"): set text(fill: white)
   #text(fill: clr)[#body]
+]
+
+#let flow(clr, ..steps) = align(center)[
+  #box(
+    fill: rgb("1a1a1a"),
+    inset: 6pt,
+    stroke: (top: 2pt + rgb("333333")),
+    radius: 2pt,
+  )[
+    #show math.equation: set text(fill: rgb("e4e4e4"))
+    #(
+      steps
+        .pos()
+        .map(s => text(fill: clr, weight: "bold")[#s])
+        .join([ $arrow.r$ ])
+    )
+  ]
 ]
 
 = Architektury systemów komputerowych: Reference
@@ -182,10 +199,10 @@
       align: center,
     )[*Sumatory*],
     [*Półsumator*],
-    [#raw("s = x ^ y") \ #raw("c = x & y")],
+    [`s = x ^ y` \ `c = x & y`],
     [Dodaje dwa bity. `s` to suma, `c` to bit przeniesienia (carry).],
     [*Pełny sumator (FA)*],
-    [#raw("s = x ^ y ^ ci") \ #raw("co=x&y|ci&(x^y)")],
+    [`s = x ^ y ^ ci` \ `co=x&y|ci&(x^y)`],
     [Jak półsumator, ale przyjmuje też przeniesienie wejściowe `ci`.],
     [*Sumator n-bitowy*],
     [$n times$ FA],
@@ -214,10 +231,10 @@
       align: center,
     )[*Układy sekwencyjne (pamięć)*],
     [*Przerzutnik S-R*],
-    [#raw("S") - set, #raw("R") - reset],
-    [Przechowuje 1 bit ($Q$). `S=1` ustawia $Q=1$, `R=1` zeruje, `S=R=0` trzyma stan. Zbudowany z dwóch sprzężonych `NOR`-ów.],
+    [`S` - set, `R` - reset],
+    [Przechowuje 1 bit ($Q$). `S=1` ustawia $Q=1$, `R=1` zeruje, `S=R=0` trzyma stan. Dwa sprzężone `NOR`-y.],
     [*Sterowany poziomem*],
-    [aktywny gdy #raw("CLK") $= 1$],
+    [aktywny gdy `CLK` $= 1$],
     [Wejścia `S`/`R` bramkowane AND-em z zegarem. Stan zmienia się tylko przy `CLK=1`.],
     [*Sterowany zboczem*],
     [zbocze $1 arrow.r 0$],
@@ -277,11 +294,11 @@
     [*Rozszerz. 0* (`zext`)], [`unsigned`: dopisuje $0$ z góry],
     [*Rozszerz. znak* (`sext`)], [`signed`: powiela bit znaku (MSB)],
     `x << k`, [$x dot 2^k$ (sgn./uns.)],
-    `u >> k`, [$floor(u \/ 2^k)$ — logiczne (zera)],
+    `u >> k`, [$floor(u \/ 2^k)$ - logiczne (zera)],
     `x >> k`, [arytmetyczne (kopia MSB), zaokr. do $-oo$],
     [$x \/ 2^k$ do $0$], `(x + (1<<k)-1) >> k`,
+    [Strength reduction], [`x*24` $arrow.r$ `(x<<5)-(x<<3)`],
   )
-  Strength red.: `x*24` $arrow.r$ `(x<<5)-(x<<3)`.
 
   == Operacje, overflow i endianness
   #table(
@@ -351,12 +368,12 @@
 
     [*Zdenormaliz.*],
     [`== 0...0`],
-    [$E = 1 - "Bias"$. $M = 0."frac"$. Reprezentują $+0.0$ i $-0.0$ ($"frac"=0$) oraz liczby bardzo bliskie zera.],
+    [$E = 1 - "Bias"$. $M = 0."frac"$. Reprezentują $plus.minus 0.0$ ($"frac"=0$) i liczby bardzo bliskie zera.],
 
     [*Specjalne*],
     [`== 1...1`],
-    [Gdy `frac == 0`, to $+infinity$ lub $-infinity$ (nadmiar/dzielenie przez 0). \
-      Gdy `frac != 0`, to `NaN` (np. $sqrt(-1)$, $oo - oo$).],
+    [`frac == 0` $arrow.r$ $plus.minus oo$ (nadmiar, dzielenie przez 0). \
+      `frac != 0` $arrow.r$ `NaN` (np. $sqrt(-1)$, $oo - oo$).],
   )
 
   === Zaokrąglanie GRS i Round-to-Even
@@ -368,7 +385,7 @@
     #text(
       fill: rgb("8b949e"),
       size: 0.8em,
-    )[`G` – ostatni zachowany, `R` – pierwszy usunięty, `S` – OR reszty]
+    )[`G` - ostatni zachowany, `R` - pierwszy usunięty, `S` - OR reszty]
   ]
   #v(-4pt)
   #table(
@@ -388,11 +405,19 @@
   )
 
   === Własności matematyczne i rzutowanie
-  - *Brak łączności:* $(a+b)+c != a+(b+c)$, przez zaokrąglenia i utratę danych.
-  - *Brak rozdzielności:* $a(b+c) != a b + a c$.
-  - *Rzutowanie `int` $arrow.r$ `float`:* Może stracić precyzję (zaokrągla zgodnie z trybem).
-  - *Rzutowanie `int` $arrow.r$ `double`:* Dokładne i bezstratne (bo $52$ bity mantysy $> 32$ bity inta).
-  - *Rzutowanie `float/double` $arrow.r$ `int`:* Obcina ułamek w stronę 0. Jeśli poza zakresem lub `NaN` $arrow.r$ z reguły zwraca `TMin` (`0x80000000`).
+  #table(
+    columns: (auto, 1fr),
+    stroke: none,
+    row-gutter: 0.4em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Brak łączności*], [$(a+b)+c != a+(b+c)$ - zaokrąglenia],
+    [*Brak rozdzielności*], [$a(b+c) != a b + a c$],
+    [`int` $arrow.r$ `float`], [możliwa utrata precyzji (zaokrągla)],
+    [`int` $arrow.r$ `double`], [bezstratne ($52 > 32$ bity)],
+    [`float/double` $arrow.r$ `int`],
+    [obcina do 0; poza zakresem lub `NaN` $arrow.r$ `TMin` (`0x80000000`)],
+  )
 ]
 
 #from(4)[
@@ -407,7 +432,7 @@
   #align(center)[
     #text(fill: rgb("8b949e"), size: 0.75em, style: "italic")[
       *Uwaga:* Rejestry od %r10 do %r15 używają schematu: \
-      #raw("%r10"), #raw("%r10d"), #raw("%r10w"), #raw("%r10b").
+      `%r10`, `%r10d`, `%r10w`, `%r10b`.
     ]
   ]
 
@@ -432,12 +457,12 @@
 #from(7)[
   === Rejestry wektorowe (zmiennoprzecinkowe)
   #reg-desc(
-    `%xmm0 do %xmm15`,
-    [128-bitowe rejestry. `%xmm0` to wartość zwracana (`float`/`double`). Pierwsze 8 to argumenty. Caller-saved.],
+    `%xmm0-%xmm15`,
+    [128-bitowe. `%xmm0` to wartość zwracana (`float`/`double`). Pierwsze 8 to argumenty. Caller-saved.],
   )
   #reg-desc(
-    `%ymm0 do %ymm15`,
-    [256-bitowe rozszerzenie rejestrów XMM. Dzielą z nimi najmłodsze 128 bitów.],
+    `%ymm0-%ymm15`,
+    [256-bitowe rozszerzenie XMM. Dzielą z nimi najmłodsze 128 bitów.],
   )
 ]
 
@@ -454,13 +479,13 @@
   #line(length: 100%, stroke: rgb("333333"))
   #v(0.5em)
 
-  #addr-row("Natychmiastowy (Imm)", "$Imm", [`Imm`])
-  #addr-row("Rejestrowy (Reg)", "%Ra", [`%Ra`])
-  #addr-row("Bezpośredni (Mem)", "Imm", [`M[Imm]`])
-  #addr-row("Pośredni (Mem)", "(%Rb)", [`M[%Rb]`])
-  #addr-row("Z przesunięciem", "D(%Rb)", [`M[%Rb + D]`])
-  #addr-row("Skalowany (Ind/scaled)", "D(%Rb, %Ri, S)", [`M[%Rb+%Ri*S+D]`])
-  #addr-row("Skalowany (baseless)", "(, %Ri, S)", [`M[%Ri * S]`])
+  #addr-row("Natychmiastowy (Imm)", `$Imm`, [`Imm`])
+  #addr-row("Rejestrowy (Reg)", `%Ra`, [`%Ra`])
+  #addr-row("Bezpośredni (Mem)", `Imm`, [`M[Imm]`])
+  #addr-row("Pośredni (Mem)", `(%Rb)`, [`M[%Rb]`])
+  #addr-row("Z przesunięciem", `D(%Rb)`, [`M[%Rb + D]`])
+  #addr-row("Skalowany (Ind/scaled)", `D(%Rb, %Ri, S)`, [`M[%Rb+%Ri*S+D]`])
+  #addr-row("Skalowany (baseless)", `(, %Ri, S)`, [`M[%Ri * S]`])
 
   #v(2pt)
   #align(center)[
@@ -512,10 +537,9 @@
   )
 
   === Translacja struktur kontrolnych (C $arrow.r$ ASM)
-  - *if-else:* `jX` (skok) lub `cmovX` (liczy obie ścieżki, unika kar za predykcję). \
-    *Uwaga:* `cmovX` psuje się przy drogich operacjach, wyłuskaniu wskaźników (`*p`) i efektach ubocznych (`x++`).
-  - *`switch`:* Tablice skoków $arrow.r$ czas $O(1)$. Skok pośredni: `jmp *.L4(,%rdi,8)`. Brak `break` $=>$ *fall-through*.
-  - *Pętla `for`:* Zawsze redukowana do pętli `while`: `init; while(cond) { body; update; }`
+  - *if-else:* `jX` (skok) lub `cmovX` (liczy obie ścieżki, bez kary za predykcję). `cmovX` odpada przy drogich gałęziach, wyłuskaniach (`*p`) i efektach ubocznych (`x++`).
+  - *`switch`:* tablica skoków $arrow.r$ czas $O(1)$. Skok pośredni: `jmp *.L4(,%rdi,8)`. Brak `break` $=>$ *fall-through*.
+  - *Pętla `for`:* zawsze redukowana do `while`: `init; while(cond) { body; update; }`
 
   #v(2pt)
   *Wzorce asemblerowe dla pętli:*
@@ -538,11 +562,9 @@
 #from(6)[
   #colbreak()
   == Procedury i stos
-  Stos w x86-64 rośnie *w dół* (w stronę niższych adresów). Rejestr `%rsp` wskazuje na *wierzchołek* stosu (najniższy zajęty adres). Wartości odkłada się używając `push` (zmniejsza `%rsp` o 8), a zdejmuje `pop` (zwiększa `%rsp` o 8).
-
-  === Przekazywanie sterowania
-  - `call dest`: Odkłada adres powrotu (kolejnej instrukcji) na stos i robi skok do `dest`.
-  - `ret`: Zdejmuje adres powrotu ze stosu i robi pod niego skok.
+  Stos rośnie *w dół* (niższe adresy); `%rsp` wskazuje *wierzchołek* (najniższy zajęty adres). `push` zmniejsza `%rsp` o 8, `pop` zwiększa o 8.
+  - `call dest`: odkłada adres powrotu na stos i skacze do `dest`.
+  - `ret`: zdejmuje adres powrotu ze stosu i skacze pod niego.
 
   == Konwencja Wywoływań (System V ABI)
   #align(center)[
@@ -597,8 +619,8 @@
   )
 
   === Ramka stosu
-  Każde wywołanie funkcji otrzymuje wlasna ramkę na stosie (dzięki temu *rekurencja* działa naturalnie).
-  *Alokacja ramki jest potrzebna, gdy:* brakuje rejestrów na zmienne (spilling), użyto lokalnej tablicy/struktury, lub pobrano adres zmiennej lokalnej (operator `&`).
+  Każde wywołanie funkcji ma własną ramkę (stąd *rekurencja* działa naturalnie). \
+  *Ramka potrzebna, gdy:* brak rejestrów na zmienne (spilling), lokalna tablica/struktura, lub pobrano adres zmiennej (`&`).
 
   #grid(
     columns: (1fr, 1fr),
@@ -620,7 +642,7 @@
       ```
     ],
   )
-  *Sprzątanie przez `leave`:* Zastępuje `movq %rbp, %rsp` i `popq %rbp` w jednej instrukcji.
+  *`leave`:* zastępuje `movq %rbp, %rsp` + `popq %rbp` jedną instrukcją.
 ]
 
 #from(7)[
@@ -628,24 +650,10 @@
   == Architektura CPU
 
   === Fazy przetwarzania instrukcji
-  #align(center)[
-    #box(
-      fill: rgb("1a1a1a"),
-      inset: 6pt,
-      stroke: (top: 2pt + rgb("333333")),
-      radius: 2pt,
-    )[
-      #show math.equation: set text(fill: rgb("e4e4e4"))
-      #text(fill: rgb("2188FF"), weight: "bold")[Fetch] $arrow.r$
-      #text(fill: rgb("2188FF"), weight: "bold")[Decode] $arrow.r$
-      #text(fill: rgb("2188FF"), weight: "bold")[Execute] $arrow.r$
-      #text(fill: rgb("2188FF"), weight: "bold")[Memory] $arrow.r$
-      #text(fill: rgb("2188FF"), weight: "bold")[Write]
-    ]
-  ]
+  #flow(rgb("2188FF"), [Fetch], [Decode], [Execute], [Memory], [Write])
 
   === Pipelining i hazardy
-  Nakładanie faz na siebie znacznie zwiększa throughput. Prowadzi to jednak do konfliktów (hazardów):
+  Nakładanie faz zwiększa throughput, ale rodzi konflikty (hazardy):
   #table(
     columns: (25%, 75%),
     stroke: none,
@@ -653,18 +661,18 @@
     align: horizon,
     table.hline(stroke: rgb("333333")),
     [*Danych*],
-    [Odczyt po zapisie. Wynik instrukcji nie jest w rejestrze, a kolejna już go potrzebuje. \
-      *Rozwiązanie:* Forwarding/bypassing (przekazanie z ALU prosto na wejście następnej operacji) lub wstrzymanie (stall/bubble).],
+    [Odczyt po zapisie - wynik jeszcze nie jest w rejestrze, a kolejna instrukcja już go potrzebuje. \
+      *Rozwiązanie:* forwarding/bypassing (wynik z ALU prosto na wejście) lub stall/bubble.],
     [*Sterowania*],
-    [Instrukcja skoku wymusza odgadnięcie następnego adresu. \
-      *Rozwiązanie:* Branch prediction. Błąd kosztuje wyczyszczenie potoku (branch misprediction penalty).],
+    [Skok wymusza odgadnięcie następnego adresu. \
+      *Rozwiązanie:* branch prediction. Pomyłka $arrow.r$ czyszczenie potoku (misprediction penalty).],
   )
 
   === Out-of-Order
-  Nowoczesne procesory nie wykonują instrukcji sekwencyjnie.
-  - *Superskalarność:* Zdolność do wykonania wielu instrukcji w jednym cyklu zegara (posiadanie wielu jednostek wykonawczych).
-  - *Register renaming:* Dynamiczne mapowanie rejestrów logicznych (`%rax`) na wiele rejestrów fizycznych. Eliminuje fałszywe zależności (nadpisywanie tego samego rejestru).
-  - *Reorder buffer:* Gwarantuje, że instrukcje, choć liczone asynchronicznie, są ostatecznie zatwierdzane w oryginalnej kolejności programu, by zachować spójność.
+  Nowoczesne procesory nie wykonują instrukcji sekwencyjnie:
+  - *Superskalarność:* wiele instrukcji na cykl (wiele jednostek wykonawczych).
+  - *Register renaming:* mapowanie rejestrów logicznych (`%rax`) na wiele fizycznych - eliminuje fałszywe zależności.
+  - *Reorder buffer:* instrukcje liczone asynchronicznie, ale zatwierdzane w kolejności programu (spójność).
 ]
 
 #from(8)[
@@ -687,35 +695,41 @@
     [$&A[i][j] = x_A + (i times C + j) times "sizeof"(T)$],
     [Wielopoziomowa],
     `T *A[L]`,
-    [Adres elementu: $M[x_A + i times 8] + j times "sizeof"(T)$ \ (Wymaga dwóch odczytów z pamięci)],
+    [$M[x_A + i times 8] + j times "sizeof"(T)$ \ (dwa odczyty z pamięci)],
   )
 
   === Wyrównanie danych i padding
-  - *Zasada ogólna:* Obiekt o rozmiarze $K$ bajtów musi znajdować się pod adresem podzielnym przez $K$, czyli $\pmod K = 0$.
-  - *Wyrównanie struktur:* Każde pole struktury jest wyrównywane do własnego rozmiaru $K$. Łączny rozmiar całej struktury musi być podzielny przez największe wewnętrzne wyrównanie. W razie potrzeby kompilator dodaje padding na końcu.
-  - *Optymalizacja:* Układanie pól w strukturze od największego do najmniejszego minimalizuje marnowanie pamięci na padding.
+  - *Zasada ogólna:* obiekt rozmiaru $K$ leży pod adresem podzielnym przez $K$.
+  - *Struktury:* każde pole wyrównane do własnego $K$; rozmiar całości podzielny przez największe wyrównanie (padding na końcu).
+  - *Optymalizacja:* pola od największego do najmniejszego $arrow.r$ minimalny padding.
 ]
 
 #from(9)[
   == Układ pamięci
 
   === Mapa pamięci procesu
+  #table(
+    columns: (25%, 75%),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Stack* #text(fill: rgb("D73A49"))[$arrow.b$]],
+    [Rośnie w dół. Zmienne lokalne, adresy powrotu (limit ~8MB).],
+    [*Shared libs*],
+    [Współdzielone biblioteki (np. `libc.so`).],
+    [*Sterta* #text(fill: rgb("28A745"))[$arrow.t$]],
+    [Rośnie w górę. Dynamiczna alokacja (`malloc`, `new`).],
+    [*Data*],
+    [Zmienne globalne i statyczne (zainicjowane i niezainicjowane).],
+    [*Text*],
+    [Read-only. Binarny kod wykonywalny programu.],
+    table.hline(stroke: rgb("222222")),
+  )
   #align(center)[
-    #table(
-      columns: (auto, 1fr),
-      stroke: 1pt + rgb("333333"),
-      align: left,
-      table.cell(fill: rgb("1a1a1a"))[*Stack*],
-      [Rośnie w dół. Zmienne lokalne, adresy powrotu (limit ~8MB).],
-      table.cell(fill: rgb("1a1a1a"))[*Shared libs*],
-      [Współdzielone biblioteki (np. `libc.so`).],
-      table.cell(fill: rgb("1a1a1a"))[*Sterta*],
-      [Rośnie w górę. Dynamiczna alokacja (`malloc`, `new`).],
-      table.cell(fill: rgb("1a1a1a"))[*Data*],
-      [Zmienne globalne i statyczne (zainicjowane i niezainicjowane).],
-      table.cell(fill: rgb("1a1a1a"))[*Text*],
-      [Read-only. Binarny kod wykonywalny programu.],
-    )
+    #text(fill: rgb("8b949e"), size: 0.75em, style: "italic")[
+      Góra tabeli = wysokie adresy, dół = niskie adresy.
+    ]
   ]
 
   === Zagrożenia i mechanizmy obronne
@@ -726,23 +740,23 @@
     align: horizon,
     table.hline(stroke: rgb("333333")),
     [*Buffer overflow*],
-    [Brak sprawdzania granic tablic. Nadpisuje zawartość stosu (np. stary `%rbp` i *adres powrotu*), pozwalając na przejęcie sterowania.],
+    [Brak sprawdzania granic tablic. Nadpisuje stos (stary `%rbp`, *adres powrotu*) $arrow.r$ przejęcie sterowania.],
     [*ROP (Gadżety)*],
-    [Return-Oriented Programming. Wykorzystanie legalnych, krótkich skrawków kodu zakończonych `ret` do ominięcia blokady wykonywania.],
+    [Return-Oriented Programming. Sklejanie legalnych skrawków kodu zakończonych `ret` - omija zakaz wykonywania (NX).],
     [*Stack canaries*],
-    [Losowa wartość wstawiana tuż przed adresem powrotu. Przed `ret` weryfikowana instrukcjami `xor` i `je`. Jeśli uszkodzona $arrow.r$ `abort()`.],
+    [Losowa wartość tuż przed adresem powrotu. Przed `ret` weryfikacja (`xor` + `je`); uszkodzona $arrow.r$ `abort()`.],
     [*NX / ASLR*],
-    [*NX:* Stos i sterta dostają zakaz wykonywania kodu. \
-      *ASLR:* Losowanie bazowych adresów obszarów pamięci przy każdym starcie.],
+    [*NX:* zakaz wykonywania kodu ze stosu i sterty. \
+      *ASLR:* losowanie bazowych adresów obszarów przy każdym starcie.],
   )
 
   === Unie
-  Wszystkie pola unii współdzielą *ten sam adres początkowy* (offset 0). Alokacja równa jest rozmiarowi *największego elementu*. Używane głównie do manipulacji na poziomie bitów z ominięciem systemu typów (np. odczyt bitów typu `float` jako `int`).
+  Wszystkie pola współdzielą *ten sam adres* (offset 0); rozmiar = *największe pole*. Służą do manipulacji bitowych z ominięciem systemu typów (np. bity `float` jako `int`).
 ]
 
 #from(9)[
   == Optymalizacje i ich ograniczenia
-  Kompilator nie zoptymalizuje kodu, jeśli istnieje szansa, że zmieni to zachowanie programu (np. dla specyficznych argumentów).
+  Kompilator nie zoptymalizuje kodu, jeśli mogłoby to zmienić zachowanie programu (choćby dla specyficznych argumentów).
 
   === Optymalizacyjne blokady
   #table(
@@ -752,11 +766,11 @@
     align: horizon,
     table.hline(stroke: rgb("333333")),
     [*Aliasing pamięci*],
-    [Dwa wskaźniki (np. `*p`, `*q`) mogą wskazywać na to samo. Kompilator nie schowa sumy w rejestrze, tylko wymusza odczyt/zapis do RAM. Mozna wykorzystac słowo kluczowe `restrict`.],
+    [`*p` i `*q` mogą wskazywać na to samo $arrow.r$ wymuszony odczyt/zapis do RAM zamiast rejestru. Pomaga słowo kluczowe `restrict`.],
     [*Wywołania funkcji*],
-    [Funkcja w pętli może mieć ukryte efekty uboczne (np. licznik globalny). Kompilator jej nie wyrzuci poza pętlę. *Rozwiązanie:* Inlining (wklejenie kodu) lub makra.],
-    [*Arytmetyka `float`-ow*],
-    [Brak łączności: $(a+b)+c != a+(b+c)$. Kompilator *nigdy* nie zmieni kolejności działań na `float`-ach w trosce o utratę precyzji/zaokrąglenia.],
+    [Funkcja w pętli może mieć ukryte efekty uboczne - nie zostanie wyrzucona poza pętlę. *Rozwiązanie:* inlining lub makra.],
+    [*Arytmetyka `float`*],
+    [Brak łączności: $(a+b)+c != a+(b+c)$. Kompilator *nigdy* nie zmieni kolejności działań (troska o precyzję).],
   )
 
   === Podstawowe techniki optymalizacji
@@ -767,13 +781,13 @@
     align: horizon,
     table.hline(stroke: rgb("333333")),
     [*Code motion*],
-    [Wyrzucenie obliczeń niezmienników (np. `x * y`) całkowicie poza pętlę.],
+    [Wyrzucenie niezmienników (np. `x * y`) poza pętlę.],
     [*Strength reduction*],
-    [Zamiana kosztownych instrukcji na tańsze (np. `x * 64` $arrow.r$ `x << 6`, lub iterowanie za pomocą wskaźnika zamiast mnożenia indeksu przez rozmiar).],
+    [Kosztowne $arrow.r$ tańsze (np. `x * 64` $arrow.r$ `x << 6`, iteracja wskaźnikiem zamiast mnożenia indeksu).],
     [*Share subexpr.*],
-    [Wykrywanie i jednokrotne obliczanie powtarzających się fragmentów równań.],
+    [Jednokrotne obliczanie powtarzających się podwyrażeń.],
     [*Loop unrolling*],
-    [Rozwinięcie pętli (np. przeskok co 2 iteracje). Zmniejsza narzut związany z instrukcjami pętli i pozwala procesorowi na równoległość.],
+    [Rozwinięcie pętli (np. krok co 2). Mniejszy narzut pętli, więcej równoległości dla CPU.],
   )
 ]
 
@@ -798,9 +812,9 @@
   ]
 
   === Formaty plików obiektowych (ELF)
-  - *Relokowalne (`.o`):* Kod i dane gotowe do połączenia z innymi plikami `.o`.
-  - *Wykonywalne (`a.out`):* Sklejone, gotowe do załadowania do pamięci i uruchomienia.
-  - *Współdzielone (`.so`):* Linkowane dynamicznie podczas ładowania lub działania.
+  - *Relokowalne (`.o`):* kod i dane gotowe do połączenia z innymi `.o`.
+  - *Wykonywalne (`a.out`):* sklejone, gotowe do załadowania i uruchomienia.
+  - *Współdzielone (`.so`):* linkowane dynamicznie przy ładowaniu lub w trakcie działania.
 
   #table(
     columns: (28%, 72%),
@@ -808,24 +822,24 @@
     row-gutter: 0.5em,
     align: horizon,
     table.hline(stroke: rgb("333333")),
-    raw(".text"), [Skompilowany kod maszynowy.],
-    raw(".rodata"),
-    [Dane tylko do odczytu (np. `"Witaj"` w `printf("Witaj")`, tablice `switch`).],
-    raw(".data"),
+    `.text`, [Skompilowany kod maszynowy.],
+    `.rodata`,
+    [Dane tylko do odczytu (np. `"Witaj"` w `printf`, tablice `switch`).],
+    `.data`,
     [Zainicjowane zmienne globalne i statyczne (np. `int x = 5;`).],
-    raw(".bss"),
-    [Niezainicjowane zmienne globalne/statyczne, nie zajmują miejsca w pliku.],
-    raw(".symtab"),
-    [Tablica symboli (informacje o funkcjach i zmiennych globalnych).],
-    raw(".rel.text / .data"),
-    [Informacje dla linkera, gdzie i jak wstawić ostateczne adresy w kodzie/danych podczas relokacji.],
+    `.bss`,
+    [Niezainicjowane globalne/statyczne - nie zajmują miejsca w pliku.],
+    `.symtab`,
+    [Tablica symboli (funkcje i zmienne globalne).],
+    `.rel.text / .data`,
+    [Wpisy relokacji: gdzie i jak linker ma wstawić ostateczne adresy.],
   )
 
   === Symbol resolution
   Linker rozróżnia 3 typy symboli:
-  - *Globalne*: zdefiniowane tu, używane tam,
-  - *Zewnętrzne*: `extern`, używane tu, zdefiniowane gdzie indziej, oraz
-  - *Lokalne*: z C-owym słowem `static`. \
+  - *Globalne:* zdefiniowane tu, używane tam,
+  - *Zewnętrzne:* `extern` - używane tu, zdefiniowane gdzie indziej,
+  - *Lokalne:* z C-owym słowem `static`. \
   #text(
     fill: rgb("8b949e"),
     size: 0.8em,
@@ -851,15 +865,15 @@
     align: horizon,
     table.hline(stroke: rgb("333333")),
     [*Reguła 1*],
-    [Wiele silnych symboli $arrow.r$ *błąd linkowania* (Multiple definition).],
+    [Wiele silnych $arrow.r$ *błąd linkowania* (Multiple definition).],
     [*Reguła 2*],
-    [1 silny + $n$ słabych $arrow.r$ linker wybiera *silny* (słabe podpinają się pod niego).],
+    [1 silny + $n$ słabych $arrow.r$ wygrywa *silny*.],
     [*Reguła 3*],
-    [Wiele słabych $arrow.r$ linker wybiera *dowolny* (`gcc -fno-common` zakazuje takich sytuacji).],
+    [Wiele słabych $arrow.r$ linker wybiera *dowolny* (`gcc -fno-common` zakazuje).],
   )
 
   === Relokacja
-  Po rozwiązaniu symboli linker łączy sekcje `.text` / `.data` z wielu plików `.o` w jeden wielki blok. Przydziela im finalne adresy (run-time), a następnie modyfikuje wszystkie odniesienia w kodzie maszynowym do zmiennych i funkcji na podstawie wpisów z `.rel`.
+  Linker skleja sekcje `.text`/`.data` z plików `.o` w jeden blok, nadaje finalne adresy (run-time) i poprawia wszystkie odniesienia w kodzie wg wpisów z `.rel`.
 
   === Biblioteki
   #table(
@@ -873,9 +887,9 @@
       inset: 8pt,
     )[
       *Statyczne (`.a`)* \
-      Zbiór plików `.o`. Linker kopiuje do pliku wykonywalnego *tylko te moduły*, które są faktycznie używane. \
-      Wada jest to, ze każda aplikacja ma własną kopię w RAM. Zmiana wymusza rekompilację. \
-      *Kolejność flag `gcc`:* Biblioteki `.a` podaje sie na samym końcu komendy.
+      Zbiór plików `.o`. Linker kopiuje *tylko używane moduły*. \
+      Wady: każda aplikacja ma własną kopię w RAM, zmiana wymusza relink. \
+      *Flagi `gcc`:* `.a` podaje się na końcu komendy.
     ],
     table.cell(
       fill: rgb("1a1a1a"),
@@ -883,8 +897,8 @@
       inset: 8pt,
     )[
       *Dynamiczne (`.so`)* \
-      Kod ładowany do pamięci raz. Pliki wykonywalne otrzymują tylko adresy podczas działania (przez GOT). \
-      W porownaniu do `.a` znacznie mniejsze pliki binarne, łatwe aktualizacje.
+      Kod ładowany do pamięci raz; adresy dostarczane w trakcie działania (przez GOT). \
+      Zalety: znacznie mniejsze binarki, łatwe aktualizacje.
     ],
   )
 ]
@@ -903,7 +917,7 @@
     [*Wewnętrzna*],
     [Przydzielony blok jest *większy* niż zażądane dane.],
     [*Zewnętrzna*],
-    [Na stercie jest wystarczająco dużo wolnego miejsca w sumie, ale jest *rozrzucone*.],
+    [Wolnego miejsca jest dość w sumie, ale jest *rozrzucone*.],
   )
 
   === Budowa bloku
@@ -944,10 +958,21 @@
   ]
 
   === Polityki przydziału i łączenia
-  - *First fit:* Szuka od początku, bierze pierwszy pasujący blok (szybki, ale mocno fragmentuje początek sterty).
-  - *Next fit:* Szuka od miejsca ostatniego przydziału (szybszy, ale gorsza fragmentacja pamięci).
-  - *Best fit:* Przeszukuje listę i wybiera blok o rozmiarze najbliższym żądanemu (najlepsze wykorzystanie pamięci, najwolniejszy algorytm).
-  - *Coalescing:* Łączenie sąsiednich wolnych bloków przy `free()`. Użycie footer-ow pozwala na sprawdzenie w czasie $O(1)$ w tył, czy poprzedni blok też jest wolny.
+  #table(
+    columns: (auto, 1fr),
+    stroke: none,
+    row-gutter: 0.4em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*First fit*],
+    [Pierwszy pasujący od początku. Szybki, fragmentuje początek sterty.],
+    [*Next fit*],
+    [Od miejsca ostatniego przydziału. Szybszy, gorsza fragmentacja.],
+    [*Best fit*],
+    [Blok najbliższy żądanemu rozmiarowi. Najlepsza pamięć, najwolniejszy.],
+    [*Coalescing*],
+    [Łączenie sąsiednich wolnych bloków przy `free()`. Footery $arrow.r$ sprawdzenie poprzednika w $O(1)$.],
+  )
 
   == Hierarchia pamięci i lokalność
 
@@ -963,7 +988,7 @@
       inset: 8pt,
     )[
       *SRAM* \
-      Bardzo szybka, droga. Przechowuje stan dopóki jest zasilanie (nie wymaga odświeżania).
+      Bardzo szybka, droga. Trzyma stan dopóki jest zasilanie (bez odświeżania).
     ],
     table.cell(
       fill: rgb("1a1a1a"),
@@ -971,15 +996,15 @@
       inset: 8pt,
     )[
       *DRAM* \
-      Wolniejsza, tania, bardzo pojemna. Wymaga ciągłego odświeżania.
+      Wolniejsza, tania, pojemna. Wymaga ciągłego odświeżania.
     ],
   )
 
-  === Lokalnośc
-  - *Czasowa:* Jeśli dane były użyte, prawdopodobnie zaraz będą użyte ponownie (np. zmienna licznika w pętli).
-  - *Przestrzenna:* Jeśli użyto adresu $x$, bardzo prawdopodobne, że zaraz użyte będą adresy $x+1, x+2$ (np. iteracja po tablicy, wiersz po wierszu).
+  === Lokalność
+  - *Czasowa:* użyte dane zaraz będą użyte ponownie (np. licznik pętli).
+  - *Przestrzenna:* po adresie $x$ zaraz przyjdą $x+1, x+2$ (np. iteracja po tablicy).
 
-  === Rodzaje chybien
+  === Rodzaje chybień
   #table(
     columns: (25%, 75%),
     stroke: none,
@@ -987,11 +1012,11 @@
     align: horizon,
     table.hline(stroke: rgb("333333")),
     [*Cold (compulsory)*],
-    [Blok jest pobierany z RAM *po raz pierwszy*.],
+    [Blok pobierany z RAM *po raz pierwszy*.],
     [*Capacity*],
-    [Working set programu jest fizycznie *większy* niż całkowita pojemność pamięci cache.],
+    [Working set programu *większy* niż pojemność cache.],
     [*Conflict*],
-    [Miejsce w cache jest wolne, ale różne bloki pamięci mapują się na *ten sam set* w cache'u i nawzajem się wypierają.],
+    [Różne bloki mapują się na *ten sam set* i nawzajem się wypierają, mimo wolnego miejsca gdzie indziej.],
   )
 ]
 
@@ -1005,23 +1030,44 @@
 
   === Podział adresu sprzętowego
   #align(center)[
-    #box(stroke: 1pt + rgb("333333"), radius: 2pt, clip: true)[
+    #box(
+      fill: rgb("1a1a1a"),
+      inset: 8pt,
+      stroke: 1pt + rgb("333333"),
+      radius: 2pt,
+    )[
       #grid(
-        columns: (auto, auto, auto),
-        box(fill: rgb("D73A4944"), inset: 6pt, stroke: (
-          right: 1pt + rgb("333333"),
-        ))[*Tag*],
-        box(fill: rgb("2188FF44"), inset: 6pt, stroke: (
-          right: 1pt + rgb("333333"),
-        ))[*Indeks*],
-        box(fill: rgb("28A74544"), inset: 6pt)[*Offset*],
+        columns: (1.5fr, 1fr, 1fr),
+        gutter: 4pt,
+        align: center,
+        box(
+          fill: rgb("D73A4944"),
+          stroke: (left: 2pt + rgb("D73A49")),
+          inset: 4pt,
+          width: 100%,
+          [*Tag* \ $t$ bitów],
+        ),
+        box(
+          fill: rgb("2188FF44"),
+          stroke: (left: 2pt + rgb("2188FF")),
+          inset: 4pt,
+          width: 100%,
+          [*Indeks* \ $s$ bitów],
+        ),
+        box(
+          fill: rgb("28A74544"),
+          stroke: (left: 2pt + rgb("28A745")),
+          inset: 4pt,
+          width: 100%,
+          [*Offset* \ $b$ bitów],
+        ),
       )
     ]
   ]
-  - *Tag:* Identyfikator bloku. Sprawdzany w czasie $O(1)$ dla linii w danym zbiorze.
+  - *Tag:* Identyfikator bloku. Sprawdzany w $O(1)$ dla linii w danym zbiorze.
   - *Indeks:* Wskazuje sprzętowo na zbiór.
-  - *Offset:* Wskazuje na konkretny bajt wewnątrz bloku danych.
-  - *Valid bit:* Określa, czy linia ma w ogóle poprawne dane (1) czy śmieci (0).
+  - *Offset:* Konkretny bajt wewnątrz bloku danych.
+  - *Valid bit:* Czy linia ma poprawne dane (1), czy śmieci (0).
 
   === Asocjatywność
   #table(
@@ -1031,11 +1077,11 @@
     align: horizon,
     table.hline(stroke: rgb("333333")),
     [*Direct-mapped*],
-    [$E=1$. Adres pasuje do *dokładnie jednej* linii. Szybkie, ale podatne na ciągłe wyrzucanie nawzajem adresów o tym samym indeksie.],
+    [$E=1$. Adres pasuje do *dokładnie jednej* linii. Szybkie, ale adresy o tym samym indeksie się wypierają.],
     [*E-way assoc.*],
-    [$E>1$. Blok ma przypisany zbiór, ale w jego obrębie może zająć *dowolną* linię. Wymaga strategii usuwania starych danych (np. LRU).],
+    [$E>1$. Blok ma zbiór, ale w nim *dowolną* linię. Wymaga strategii wymiany (np. LRU).],
     [*Fully assoc.*],
-    [$S=1$. Jeden zbiór, linia może trafić *gdziekolwiek*. Bardzo drogie sprzętowo.],
+    [$S=1$. Linia może trafić *gdziekolwiek*. Bardzo drogie sprzętowo.],
   )
 
   === Polityki zapisu
@@ -1050,8 +1096,8 @@
       inset: 8pt,
     )[
       *Write-hit* \
-      - *Write-through:* Równoczesny zapis do cache i do RAM, strasznie wolne. \
-      - *Write-back:* Opóźnia zapis do RAM. Zapisuje tylko do cache i zapala *dirty bit*. RAM zostaje uaktualniony *dopiero*, gdy linia jest wyrzucana.
+      - *Write-through:* równoczesny zapis do cache i RAM - wolne. \
+      - *Write-back:* zapis tylko do cache + *dirty bit*. RAM aktualizowany *dopiero* przy wyrzuceniu linii.
     ],
     table.cell(
       fill: rgb("1a1a1a"),
@@ -1059,8 +1105,8 @@
       inset: 8pt,
     )[
       *Write-miss* \
-      - *Write-allocate:* Najpierw wciąga brakujący blok z RAM do cache, a dopiero potem go tam nadpisuje. Tworzy parę z Write-back. \
-      - *No-write-allocate:* Ignoruje cache całkowicie i zapisuje prosto do RAM. Tworzy parę z Write-through.
+      - *Write-allocate:* wciąga blok z RAM do cache, potem nadpisuje. Para z write-back. \
+      - *No-write-allocate:* zapis prosto do RAM, z pominięciem cache. Para z write-through.
     ],
   )
 ]
@@ -1070,9 +1116,9 @@
   == Pamięć wirtualna
 
   === Role pamięci wirtualnej
-  + *Cache dla dysku:* DRAM to pamięć podręczna dla danych na dysku. System operacyjny przesyła dane blokami zwanymi *stronami*.
-  + *Zarządzanie:* Każdy proces dostaje własną, idealnie liniową przestrzeń adresową. Upraszcza to linkowanie (kod/sterta zawsze startują od tych samych adresów).
-  + *Ochrona:* Każdy wpis w tablicy stron (PTE) ma bity uprawnień (read/write/exec). Blokuje to dostęp procesów do pamięci jądra lub cudzych danych.
+  + *Cache dla dysku:* DRAM jako pamięć podręczna danych z dysku; transfer blokami zwanymi *stronami*.
+  + *Zarządzanie:* każdy proces ma własną, liniową przestrzeń adresową - upraszcza linkowanie (kod/sterta zawsze pod tymi samymi adresami).
+  + *Ochrona:* bity uprawnień (read/write/exec) w każdym wpisie tablicy stron (PTE) - blokują dostęp do jądra i cudzych danych.
 
   === Translacja adresów (VA $arrow.r$ PA)
   #align(center)[
@@ -1093,18 +1139,22 @@
   - Sprzętowy układ MMU zamienia `VPN` na `PPN` używając *tablicy stron*.
 
   === Tablice stron i TLB
-  - *Page fault:* Próba dostępu do strony, której nie ma w RAM. Zgłasza wyjątek, a OS wstrzymuje proces i wczytuje stronę z dysku.
-  - *Wielopoziomowe tablice stron:* Drzewo tablic. Rozwiązuje problem marnowania RAM-u, bo pozwala na zaalokowanie tylko tych gałęzi, które są faktycznie używane.
-  - *Translation Lookaside Buffer:* Mały, szybki sprzętowy cache dla MMU umieszczony wewnątrz procesora. Przechowuje ostatnie tłumaczenia (`VPN` $arrow.r$ `PPN`), eliminując powolny odczyt tablicy stron z pamięci dla każdego żądania.
+  - *Page fault:* dostęp do strony spoza RAM $arrow.r$ wyjątek; OS wstrzymuje proces i wczytuje stronę z dysku.
+  - *Wielopoziomowe tablice stron:* drzewo - alokowane są tylko faktycznie używane gałęzie (oszczędność RAM).
+  - *TLB:* mały sprzętowy cache translacji (`VPN` $arrow.r$ `PPN`) wewnątrz CPU - eliminuje odczyt tablicy stron z pamięci przy każdym żądaniu.
 
   === VIPT (Virtually Indexed, Physically Tagged)
-  Zwykle procesor musi przetłumaczyć adres, zanim zacznie szukać danych w L1. Ale jeśli L1 jest małe, cały indeks (`CI`) mieści się w offsecie strony (`VPO`).
-
-  Skoro `VPO` jest identyczne z `PPO`, procesor wysyła bity wirtualnego indeksu prosto do L1 *równolegle* do wysłania `VPN` do sprzętowego TLB. Gdy TLB kończy translację i zwraca fizyczny tag (`CT`), L1 ma już przygotowany wiersz gotowy do weryfikacji. Skraca to czas dostępu.
+  Gdy L1 jest małe, indeks (`CI`) mieści się w `VPO`, a `VPO = PPO`:
+  #flow(
+    rgb("2188FF"),
+    [`VPO` $arrow.r$ indeks L1],
+    [równolegle: `VPN` $arrow.r$ TLB],
+    [tag `CT` weryfikuje wiersz],
+  )
+  Lookup zbioru w L1 startuje *równolegle* z translacją w TLB - skraca to czas dostępu.
 ]
 
 #from(15)[
-  #colbreak()
   == Wyjątkowe przepływy (ECF) i procesy
   Zjawiska na poziomie sprzętu/OS zakłócające sekwencyjny przepływ sterowania.
 
@@ -1117,25 +1167,25 @@
     table.header(
       text(fill: rgb("8b949e"))[*Klasa*],
       text(fill: rgb("8b949e"))[*Typ*],
-      text(fill: rgb("8b949e"))[*Powrót do...*],
+      text(fill: rgb("8b949e"))[*Powrót do*],
       text(fill: rgb("8b949e"))[*Przykład*],
     ),
     table.hline(stroke: rgb("333333")),
     [*Interrupt*],
-    [Asynch.],
-    [Następnej instr.],
+    [async],
+    [następnej instrukcji],
     [Timer, I/O, klawiatura],
     [*Trap*],
-    [Synch.],
-    [Następnej instr.],
+    [sync],
+    [następnej instrukcji],
     [Celowe wywołanie: `syscall`, breakpoint],
     [*Fault*],
-    [Synch.],
-    [Ponawia *bieżącą* instr.],
+    [sync],
+    [*bieżącej* instrukcji],
     [Page fault (brak strony), segfault],
     [*Abort*],
-    [Synch.],
-    [Nie wraca],
+    [sync],
+    [nie wraca],
     [Krytyczny błąd sprzętowy pamięci],
   )
 
@@ -1159,8 +1209,8 @@
       style: "italic",
     )[*Uwaga:* W `syscall` 4. argument to `%r10`]
   ]
-  - *ID:* Musi być załadowane do `%rax` przed wykonaniem skoku (np. `0`=read, `1`=write, `57`=fork).
-  - *Wynik:* Zwracany w `%rax` (wartości ujemne od -4095 do -1 oznaczają błąd `errno`).
+  - *ID:* w `%rax` przed skokiem (np. `0`=read, `1`=write, `57`=fork).
+  - *Wynik:* w `%rax` (wartości od -4095 do -1 to błąd `errno`).
 ]
 
 #from(4)[
@@ -1178,26 +1228,26 @@
     ),
     table.hline(stroke: rgb("333333")),
 
-    raw("mov S, D"), $D arrow.l S$, [Kopiuje wartość z S do D.],
-    raw("lea S, D"),
+    `mov S, D`, $D arrow.l S$, [Kopiuje wartość z S do D.],
+    `lea S, D`,
     $D arrow.l "addr"(S)$,
     [Oblicza adres S (bez czytania pamięci).],
-    raw("add S, D"), $D arrow.l D + S$, [Dodawanie (ustawia flagi).],
-    raw("sub S, D"), $D arrow.l D - S$, [Odejmowanie (ustawia flagi).],
-    raw("imul S, D"), $D arrow.l D * S$, [Mnożenie liczb ze znakiem.],
-    raw("sal / shl k, D"),
+    `add S, D`, $D arrow.l D + S$, [Dodawanie (ustawia flagi).],
+    `sub S, D`, $D arrow.l D - S$, [Odejmowanie (ustawia flagi).],
+    `imul S, D`, $D arrow.l D * S$, [Mnożenie liczb ze znakiem.],
+    `sal / shl k, D`,
     $D limits(<<)= k$,
     [Przesunięcie w lewo (mnożenie przez $2^k$).],
-    raw("sar k, D"),
+    `sar k, D`,
     $D limits(>>)= k$,
     [Arytmetyczne w prawo (dzielenie). *Kopiuje znak*.],
-    raw("shr k, D"), $D limits(>>)= k$, [Logiczne w prawo. Dopełnia zerami.],
-    raw("and / or S, D"),
+    `shr k, D`, $D limits(>>)= k$, [Logiczne w prawo. Dopełnia zerami.],
+    `and / or S, D`,
     $D arrow.l D "& / |" S$,
     [Operacje bitowe (ustawiają flagi).],
-    raw("xor S, D"),
+    `xor S, D`,
     $D arrow.l D "^" S$,
-    [Często używane jako `xor %rax, %rax` do zerowania.],
+    [Często jako `xor %rax, %rax` do zerowania.],
   )
 
   #from(5)[
@@ -1208,21 +1258,21 @@
       row-gutter: 0.5em,
       align: horizon,
       table.hline(stroke: rgb("333333")),
-      raw("cmp S1, S2"),
+      `cmp S1, S2`,
       $"S2" - "S1"$,
       [Ustawia flagi jak odejmowanie, nie zapisuje wyniku.],
-      raw("test S1, S2"),
+      `test S1, S2`,
       $"S2 & S1"$,
       [Ustawia flagi jak *AND*.],
-      raw("jX dest"),
+      `jX dest`,
       $"if"(X) "%rip" arrow.l "dest"$,
       [Skok warunkowy (X = warunek).],
-      raw("setX D"),
+      `setX D`,
       $"if"(X) D arrow.l 1$,
-      [Ustawia najmłodszy bajt na 0 lub 1 na podstawie flag.],
-      raw("cmovX S, D"),
+      [Ustawia najmłodszy bajt na 0 lub 1 wg flag.],
+      `cmovX S, D`,
       $"if"(X) D arrow.l S$,
-      [Warunkowe kopiowanie (optymalizacja zamiast skoku).],
+      [Warunkowe kopiowanie (zamiast skoku).],
     )
   ]
 
@@ -1234,19 +1284,19 @@
       row-gutter: 0.5em,
       align: horizon,
       table.hline(stroke: rgb("333333")),
-      raw("push S"),
+      `push S`,
       $"%rsp" -= 8 \ M["%rsp"] arrow.l S$,
       [Odkłada na stos (zmniejsza `%rsp`).],
-      raw("pop D"),
+      `pop D`,
       $D arrow.l M["%rsp"] \ "%rsp" += 8$,
       [Zdejmuje ze stosu do D (zwiększa `%rsp`).],
-      raw("call dest"),
+      `call dest`,
       $"push" "%rip" \ "%rip" arrow.l "dest"$,
       [Skok do funkcji (zapisuje adres powrotu na stosie).],
-      raw("ret"),
+      `ret`,
       $"pop" "%rip"$,
       [Zdejmuje adres powrotu ze stosu i skacze pod niego.],
-      raw("leave"),
+      `leave`,
       $"%rsp" arrow.l "%rbp" \ "pop" "%rbp"$,
       [Sprząta ramkę stosu (odwrotność prologu).],
     )
@@ -1254,6 +1304,7 @@
 ]
 
 #from(7)[
+  #colbreak()
   === Operacje wektorowe
   Rozszerzenie AVX. Przedrostek `v` (nie niszczy źródeł).
   #table(
@@ -1262,16 +1313,16 @@
     row-gutter: 0.5em,
     align: horizon,
     table.hline(stroke: rgb("333333")),
-    raw("vmovaps / ups S, D"),
+    `vmovaps / ups S, D`,
     $D arrow.l S$,
-    [Kopiuje wektor. `a` (aligned - szybkie, pamięć dzieli się przez wyrównanie), `u` (unaligned).],
-    raw("vaddps / pd S1, S2, D"),
+    [Kopiuje wektor. `a` (aligned - szybkie, adres podzielny przez wyrównanie), `u` (unaligned).],
+    `vaddps / pd S1, S2, D`,
     $D arrow.l "S2" + "S1"$,
     [Dodawanie wielokrotne (packed). `ps` (single-float), `pd` (double).],
-    raw("vmulps / pd S1, S2, D"),
+    `vmulps / pd S1, S2, D`,
     $D arrow.l "S2" * "S1"$,
     [Mnożenie wektorowe.],
-    raw("vfmadd231ps S1, S2, D"),
+    `vfmadd231ps S1, S2, D`,
     $D arrow.l "S2" * "S1" + D$,
     [*Fused Multiply-Add*. Mnoży i dodaje do `D` w jednym kroku.],
   )
@@ -1285,21 +1336,21 @@
     row-gutter: 0.5em,
     align: horizon,
     table.hline(stroke: rgb("333333")),
-    raw("movsd / movss S, D"),
+    `movsd / movss S, D`,
     $D arrow.l S$,
-    [Kopiuje wartość skalarną (`double` / `float`) między rejestrami XMM lub pamięcią.],
-    raw("movapd / movaps S, D"),
+    [Kopiuje skalar (`double` / `float`) między rejestrami XMM lub pamięcią.],
+    `movapd / movaps S, D`,
     $D arrow.l S$,
     [Kopiuje wyrównany wektor zmiennoprzecinkowy.],
-    raw("addsd / subsd S, D"),
+    `addsd / subsd S, D`,
     $D arrow.l D "op" S$,
     [Skalarne dodawanie / odejmowanie podwójnej precyzji.],
-    raw("xorpd / xorps S, D"),
+    `xorpd / xorps S, D`,
     $D arrow.l D \^ S$,
-    [Bitowy XOR na rejestrach XMM. Używany jako `xorpd %xmm0, %xmm0` do szybkiego zerowania rejestru.],
-    raw("ucomisd S1, S2"),
+    [Bitowy XOR na XMM. Jako `xorpd %xmm0, %xmm0` zeruje rejestr.],
+    `ucomisd S1, S2`,
     $"S2" - "S1"$,
-    [Porównuje wartości typu `double` i ustawia odpowiednio flagi `ZF, PF, CF` w rejestrze `%rflags`.],
+    [Porównuje `double` i ustawia flagi `ZF, PF, CF` w `%rflags`.],
   )
 ]
 
