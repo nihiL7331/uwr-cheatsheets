@@ -463,50 +463,6 @@
       `%Ri` to rejestr indeksowy, a `S` to skala (tylko: 1, 2, 4 lub 8).
     ]
   ]
-
-  #colbreak()
-  == Podstawowe instrukcje i arytmetyka (AT&T)
-  #table(
-    columns: (30%, 30%, 1fr),
-    stroke: none,
-    row-gutter: 0.5em,
-    align: horizon,
-    table.header(
-      text(fill: rgb("8b949e"))[*Opcode*],
-      text(fill: rgb("8b949e"))[*Efekt*],
-      text(fill: rgb("8b949e"))[*Opis*],
-    ),
-    table.hline(stroke: rgb("333333")),
-
-    raw("mov S, D"), $D arrow.l S$, [Kopiuje wartość z S do D.],
-    raw("lea S, D"),
-    $D arrow.l "addr"(S)$,
-    [Oblicza adres S (bez czytania pamięci).],
-    raw("add S, D"), $D arrow.l D + S$, [Dodawanie (ustawia flagi).],
-    raw("sub S, D"), $D arrow.l D - S$, [Odejmowanie (ustawia flagi).],
-    raw("imul S, D"), $D arrow.l D * S$, [Mnożenie liczb ze znakiem.],
-    raw("sal / shl k, D"),
-    $D limits(<<)= k$,
-    [Przesunięcie w lewo (mnożenie przez $2^k$).],
-    raw("sar k, D"),
-    $D limits(>>)= k$,
-    [Arytmetyczne w prawo (dzielenie). *Kopiuje znak*.],
-    raw("shr k, D"), $D limits(>>)= k$, [Logiczne w prawo. Dopełnia zerami.],
-    raw("and / or S, D"),
-    $D arrow.l D "& / |" S$,
-    [Operacje bitowe (ustawiają flagi).],
-    raw("xor S, D"),
-    $D arrow.l D "^" S$,
-    [Często używane jako `xor %rax, %rax` do zerowania.],
-  )
-  #v(2pt)
-  #align(center)[
-    #text(fill: rgb("8b949e"), size: 0.75em, style: "italic")[
-      *Uwaga o sufiksach:* Instrukcje przyjmują sufiks określający rozmiar danych: \
-      `b` ($8$-bit), `w` ($16$-bit), `l` ($32$-bit), `q` ($64$-bit). \
-      Np. `movl` kopiuje $32$ bity (i automatycznie zeruje górną połowę 64-bitowego rejestru!).
-    ]
-  ]
 ]
 
 #from(5)[
@@ -669,6 +625,104 @@
     ],
   )
   *Sprzątanie przez `leave`:* Zastępuje `movq %rbp, %rsp` i `popq %rbp` w jednej instrukcji.
+]
+
+#from(4)[
+  == Katalog instrukcji (AT&T)
+  #table(
+    columns: (30%, 30%, 1fr),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.header(
+      text(fill: rgb("8b949e"))[*Opcode*],
+      text(fill: rgb("8b949e"))[*Efekt*],
+      text(fill: rgb("8b949e"))[*Opis*],
+    ),
+    table.hline(stroke: rgb("333333")),
+
+    raw("mov S, D"), $D arrow.l S$, [Kopiuje wartość z S do D.],
+    raw("lea S, D"),
+    $D arrow.l "addr"(S)$,
+    [Oblicza adres S (bez czytania pamięci).],
+    raw("add S, D"), $D arrow.l D + S$, [Dodawanie (ustawia flagi).],
+    raw("sub S, D"), $D arrow.l D - S$, [Odejmowanie (ustawia flagi).],
+    raw("imul S, D"), $D arrow.l D * S$, [Mnożenie liczb ze znakiem.],
+    raw("sal / shl k, D"),
+    $D limits(<<)= k$,
+    [Przesunięcie w lewo (mnożenie przez $2^k$).],
+    raw("sar k, D"),
+    $D limits(>>)= k$,
+    [Arytmetyczne w prawo (dzielenie). *Kopiuje znak*.],
+    raw("shr k, D"), $D limits(>>)= k$, [Logiczne w prawo. Dopełnia zerami.],
+    raw("and / or S, D"),
+    $D arrow.l D "& / |" S$,
+    [Operacje bitowe (ustawiają flagi).],
+    raw("xor S, D"),
+    $D arrow.l D "^" S$,
+    [Często używane jako `xor %rax, %rax` do zerowania.],
+  )
+
+  #from(5)[
+    === Porównania i sterowanie
+    #table(
+      columns: (30%, 30%, 1fr),
+      stroke: none,
+      row-gutter: 0.5em,
+      align: horizon,
+      table.hline(stroke: rgb("333333")),
+      raw("cmp S1, S2"),
+      $"S2" - "S1"$,
+      [Ustawia flagi jak odejmowanie, nie zapisuje wyniku.],
+      raw("test S1, S2"),
+      $"S2 & S1"$,
+      [Ustawia flagi jak *AND*.],
+      raw("jX dest"),
+      $"if"(X) "%rip" arrow.l "dest"$,
+      [Skok warunkowy (X = warunek).],
+      raw("setX D"),
+      $"if"(X) D arrow.l 1$,
+      [Ustawia najmłodszy bajt na 0 lub 1 na podstawie flag.],
+      raw("cmovX S, D"),
+      $"if"(X) D arrow.l S$,
+      [Warunkowe kopiowanie (optymalizacja zamiast skoku).],
+    )
+  ]
+
+  #from(6)[
+    === Stos i zarządzanie procedurami
+    #table(
+      columns: (30%, 30%, 1fr),
+      stroke: none,
+      row-gutter: 0.5em,
+      align: horizon,
+      table.hline(stroke: rgb("333333")),
+      raw("push S"),
+      $"%rsp" -= 8 \ M["%rsp"] arrow.l S$,
+      [Odkłada na stos (zmniejsza `%rsp`).],
+      raw("pop D"),
+      $D arrow.l M["%rsp"] \ "%rsp" += 8$,
+      [Zdejmuje ze stosu do D (zwiększa `%rsp`).],
+      raw("call dest"),
+      $"push" "%rip" \ "%rip" arrow.l "dest"$,
+      [Skok do funkcji (zapisuje adres powrotu na stosie).],
+      raw("ret"),
+      $"pop" "%rip"$,
+      [Zdejmuje adres powrotu ze stosu i skacze pod niego.],
+      raw("leave"),
+      $"%rsp" arrow.l "%rbp" \ "pop" "%rbp"$,
+      [Sprząta ramkę stosu (odwrotność prologu).],
+    )
+  ]
+]
+
+#v(2pt)
+#align(center)[
+  #text(fill: rgb("8b949e"), size: 0.75em, style: "italic")[
+    *Uwaga o sufiksach:* Instrukcje przyjmują sufiks określający rozmiar danych: \
+    `b` ($8$-bit), `w` ($16$-bit), `l` ($32$-bit), `q` ($64$-bit). \
+    Np. `movl` kopiuje $32$ bity (i automatycznie zeruje górną połowę 64-bitowego rejestru!).
+  ]
 ]
 
 // #from(7)[
