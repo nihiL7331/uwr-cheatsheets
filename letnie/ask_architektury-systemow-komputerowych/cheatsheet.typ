@@ -610,17 +610,17 @@
     box(fill: rgb("1a1a1a"), stroke: (top: 2pt + rgb("333333")), inset: 8pt)[
       *Prolog*
       ```asm
-      pushq %rbp        ; Zapisz stary base ptr
-      movq  %rsp, %rbp  ; Nowy base ptr = rsp
-      subq  $32, %rsp   ; Alokacja 32 bajtów
+      pushq %rbp        ; zapisz stary base ptr
+      movq  %rsp, %rbp  ; nowy base ptr = rsp
+      subq  $32, %rsp   ; alokacja 32 bajtów
       ```
     ],
     box(fill: rgb("1a1a1a"), stroke: (top: 2pt + rgb("333333")), inset: 8pt)[
       *Epilog*
       ```asm
-      addq  $32, %rsp   ; Zwolnij alokację
-      popq  %rbp        ; Przywróć base ptr
-      ret               ; Skok powrotny
+      addq  $32, %rsp   ; zwolnij alokację
+      popq  %rbp        ; przywróć base ptr
+      ret               ; skok powrotny
       ```
     ],
   )
