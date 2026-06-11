@@ -270,7 +270,6 @@
     table.hline(stroke: rgb("333333")),
     [*Rozszerz. 0* (`zext`)], [`unsigned`: dopisuje $0$ z góry],
     [*Rozszerz. znak* (`sext`)], [`signed`: powiela bit znaku (MSB)],
-    [*Obcięcie* (`trunc`)], [$u mod 2^w$; może zmienić znak],
     `x << k`, [$x dot 2^k$ (sgn./uns.)],
     `u >> k`, [$floor(u \/ 2^k)$ — logiczne (zera)],
     `x >> k`, [arytmetyczne (kopia MSB), zaokr. do $-oo$],
@@ -583,71 +582,95 @@
   - *Pętle for:* Kompilator konwertuje je na pętle `while` według schematu: `init; while(war){ body; update it }`.
   - *Switch:* Używa *tablic skoków* dla osiągnięcia czasu skoku $O(1)$ przy `case`. Realizowane przez pośredni skok z adresowaniem skalowanym: `jmp *.L4(,%rdi,8)`. Pominięcie `break` w języku C odpowiada fizycznemu brakowi instrukcji skoku kończącej dany blok w ASM (fall-through do kodu poniżej).
 ]
-//
-// #from(6)[
-//   == Konwencja wywoływań (System V AMD64 ABI)
-//   #align(center)[
-//     #box(fill: rgb("1a1a1a"), inset: 6pt, stroke: (top: 2pt + rgb("333333")))[
-//       #show regex("%"): set text(fill: white)
-//       #show math.equation: set text(fill: rgb("e4e4e4"))
-//       #text(fill: rgb("D73A49"))[
-//         `%rdi` $arrow.r$ `%rsi` $arrow.r$ `%rdx` $arrow.r$ `%rcx` $arrow.r$ `%r8` $arrow.r$ `%r9`
-//       ]
-//     ] \
-//     #text(
-//       fill: rgb("8b949e"),
-//       size: 0.75em,
-//       style: "italic",
-//     )[Argumenty 7+: Na stosie od końca. Wynik: Zawsze w `%rax`.]
-//   ]
-//
-//   #table(
-//     columns: (1fr, 1fr),
-//     stroke: none,
-//     column-gutter: 10pt,
-//     table.cell(
-//       fill: rgb("1a1a1a"),
-//       stroke: (top: 2pt + rgb("D73A49")),
-//       inset: 8pt,
-//     )[
-//       *Caller-saved* (Można niszczyć) \
-//       #v(4pt)
-//       #hregs(
-//         rgb("D73A49"),
-//       )[`%rax`, `%rdi`, `%rsi`, `%rdx`, `%rcx`, `%r8`-`%r11`]
-//     ],
-//     table.cell(
-//       fill: rgb("1a1a1a"),
-//       stroke: (top: 2pt + rgb("28A745")),
-//       inset: 8pt,
-//     )[
-//       *Callee-saved* (Musi przywrócić) \
-//       #v(4pt)
-//       #hregs(rgb("28A745"))[`%rbx`, `%rbp`, `%r12`-`%r15`]
-//     ],
-//   )
-//
-//   === Instrukcje stosu i procedur
-//   #table(
-//     columns: (30%, 30%, 1fr),
-//     stroke: none,
-//     row-gutter: 0.5em,
-//     align: horizon,
-//     table.hline(stroke: rgb("333333")),
-//     raw("push S"), $"%rsp" -= 8 \ M["%rsp"] arrow.l S$, [Odkłada na stos.],
-//     raw("pop D"),
-//     $D arrow.l M["%rsp"] \ "%rsp" += 8$,
-//     [Zdejmuje ze stosu do D.],
-//     raw("call dest"),
-//     $"push" "%rip" \ "%rip" arrow.l "dest"$,
-//     [Skok do funkcji (zapisuje adres powrotu).],
-//     raw("ret"), $"pop" "%rip"$, [Powrót z funkcji.],
-//     raw("leave"),
-//     $"%rsp" arrow.l "%rbp" \ "pop" "%rbp"$,
-//     [Sprząta ramkę stosu.],
-//   )
-// ]
-//
+
+#from(6)[
+  #colbreak()
+  == Procedury i stos
+  Stos w x86-64 rośnie *w dół* (w stronę niższych adresów). Rejestr `%rsp` wskazuje na *wierzchołek* stosu (najniższy zajęty adres). Wartości odkłada się używając `push` (zmniejsza `%rsp` o 8), a zdejmuje `pop` (zwiększa `%rsp` o 8).
+
+  === Przekazywanie sterowania
+  - `call dest`: Odkłada adres powrotu (kolejnej instrukcji) na stos i robi skok do `dest`.
+  - `ret`: Zdejmuje adres powrotu ze stosu i robi pod niego skok.
+
+  == Konwencja Wywoływań (System V ABI)
+  #align(center)[
+    #box(
+      fill: rgb("1a1a1a"),
+      inset: 6pt,
+      stroke: (top: 2pt + rgb("333333")),
+      radius: 2pt,
+    )[
+      #show regex("%"): set text(fill: white)
+      #show math.equation: set text(fill: rgb("e4e4e4"))
+      #text(fill: rgb("D73A49"))[
+        `%rdi` $arrow.r$ `%rsi` $arrow.r$ `%rdx` $arrow.r$ `%rcx` $arrow.r$ `%r8` $arrow.r$ `%r9`
+      ]
+    ] \
+    #text(
+      fill: rgb("8b949e"),
+      size: 0.75em,
+      style: "italic",
+    )[Argumenty 7+: Na stosie od końca. Wynik w `%rax`.]
+  ]
+
+  === Rejestry caller-saved vs callee-saved
+  #table(
+    columns: (1fr, 1fr),
+    stroke: none,
+    column-gutter: 10pt,
+    table.cell(
+      fill: rgb("1a1a1a"),
+      stroke: (top: 2pt + rgb("D73A49")),
+      inset: 8pt,
+    )[
+      *Caller-saved* \
+      #text(fill: rgb("8b949e"), size: 7.5pt)[(Wołający musi zapisać)] \
+      Mogą zostać nadpisane w funkcji. By je zachować, caller kładzie je na stos przed `call`. \
+      #v(4pt)
+      #hregs(
+        rgb("D73A49"),
+      )[`%rax`, `%rdi`, `%rsi`, `%rdx`, `%rcx`, `%r8`-`%r11`]
+    ],
+    table.cell(
+      fill: rgb("1a1a1a"),
+      stroke: (top: 2pt + rgb("28A745")),
+      inset: 8pt,
+    )[
+      *Callee-saved* \
+      #text(fill: rgb("8b949e"), size: 7.5pt)[(Wołany musi przywrócić)] \
+      Muszą zachować stan. Callee musi zapisać je na stos i odtworzyć przed `ret`. \
+      #v(4pt)
+      #hregs(rgb("28A745"))[`%rbx`, `%rbp`, `%r12`-`%r15`]
+    ],
+  )
+
+  === Ramka stosu
+  Każde wywołanie funkcji otrzymuje wlasna ramkę na stosie (dzięki temu *rekurencja* działa naturalnie).
+  *Alokacja ramki jest potrzebna, gdy:* brakuje rejestrów na zmienne (spilling), użyto lokalnej tablicy/struktury, lub pobrano adres zmiennej lokalnej (operator `&`).
+
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 10pt,
+    box(fill: rgb("1a1a1a"), stroke: (top: 2pt + rgb("333333")), inset: 8pt)[
+      *Prolog*
+      ```asm
+      pushq %rbp        ; Zapisz stary base ptr
+      movq  %rsp, %rbp  ; Nowy base ptr = rsp
+      subq  $32, %rsp   ; Alokacja 32 bajtów
+      ```
+    ],
+    box(fill: rgb("1a1a1a"), stroke: (top: 2pt + rgb("333333")), inset: 8pt)[
+      *Epilog*
+      ```asm
+      addq  $32, %rsp   ; Zwolnij alokację
+      popq  %rbp        ; Przywróć base ptr
+      ret               ; Skok powrotny
+      ```
+    ],
+  )
+  *Sprzątanie przez `leave`:* Zastępuje `movq %rbp, %rsp` i `popq %rbp` w jednej instrukcji.
+]
+
 // #from(7)[
 //   == Struktury, Wyrównanie i Bezpieczeństwo
 //   + *Wyrównanie pola ($K$):* Zmienna $K$-bajtowa pod adresem $\pmod K = 0$.
