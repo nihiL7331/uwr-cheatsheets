@@ -512,7 +512,7 @@
 
 #from(5)[
   #colbreak()
-  == Flagi stanu i Sterowanie (Control)
+  == Flagi stanu i sterowanie
   #reg-desc(`ZF`, [Zero. Wynik to 0 (np. argumenty są równe).])
   #reg-desc(`SF`, [Sign. Wynik jest ujemny (MSB = 1).])
   #reg-desc(`CF`, [Carry. Przepełnienie dla liczb *bez znaku* (unsigned).])
