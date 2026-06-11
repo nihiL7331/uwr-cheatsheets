@@ -629,10 +629,10 @@
 
 #from(7)[
   #colbreak()
-  == Architektura CPU, Potokowość i OoO
+  == Architektura CPU
   Przetwarzanie instrukcji dzieli się na 5 faz: *Fetch* (pobranie), *Decode* (dekodowanie/odczyt z rejestru), *Execute* (ALU), *Memory* (pamięć), *Write-back* (zapis do rejestru).
 
-  === Potokowość (Pipelining) i Hazardy
+  === Pipelining i hazardy
   Nakładanie faz na siebie znacznie zwiększa throughput. Prowadzi to jednak do konfliktów (hazardów):
   #table(
     columns: (25%, 75%),
@@ -648,7 +648,7 @@
       *Rozwiązanie:* Branch prediction. Błąd kosztuje wyczyszczenie potoku (branch misprediction penalty).],
   )
 
-  === Wykonywanie poza kolejnością (Out-of-Order)
+  === Out-of-Order
   Nowoczesne procesory nie wykonują instrukcji sekwencyjnie.
   - *Superskalarność:* Zdolność do wykonania wielu instrukcji w jednym cyklu zegara (posiadanie wielu jednostek wykonawczych).
   - *Register renaming:* Dynamiczne mapowanie rejestrów logicznych (`%rax`) na wiele rejestrów fizycznych. Eliminuje fałszywe zależności (nadpisywanie tego samego rejestru).
