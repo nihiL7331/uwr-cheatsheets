@@ -477,7 +477,7 @@
 
   === Sufiksy warunkowe (dla `jX`, `setX`, `cmovX`)
   #table(
-    columns: (20%, 1fr),
+    columns: (20%, auto),
     stroke: none,
     row-gutter: 0.4em,
     align: horizon,
