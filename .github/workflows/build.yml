@@ -57,7 +57,7 @@ jobs:
               SRC_FILE="$BASE_DIR/$source_val"
             else
               dir_name=$(basename "$BASE_DIR")
-              default_source="${dir_name%%_*}"
+              default_source="cheatsheet"
               SRC_FILE="$BASE_DIR/$default_source.typ"
             fi
 
