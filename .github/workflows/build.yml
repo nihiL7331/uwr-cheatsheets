@@ -86,6 +86,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore: build pdf artifacts"
-          file_pattern: |
-            letnie/**/w*.pdf
-            obowiazki/**/w*.pdf
+          file_pattern: "*/**/w*.pdf"
