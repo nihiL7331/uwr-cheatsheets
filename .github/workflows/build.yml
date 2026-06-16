@@ -28,21 +28,64 @@ jobs:
 
       - name: Compile
         run: |
-          BASE_DIR="letnie/ask_architektury-systemow-komputerowych"
-          SRC_FILE="$BASE_DIR/cheatsheet.typ"
-          MAX_LECTURE=15
+          groups=("letnie" "obowiazki")
+          dirs=()
 
-          for i in $(seq 1 $MAX_LECTURE); do
-            FOLDER_NUM=$(printf "%02d" $i)
+          for group in "${groups[@]}"; do
+            if [ -d "$group" ]; then
+              for subdir in "$group"/*/; do
+                subdir="${subdir%/}"
+                if [ -f "$subdir/.meta" ]; then
+                  dirs+=("$subdir")
+                fi
+              done
+            fi
+          done
 
-            typst compile --ignore-system-fonts --input od=1 --input do=$i \
-              -f pdf --font-path fonts/ "$SRC_FILE" "$BASE_DIR/w$FOLDER_NUM.pdf" \
-              2> >(tee /tmp/warn.log >&2)
-            if grep -q "unknown font family" /tmp/warn.log; then exit 1; fi
+          for BASE_DIR in "${dirs[@]}"; do
+            echo "Processing $BASE_DIR..."
+
+            lectures=$(awk -F= '/^lectures=/{print $2}' "$BASE_DIR/.meta" | tr -d '\r')
+            source_val=$(awk -F= '/^source=/{print $2}' "$BASE_DIR/.meta" | tr -d '\r')
+
+            if [ -z "$lectures" ]; then
+              echo "Warning: No valid 'lectures' count found in $BASE_DIR/.meta. Skipping."
+              continue
+            fi
+
+            if [ -n "$source_val" ]; then
+              SRC_FILE="$BASE_DIR/$source_val"
+            else
+              dir_name=$(basename "$BASE_DIR")
+              default_source="${dir_name%%_*}"
+              SRC_FILE="$BASE_DIR/$default_source.typ"
+            fi
+
+            echo "Using source: $SRC_FILE, Max lectures: $lectures"
+
+            if [ ! -f "$SRC_FILE" ]; then
+              echo "Error: Source file $SRC_FILE does not exist. Skipping."
+              continue
+            fi
+
+            for i in $(seq 1 "$lectures"); do
+              NUM=$(printf "%02d" $i)
+
+              typst compile --ignore-system-fonts --input od=1 --input do=$i \
+                -f pdf --font-path fonts/ "$SRC_FILE" "$BASE_DIR/w$NUM.pdf" \
+                2> >(tee /tmp/warn.log >&2)
+              
+              if grep -q "unknown font family" /tmp/warn.log; then 
+                echo "Compilation failed due to unknown font family."
+                exit 1
+              fi
+            done
           done
 
       - name: Commit
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "chore: auto-update ask pdf artifacts"
-          file_pattern: "letnie/ask_architektury-systemow-komputerowych/w*/*.pdf"
+          commit_message: "chore: build pdf artifacts"
+          file_pattern: |
+            letnie/**/w*.pdf
+            obowiazki/**/w*.pdf
