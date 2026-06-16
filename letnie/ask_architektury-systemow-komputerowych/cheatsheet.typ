@@ -597,9 +597,9 @@
       inset: 8pt,
     )[
       *Caller-saved* \
-      #text(fill: rgb("8b949e"), size: 7.5pt)[(Wołający musi zapisać)] \
-      Mogą zostać nadpisane w funkcji. By je zachować, caller kładzie je na stos przed `call`. \
-      #v(4pt)
+      #text(fill: rgb("8b949e"), size: 6.5pt)[(Wołający musi zapisać)] \
+      #text(size: 7pt)[Mogą zostać nadpisane w funkcji. By je zachować, caller kładzie je na stos przed `call`.] \
+      #v(2pt)
       #hregs(
         rgb("D73A49"),
       )[`%rax`, `%rdi`, `%rsi`, `%rdx`, `%rcx`, `%r8`-`%r11`]
@@ -610,8 +610,8 @@
       inset: 8pt,
     )[
       *Callee-saved* \
-      #text(fill: rgb("8b949e"), size: 7.5pt)[(Wołany musi przywrócić)] \
-      Muszą zachować stan. Callee musi zapisać je na stos i odtworzyć przed `ret`. \
+      #text(fill: rgb("8b949e"), size: 6.5pt)[(Wołany musi przywrócić)] \
+      #text(size: 7pt)[Muszą zachować stan. Callee musi zapisać je na stos i odtworzyć przed `ret`.] \
       #v(4pt)
       #hregs(rgb("28A745"))[`%rbx`, `%rbp`, `%r12`-`%r15`]
     ],
