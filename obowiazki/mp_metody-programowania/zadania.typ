@@ -246,6 +246,130 @@ Dla poniższych wyrażeń w języku OCaml podaj ich (najogólniejszy) typ, lub n
 
 #pagebreak()
 
+= Rekurencja ogonowa
+
+Określ czy definicje poniższych funkcji rekurencyjnych są ogonowe. Jeżeli tak, wpisz w komórce obok `TAK`, jeżeli nie – przepisz je na ogonowe, lub uzasadnij, dlaczego to niemożliwe.
+
+#table(
+  columns: (20pt, 1fr, 1fr),
+  stroke: 0.5pt,
+  inset: (5pt, 20pt, 20pt, 5pt),
+  align: horizon,
+
+  table.cell(inset: 4pt)[Lp], table.cell(inset: 4pt)[Definicja funkcji], table.cell(inset: 4pt)[Odpowiedź],
+
+  [1.],
+  ```ml
+  let rec f a =
+    if a < 0 then -1
+    else if a = 0 then a
+    else a + f (a-1)
+  ```,
+  [],
+
+  [2.],
+  ```ml
+  let rec comp f fil a =
+    if fil a
+      then a
+      else comp f fil (f a)
+  ```,
+  [],
+
+  [3.],
+  ```ml
+  let rec f g xs =
+    match xs with
+      | [] -> g 0
+      | x :: xs -> (g x) :: (f g xs)
+  ```,
+  [],
+
+  [4.],
+  ```ml
+  let rec app xs ys =
+    match xs with
+      | [] -> ys
+      | x :: xs -> x :: (app xs ys)
+  ```,
+  [],
+
+  [5.],
+  ```ml
+  let rec comp f fil a =
+    if fil a
+    then a
+    else 1 + comp f fil (f a)
+  ```,
+  [],
+
+  [6.],
+  ```ml
+  let rec f g xs acc =
+    match xs with
+      | [] -> acc
+      | x :: xs -> f g xs (g acc x)
+  ```,
+  [],
+)
+
+#pagebreak()
+
+= Identyfikacja funkcji
+
+W każdym rzędzie podana jest funkcja w postaci typu, definicji i jej działania. Wypełnij brakujące informacje.
+
+Pierwszy wpis (dla `square`) jest podany jako przykład.
+
+#table(
+  columns: (20pt, 0.6fr, 1fr, 1fr),
+  stroke: 0.5pt,
+  inset: (5pt, 20pt, 20pt, 5pt),
+  align: horizon,
+
+  table.cell(inset: 4pt)[Lp],
+  table.cell(inset: 4pt)[Typ funkcji],
+  table.cell(inset: 4pt)[Definicja funkcji],
+  table.cell(inset: 4pt)[Opis funkcji],
+
+  [1.],
+  [`int -> int`],
+  [```ml fun a -> a * a```],
+  [Podnosi argument $a$ do kwadratu.],
+
+  [2.],
+  [`int -> 'a -> 'a list`],
+  [],
+  [Wstawia $n$ elementów $a$ na początek listy $x s$.],
+
+  [3.],
+  [],
+  [
+    ```ml
+    fun a b c ->
+      if a > 0 then b a
+      else c a
+    ```
+  ],
+  [],
+
+  [4.],
+  table.cell(inset: 4pt)[```
+  (ident * expr) list -> ident -> expr
+  -> (ident * expr) list
+
+  ```],
+  [#v(120pt)],
+  [Aktualizuje (jeżeli para z pierwszą współrzędną równą `ident` jest już w liście, to ją najpierw usuwa) listę par wprowadzając nową parę `(ident, expr)`.],
+
+  [5.],
+  [],
+  [#v(80pt)],
+  [Zamienia listę elementów typu $tau "opt"$ na listę elementów typu $tau$, pozbywając się pustych elementów.],
+)
+
+#pagebreak()
+
 = Indukcja strukturalna
 
 == Formułowanie zasady indukcji
