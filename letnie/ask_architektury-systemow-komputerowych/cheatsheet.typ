@@ -1101,8 +1101,8 @@
 
   === Role pamięci wirtualnej
   + *Cache dla dysku:* DRAM jako pamięć podręczna danych z dysku; transfer blokami zwanymi *stronami*.
-  + *Zarządzanie:* każdy proces ma własną, liniową przestrzeń adresową - upraszcza linkowanie (kod/sterta zawsze pod tymi samymi adresami).
-  + *Ochrona:* bity uprawnień (read/write/exec) w każdym wpisie tablicy stron (PTE) - blokują dostęp do jądra i cudzych danych.
+  + *Zarządzanie:* każdy proces ma własną, liniową przestrzeń adresową, co upraszcza linkowanie (kod/sterta zawsze pod tymi samymi adresami).
+  + *Ochrona:* bity uprawnień w każdym wpisie tablicy stron blokują dostęp do jądra i cudzych danych.
 
   === Translacja adresów (VA $arrow.r$ PA)
   #align(center)[
@@ -1110,12 +1110,12 @@
       columns: (1fr, 1fr),
       gutter: 10pt,
       box(fill: rgb("1a1a1a"), inset: 8pt, stroke: (top: 2pt + rgb("2188FF")))[
-        *Adres Wirtualny (VA)* \
-        `VPN` (Page Num) | `VPO` (Offset)
+        *Virtual Address* \
+        `VPN` | `VPO`
       ],
       box(fill: rgb("1a1a1a"), inset: 8pt, stroke: (top: 2pt + rgb("28A745")))[
-        *Adres Fizyczny (PA)* \
-        `PPN` (Page Num) | `PPO` (Offset)
+        *Physical Address* \
+        `PPN` | `PPO`
       ],
     )
   ]
@@ -1124,7 +1124,6 @@
 
   === Tablice stron i TLB
   - *Page fault:* dostęp do strony spoza RAM $arrow.r$ wyjątek; OS wstrzymuje proces i wczytuje stronę z dysku.
-  - *Wielopoziomowe tablice stron:* drzewo - alokowane są tylko faktycznie używane gałęzie (oszczędność RAM).
   - *TLB:* mały sprzętowy cache translacji (`VPN` $arrow.r$ `PPN`) wewnątrz CPU - eliminuje odczyt tablicy stron z pamięci przy każdym żądaniu.
 
   === VIPT (Virtually Indexed, Physically Tagged)
@@ -1135,7 +1134,7 @@
     [równolegle: `VPN` $arrow.r$ TLB],
     [tag `CT` weryfikuje wiersz],
   )
-  Lookup zbioru w L1 startuje *równolegle* z translacją w TLB - skraca to czas dostępu.
+  Lookup zbioru w L1 startuje *równolegle* z translacją w TLB, co skraca czas dostępu.
 ]
 
 #from(15)[
