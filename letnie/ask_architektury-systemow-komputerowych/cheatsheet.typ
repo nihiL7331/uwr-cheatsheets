@@ -246,15 +246,23 @@
   == Typy danych
   #v(-2pt)
   #table(
-    columns: (auto, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
+    columns: (auto, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
     stroke: none,
     align: center,
     row-gutter: 0.2em,
     table.header(
-      [*Typ*], `char`, `short`, `int`, `long`, `float`, `double`, `void*`
+      [*Typ*],
+      `char`,
+      `short`,
+      `unsigned`,
+      `int`,
+      `long`,
+      `float`,
+      `double`,
+      `void*`,
     ),
     table.hline(stroke: rgb("333333")),
-    text(fill: rgb("8b949e"))[*x86-64*], [1], [2], [4], [8], [4], [8], [8],
+    text(fill: rgb("8b949e"))[*x86-64*], [1], [2], [4], [4], [8], [4], [8], [8],
   )
 
   #colbreak()
