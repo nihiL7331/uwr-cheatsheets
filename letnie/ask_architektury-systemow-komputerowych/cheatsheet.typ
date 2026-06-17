@@ -281,16 +281,13 @@
 
   #colbreak()
 
-  == Operacje, overflow i endianness
+  == Operacje i endianness
   #table(
     columns: (auto, 1fr),
     stroke: none,
     row-gutter: 0.4em,
     align: horizon,
     table.hline(stroke: rgb("333333")),
-    [*UAdd/TAdd*], [$(u+v) mod 2^w$],
-    [*Nadmiar (+)*], [$u,v>0$, a wynik $<0$ (wynik $-2^w$)],
-    [*Nadmiar (−)*], [$u,v<0$, a wynik $>=0$ (wynik $+2^w$)],
     [*Negacja U2*], [`-x = ~x+1`; `-TMin=TMin`, `-0=0`],
     [*Wykr. nadmiaru* (`s=x+y`)], `((s^x)&(s^y))>>(w-1)`,
     [*Maska / abs*], `m=x>>31; abs=(x^m)-m`,
