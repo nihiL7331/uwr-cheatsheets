@@ -912,6 +912,13 @@
       Zalety: znacznie mniejsze binarki, łatwe aktualizacje.
     ],
   )
+
+  === Identyfikacja relokacji w kodzie
+  Linker musi załatać adresy (wstawić relokacje) w każdym miejscu, gdzie kod:
+  - wywołuje funkcję zdefiniowaną w innym pliku/module (np. `printf()`),
+  - odwołuje się do zmiennej globalnej (nawet zadeklarowanej w tym samym pliku),
+  - odwołuje się do statycznej zmiennej lokalnej (`static int counter;`),
+  - używa literału znakowego (np. `"%d "`), który trafia do sekcji `.rodata`.
 ]
 
 #from(11)[
@@ -1219,6 +1226,7 @@
 ]
 
 #from(4)[
+  #colbreak()
   #colbreak()
   == Katalog instrukcji (AT&T)
   #table(
