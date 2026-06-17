@@ -266,31 +266,6 @@
   )
 
   #colbreak()
-  == Kodowanie liczb i konwersja
-  #align(center)[
-    $"B2U"(X) = sum_(i=0)^(w-1) x_i 2^i wide "B2T"(X) = -x_(w-1) 2^(w-1) + sum_(i=0)^(w-2) x_i 2^i$ \
-    #v(0.5em)
-    $"T2U"(x) = x < 0 ? x + 2^w : x wide "U2T"(u) = u > "TMax" ? u - 2^w : u$
-  ]
-  *Skróty:* `B` = bity, `U` = unsigned, `T` = ze znakiem (kod U2). \
-  Stąd `B2U` = bity $arrow.r$ unsigned, podobnie `U2T`, `UMax`, `TMax`, `UAdd`, `TAdd`.
-  #table(
-    columns: (auto, auto, 1fr),
-    stroke: none,
-    row-gutter: 0.3em,
-    align: horizon,
-    table.header(
-      text(fill: rgb("8b949e"))[*Stała*],
-      text(fill: rgb("8b949e"))[*Bity*],
-      text(fill: rgb("8b949e"))[*Wartość*],
-    ),
-    table.hline(stroke: rgb("333333")),
-    [*UMax*], `11...1`, [$2^w - 1$],
-    [*TMax*], `01...1`, [$2^(w-1) - 1$ (`INT_MAX`)],
-    [*TMin*], `10...0`, [$-2^(w-1)$ (`INT_MIN`)],
-    [*$-1$*], `11...1`, [te same bity co UMax],
-  )
-  *Promocja w C:* `unsigned` i `int` w jednym wyrażeniu/porównaniu (`< > ==`) $arrow.r$ `int` promowany do `unsigned` (bity bez zmian, $-1 arrow.r$ UMax).
 
   == Rozszerzanie, obcinanie i przesunięcia
   #table(
