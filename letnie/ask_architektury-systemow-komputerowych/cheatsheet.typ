@@ -664,7 +664,24 @@
     [*Latency bound*],
     [Limit wynikający z łańcucha zależności danych. Zależy od opóźnienia jednostki. Np. wynik z poprzedniej iteracji jest potrzebny w obecnej.],
     [*Throughput bound*],
-    [Limit wynikający z przepustowości sprzętu. Wzór: $max(1/("issue"), "latency"/"capacity")$.],
+    [Limit wynikający z przepustowości sprzętu.],
+  )
+
+  === Fazy przetwarzania
+  #table(
+    columns: (auto, 1fr),
+    stroke: none,
+    row-gutter: 0.4em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [Dispatch],
+    [Dekodowanie i alokacja w stacji rezerwacyjnej. CPU może zlecić ograniczoną liczbę instrukcji na cykl.],
+    [Execute],
+    [Wykonywanie właściwe. Zależne instrukcje mogą rozpocząć `e` w cyklu udostępnienia wyniku (`w`) przez instrukcję poprzedzającą.],
+    [Write-back],
+    [Udostępnianie wyniku na magistrali. W tym samym cyklu zależne instrukcje zaczynają `e`.],
+    [Retire],
+    [Zatwierdzenie stanu architektury. Musi zachodzić ściśle in-order.],
   )
 ]
 
@@ -748,6 +765,7 @@
 ]
 
 #from(9)[
+  #colbreak()
   == Optymalizacje i ich ograniczenia
   Kompilator nie zoptymalizuje kodu, jeśli mogłoby to zmienić zachowanie programu (choćby dla specyficznych argumentów).
 
@@ -785,6 +803,7 @@
 ]
 
 #from(10)[
+  #colbreak()
   == Linkowanie i konsolidacja
 
   === Fazy budowania programu
