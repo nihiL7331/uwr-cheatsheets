@@ -294,6 +294,7 @@
     [*Negacja U2*], [`-x = ~x+1`; `-TMin=TMin`, `-0=0`],
     [*Wykr. nadmiaru* (`s=x+y`)], `((s^x)&(s^y))>>(w-1)`,
     [*Maska / abs*], `m=x>>31; abs=(x^m)-m`,
+    [*`c ? a : b`*], `b ^ (-c & (a ^ b))`,
   )
   *Promocja w C:* `unsigned` i `int` w jednym wyrażeniu/porównaniu (`< > ==`) $arrow.r$ `int` promowany do `unsigned` (bity bez zmian, $-1 arrow.r$ UMax).
   #table(
