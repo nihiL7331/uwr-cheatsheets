@@ -56,7 +56,7 @@
 )
 
 #let LECTURE-NUM-FROM = int(sys.inputs.at("od", default: "1"))
-#let LECTURE-NUM-TO = int(sys.inputs.at("do", default: "15"))
+#let LECTURE-NUM-TO = int(sys.inputs.at("do", default: "2"))
 #let from(n, body) = if LECTURE-NUM-TO >= n and n >= LECTURE-NUM-FROM { body }
 
 = Metody Programownia: Reference
