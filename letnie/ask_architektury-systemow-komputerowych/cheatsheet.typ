@@ -869,20 +869,6 @@
     )
   ]
 
-  #table(
-    columns: (auto, 1fr),
-    stroke: none,
-    row-gutter: 0.4em,
-    align: horizon,
-    table.hline(stroke: rgb("333333")),
-    [*Reguła 1*],
-    [Wiele silnych $arrow.r$ *błąd linkowania* (Multiple definition).],
-    [*Reguła 2*],
-    [1 silny + $n$ słabych $arrow.r$ wygrywa *silny*.],
-    [*Reguła 3*],
-    [Wiele słabych $arrow.r$ linker wybiera *dowolny* (`gcc -fno-common` zakazuje).],
-  )
-
   === Relokacja
   Linker skleja sekcje `.text`/`.data` z plików `.o` w jeden blok, nadaje finalne adresy (run-time) i poprawia wszystkie odniesienia w kodzie wg wpisów z `.rel`.
 
