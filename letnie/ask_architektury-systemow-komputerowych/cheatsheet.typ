@@ -206,7 +206,7 @@
     [Jak półsumator, ale przyjmuje też przeniesienie wejściowe `ci`.],
     [*Sumator n-bitowy*],
     [$n times$ FA],
-    [Kaskada (ripple-carry): wyjście $C_(i)$ trafia na wejście kolejnego FA. Ostatnie `co` to *Carry Out* całości.],
+    [Kaskadowo wyjście $C_(i)$ trafia na wejście kolejnego FA. Ostatnie `co` to *Carry Out* całości.],
 
     table.hline(stroke: rgb("222222")),
     table.cell(
@@ -216,13 +216,13 @@
     )[*Układy kombinacyjne*],
     [*Dekoder*],
     [$n arrow.r 2^n$],
-    [Wejście koduje liczbę $k$. Na wyjściu zapalony jest *tylko* bit nr $k$.],
+    [Wejście koduje liczbę $k$. Na wyjściu zapalony jest bit $k$.],
     [*Multiplekser*],
     [$2^n + n arrow.r 1$],
-    [$2^n$ bitów danych + $n$ bitów sterujących $S$. Na wyjście przechodzi $S$-ty bit danych.],
+    [$2^n$ bitów danych + $n$ bitów sterujących $S$. Na wyjściu zapalony $S$-ty bit danych.],
     [*ALU*],
     [$A, B, f arrow.r C$],
-    [Dekoder na bitach $f$ wybiera operację (np. $A+B$, $A|B$, $A\&B$); multipleksowanie wyników bramkami AND/OR.],
+    [Dekoder na bitach $f$ wybiera operację np. $A+B$, multipleksowanie wyników bramkami AND/OR.],
 
     table.hline(stroke: rgb("222222")),
     table.cell(
@@ -235,10 +235,10 @@
     [Przechowuje 1 bit ($Q$). `S=1` ustawia $Q=1$, `R=1` zeruje, `S=R=0` trzyma stan. Dwa sprzężone `NOR`-y.],
     [*Sterowany poziomem*],
     [aktywny gdy `CLK` $= 1$],
-    [Wejścia `S`/`R` bramkowane AND-em z zegarem. Stan zmienia się tylko przy `CLK=1`.],
+    [Wejścia `S`/`R` zAND-owane z zegarem.],
     [*Sterowany zboczem*],
     [zbocze $1 arrow.r 0$],
-    [Dwa przerzutniki poziomowe w kaskadzie (master-slave), drugi z zanegowanym zegarem. Stan przepisuje się w *momencie* zmiany zegara.],
+    [Dwa przerzutniki poziomowe w kaskadzie. Stan przepisuje się w *momencie* zmiany zegara.],
   )
 ]
 
