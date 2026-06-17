@@ -274,8 +274,6 @@
     row-gutter: 0.4em,
     align: horizon,
     table.hline(stroke: rgb("333333")),
-    [*Rozszerz. 0* (`zext`)], [`unsigned`: dopisuje $0$ z góry],
-    [*Rozszerz. znak* (`sext`)], [`signed`: powiela bit znaku (MSB)],
     `x << k`, [$x dot 2^k$ (sgn./uns.)],
     `u >> k`, [$floor(u \/ 2^k)$ - logiczne (zera)],
     `x >> k`, [arytmetyczne (kopia MSB), zaokr. do $-oo$],
@@ -297,6 +295,7 @@
     [*Wykr. nadmiaru* (`s=x+y`)], `((s^x)&(s^y))>>(w-1)`,
     [*Maska / abs*], `m=x>>31; abs=(x^m)-m`,
   )
+  *Promocja w C:* `unsigned` i `int` w jednym wyrażeniu/porównaniu (`< > ==`) $arrow.r$ `int` promowany do `unsigned` (bity bez zmian, $-1 arrow.r$ UMax).
   #table(
     columns: (auto, 1fr, auto),
     stroke: none,
@@ -581,7 +580,9 @@
     )[
       *Caller-saved* \
       #text(fill: rgb("8b949e"), size: 6.5pt)[(Wołający musi zapisać)] \
-      #text(size: 7pt)[Mogą zostać nadpisane w funkcji. By je zachować, caller kładzie je na stos przed `call`.] \
+      #text(
+        size: 7pt,
+      )[Mogą zostać nadpisane w funkcji. By je zachować, caller kładzie je na stos przed `call`.] \
       #v(2pt)
       #hregs(
         rgb("D73A49"),
@@ -594,7 +595,9 @@
     )[
       *Callee-saved* \
       #text(fill: rgb("8b949e"), size: 6.5pt)[(Wołany musi przywrócić)] \
-      #text(size: 7pt)[Muszą zachować stan. Callee musi zapisać je na stos i odtworzyć przed `ret`.] \
+      #text(
+        size: 7pt,
+      )[Muszą zachować stan. Callee musi zapisać je na stos i odtworzyć przed `ret`.] \
       #v(4pt)
       #hregs(rgb("28A745"))[`%rbx`, `%rbp`, `%r12`-`%r15`]
     ],
