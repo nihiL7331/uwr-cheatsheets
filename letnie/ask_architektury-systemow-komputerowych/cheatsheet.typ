@@ -1075,8 +1075,8 @@
       inset: 8pt,
     )[
       *Write-hit* \
-      - *Write-through:* równoczesny zapis do cache i RAM - wolne. \
-      - *Write-back:* zapis tylko do cache + *dirty bit*. RAM aktualizowany *dopiero* przy wyrzuceniu linii.
+      - *Write-through:* równoczesny zapis do cache i RAM. \
+      - *Write-back:* zapis tylko do cache + *dirty bit*. RAM aktualizowany przy wyrzuceniu linii.
     ],
     table.cell(
       fill: rgb("1a1a1a"),
