@@ -1213,7 +1213,6 @@
 
 #from(4)[
   #colbreak()
-  #colbreak()
   == Katalog instrukcji (AT&T)
   #table(
     columns: (30%, 30%, 1fr),
