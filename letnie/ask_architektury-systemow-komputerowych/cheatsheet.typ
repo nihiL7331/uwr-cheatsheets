@@ -265,8 +265,6 @@
     text(fill: rgb("8b949e"))[*x86-64*], [1], [2], [4], [4], [8], [4], [8], [8],
   )
 
-  #colbreak()
-
   == Rozszerzanie, obcinanie i przesunięcia
   #table(
     columns: (auto, 1fr),
@@ -280,6 +278,8 @@
     [$x \/ 2^k$ do $0$], `(x + (1<<k)-1) >> k`,
     [Strength reduction], [`x*24` $arrow.r$ `(x<<5)-(x<<3)`],
   )
+
+  #colbreak()
 
   == Operacje, overflow i endianness
   #table(
@@ -314,8 +314,6 @@
 ]
 
 #from(3)[
-  #colbreak()
-
   == Zmiennoprzecinkowe (IEEE 754)
   #align(center)[
     $V = (-1)^s times M times 2^E wide "Bias" = 2^(k-1) - 1$
@@ -1096,7 +1094,6 @@
 ]
 
 #from(13)[
-  #colbreak()
   == Pamięć wirtualna
 
   === Role pamięci wirtualnej
@@ -1199,7 +1196,6 @@
 
 #from(4)[
   #colbreak()
-  #colbreak() // stupid but works ig???
   == Katalog instrukcji (AT&T)
   #table(
     columns: (30%, 30%, 1fr),
