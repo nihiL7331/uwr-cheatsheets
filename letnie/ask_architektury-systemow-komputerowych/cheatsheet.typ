@@ -1125,6 +1125,7 @@
   === Tablice stron i TLB
   - *Page fault:* dostęp do strony spoza RAM $arrow.r$ wyjątek; OS wstrzymuje proces i wczytuje stronę z dysku.
   - *TLB:* mały sprzętowy cache translacji (`VPN` $arrow.r$ `PPN`) wewnątrz CPU - eliminuje odczyt tablicy stron z pamięci przy każdym żądaniu.
+    - *Struktura TLB:* Jeżeli TLB jest pamięcią *w pełni asocjacyjną*, to `VPN` w całości stanowi tag TLB. W przeciwnym wypadku, `VPN` dzieli się na tag oraz dodatkowo na indeks, który określa konkretny zbiór wewnątrz TLB.
 
   === VIPT (Virtually Indexed, Physically Tagged)
   Gdy L1 jest małe, indeks (`CI`) mieści się w `VPO`, a `VPO = PPO`:
