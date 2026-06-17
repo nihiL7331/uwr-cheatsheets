@@ -1,7 +1,7 @@
 #align(center + horizon)[
   #text(size: 18pt)[*Metody Programowania*]
 
-  _Przykładowe zadanie egzaminacyjne_
+  _Zadania do treningu_
 
   #v(40pt)
 
@@ -11,7 +11,7 @@
 #set page(
   header: box(inset: 10pt, stroke: (bottom: 0.5pt + black), width: 100%)[
     #columns(2)[
-      #text(size: 8pt)[*Metody Programowania* \ Przykładowe zadania egzaminacyjne]
+      #text(size: 8pt)[*Metody Programowania* \ Zadania do treningu]
       #colbreak()
       #align(end)[#text(size: 8pt)[*Data kompilacji:* #datetime.today().display()]]
     ]
