@@ -653,6 +653,19 @@
   - *Superskalarność:* wiele instrukcji na cykl (wiele jednostek wykonawczych).
   - *Register renaming:* mapowanie rejestrów logicznych (`%rax`) na wiele fizycznych - eliminuje fałszywe zależności.
   - *Reorder buffer:* instrukcje liczone asynchronicznie, ale zatwierdzane w kolejności programu (spójność).
+
+  === Miary wydajności
+  #table(
+    columns: (25%, 75%),
+    stroke: none,
+    row-gutter: 0.5em,
+    align: horizon,
+    table.hline(stroke: rgb("333333")),
+    [*Latency bound*],
+    [Limit wynikający z łańcucha zależności danych. Zależy od opóźnienia jednostki. Np. wynik z poprzedniej iteracji jest potrzebny w obecnej.],
+    [*Throughput bound*],
+    [Limit wynikający z przepustowości sprzętu. Wzór: $max(1/("issue"), "latency"/"capacity")$.],
+  )
 ]
 
 #from(8)[
