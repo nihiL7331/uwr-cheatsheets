@@ -1152,64 +1152,64 @@
   Lookup zbioru w L1 startuje *równolegle* z translacją w TLB, co skraca czas dostępu.
 ]
 
-#from(15)[
-  == Wyjątkowe przepływy (ECF) i procesy
-  Zjawiska na poziomie sprzętu/OS zakłócające sekwencyjny przepływ sterowania.
-
-  === Klasy wyjątków
-  #table(
-    columns: (22%, 18%, 25%, 1fr),
-    stroke: none,
-    row-gutter: 0.5em,
-    align: horizon,
-    table.header(
-      text(fill: rgb("8b949e"))[*Klasa*],
-      text(fill: rgb("8b949e"))[*Typ*],
-      text(fill: rgb("8b949e"))[*Powrót do*],
-      text(fill: rgb("8b949e"))[*Przykład*],
-    ),
-    table.hline(stroke: rgb("333333")),
-    [*Interrupt*],
-    [async],
-    [następnej instrukcji],
-    [Timer, I/O, klawiatura],
-    [*Trap*],
-    [sync],
-    [następnej instrukcji],
-    [Celowe wywołanie: `syscall`, breakpoint],
-    [*Fault*],
-    [sync],
-    [*bieżącej* instrukcji],
-    [Page fault (brak strony), segfault],
-    [*Abort*],
-    [sync],
-    [nie wraca],
-    [Krytyczny błąd sprzętowy pamięci],
-  )
-
-  === Wywołania systemowe
-  #align(center)[
-    #box(
-      fill: rgb("1a1a1a"),
-      inset: 6pt,
-      stroke: (top: 2pt + rgb("D73A49")),
-      radius: 2pt,
-    )[
-      #show regex("%"): set text(fill: white)
-      #show math.equation: set text(fill: rgb("e4e4e4"))
-      #text(fill: rgb("D73A49"))[
-        `%rdi` $arrow.r$ `%rsi` $arrow.r$ `%rdx` $arrow.r$ `%r10` $arrow.r$ `%r8` $arrow.r$ `%r9`
-      ]
-    ] \
-    #text(
-      fill: rgb("8b949e"),
-      size: 0.75em,
-      style: "italic",
-    )[*Uwaga:* W `syscall` 4. argument to `%r10`]
-  ]
-  - *ID:* w `%rax` przed skokiem (np. `0`=read, `1`=write, `57`=fork).
-  - *Wynik:* w `%rax` (wartości od -4095 do -1 to błąd `errno`).
-]
+// #from(15)[
+//   == Wyjątkowe przepływy (ECF) i procesy
+//   Zjawiska na poziomie sprzętu/OS zakłócające sekwencyjny przepływ sterowania.
+//
+//   === Klasy wyjątków
+//   #table(
+//     columns: (22%, 18%, 25%, 1fr),
+//     stroke: none,
+//     row-gutter: 0.5em,
+//     align: horizon,
+//     table.header(
+//       text(fill: rgb("8b949e"))[*Klasa*],
+//       text(fill: rgb("8b949e"))[*Typ*],
+//       text(fill: rgb("8b949e"))[*Powrót do*],
+//       text(fill: rgb("8b949e"))[*Przykład*],
+//     ),
+//     table.hline(stroke: rgb("333333")),
+//     [*Interrupt*],
+//     [async],
+//     [następnej instrukcji],
+//     [Timer, I/O, klawiatura],
+//     [*Trap*],
+//     [sync],
+//     [następnej instrukcji],
+//     [Celowe wywołanie: `syscall`, breakpoint],
+//     [*Fault*],
+//     [sync],
+//     [*bieżącej* instrukcji],
+//     [Page fault (brak strony), segfault],
+//     [*Abort*],
+//     [sync],
+//     [nie wraca],
+//     [Krytyczny błąd sprzętowy pamięci],
+//   )
+//
+//   === Wywołania systemowe
+//   #align(center)[
+//     #box(
+//       fill: rgb("1a1a1a"),
+//       inset: 6pt,
+//       stroke: (top: 2pt + rgb("D73A49")),
+//       radius: 2pt,
+//     )[
+//       #show regex("%"): set text(fill: white)
+//       #show math.equation: set text(fill: rgb("e4e4e4"))
+//       #text(fill: rgb("D73A49"))[
+//         `%rdi` $arrow.r$ `%rsi` $arrow.r$ `%rdx` $arrow.r$ `%r10` $arrow.r$ `%r8` $arrow.r$ `%r9`
+//       ]
+//     ] \
+//     #text(
+//       fill: rgb("8b949e"),
+//       size: 0.75em,
+//       style: "italic",
+//     )[*Uwaga:* W `syscall` 4. argument to `%r10`]
+//   ]
+//   - *ID:* w `%rax` przed skokiem (np. `0`=read, `1`=write, `57`=fork).
+//   - *Wynik:* w `%rax` (wartości od -4095 do -1 to błąd `errno`).
+// ]
 
 #from(4)[
   #colbreak()
