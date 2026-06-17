@@ -1093,11 +1093,6 @@
 #from(13)[
   == Pamięć wirtualna
 
-  === Role pamięci wirtualnej
-  + *Cache dla dysku:* DRAM jako pamięć podręczna danych z dysku; transfer blokami zwanymi *stronami*.
-  + *Zarządzanie:* każdy proces ma własną, liniową przestrzeń adresową, co upraszcza linkowanie (kod/sterta zawsze pod tymi samymi adresami).
-  + *Ochrona:* bity uprawnień w każdym wpisie tablicy stron blokują dostęp do jądra i cudzych danych.
-
   === Translacja adresów (VA $arrow.r$ PA)
   #align(center)[
     #grid(
