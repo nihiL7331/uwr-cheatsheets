@@ -297,7 +297,7 @@ Określ czy definicje poniższych funkcji rekurencyjnych są ogonowe. Jeżeli ta
   ```ml
   let rec f g xs =
     match xs with
-      | [] -> g 0
+      | [] -> [g 0]
       | x :: xs -> (g x) :: (f g xs)
   ```,
   [],
