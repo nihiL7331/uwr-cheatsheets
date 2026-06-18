@@ -339,7 +339,7 @@ Pierwszy wpis (dla `square`) jest podany jako przykład.
   [Podnosi argument $a$ do kwadratu.],
 
   [2.],
-  [`int -> 'a -> 'a list`],
+  [`int -> 'a -> 'a list -> 'a list`],
   [],
   [Wstawia $n$ elementów $a$ na początek listy $x s$.],
 
