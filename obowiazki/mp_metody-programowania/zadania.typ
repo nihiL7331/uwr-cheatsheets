@@ -900,9 +900,40 @@ W szczególności nie możesz definiować kolejnych funkcji rekurencyjnych.
 
 = Gramatyki
 
-== Zadanie 1.
+Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, napisz kontrprzykład w pierwszej ramce.
+Tam gdzie wpiszesz kontrprzykład, zapisz zbiór produkcji aby gramatyka była równoważna. *Nie możesz* edytować zbiorów nieterminali, terminali, nieterminalu startowego.
 
-Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, napisz kontrprzykład w ramce.
+#let boxes(perc: 40%) = [
+  #box(width: 100%, height: perc, stroke: 0.5pt + black)
+  #box(width: 100%, height: 30%, inset: 10pt, stroke: 0.5pt + black)[
+    $P = { \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+      \
+    }$
+  ]
+]
+
 
 + #box(width: 100%)[
     #align(left)[$
@@ -915,7 +946,7 @@ Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, 
         & quad S -> a \
       }
     $]
-    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+    #boxes(perc: 30%)
   ]
 
 + #box(width: 100%)[
@@ -929,7 +960,7 @@ Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, 
         & quad S -> epsilon \
       }
     $]
-    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+    #boxes()
   ]
 
 + #box(width: 100%)[
@@ -944,7 +975,7 @@ Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, 
         & quad S -> S - S \
       }
     $]
-    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+    #boxes()
   ]
 
 + #box(width: 100%)[
@@ -960,73 +991,7 @@ Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, 
         & quad S -> not S \
       }
     $]
-    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
-  ]
-
-#pagebreak()
-
-== Zadanie 2.
-
-Dla niejednoznacznych gramatyk z zadania wyżej zapisz gramatyki równoważne, które są jednoznaczne. Tam gdzie gramatyka już była jednoznaczna, zostaw pole puste.
-
-
-+ #box(width: 100%)[
-    #align(left)[$
-      G & = (N, T, P, S), quad "gdzie:" \
-        & N = {S}, \
-        & T = {a}, \
-        & P = { \
-        & quad S -> a S, \
-        & quad S -> epsilon S, \
-        & quad S -> a \
-      }
-    $]
-    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
-  ]
-
-+ #box(width: 100%)[
-    #align(left)[$
-      G & = (N, T, P, S), quad "gdzie:" \
-        & N = {S}, \
-        & T = {(, )}, \
-        & P = { \
-        & quad S -> S S, \
-        & quad S -> (S), \
-        & quad S -> epsilon \
-      }
-    $]
-    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
-  ]
-
-+ #box(width: 100%)[
-    #align(left)[$
-      G & = (N, T, P, S), quad "gdzie:" \
-        & N = {S, D}, \
-        & T = {1,2,3,+,-}, \
-        & P = { \
-        & quad D -> 1, D -> 2, D -> 3, \
-        & quad S -> D, \
-        & quad S -> S + S, \
-        & quad S -> S - S \
-      }
-    $]
-    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
-  ]
-
-+ #box(width: 100%)[
-    #align(left)[$
-      G & = (N, T, P, S), quad "gdzie:" \
-        & N = {S, V}, \
-        & T = {top, bot, =>, not, "a", "b", ..., "z"}, \
-        & P = { \
-        & quad V -> bot, V -> top, \
-        & quad V -> "a", V -> "b", ..., V -> "z", \
-        & quad S -> V, \
-        & quad S -> S => S, \
-        & quad S -> not S \
-      }
-    $]
-    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+    #boxes()
   ]
 
 
