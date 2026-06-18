@@ -701,7 +701,7 @@ opexpr:
 #box(fill: lime.transparentize(90%), inset: 10pt)[
   *Informacja*
 
-  Monady w tak bezpośredni sposób jak poniżej się nie pojawiły na wykładzie lub ćwiczeniach, ale takie pytanie ma szansę się pojawić na egzaminie.
+  Monady w tak bezpośredni sposób jak poniżej nie pojawiły się na wykładzie ani ćwiczeniach, ale takie pytanie ma szansę pojawić się na egzaminie.
 
   Czym jest monada? Najprościej wyjaśnić monadę jako sposób pisania kodu w którym mamy jakiś abstrakcyjny typ `'a monada`, funkcję `return` która zamienia typ `'a` na `'a monada`, która podnosi wartość do kontekstu monady, oraz funkcję `bind` typu `'a monada -> ('a -> 'b monada) -> 'b monada`, która wyciąga wartość z kontekstu monady i aplikuje ją na funkcję.
 
