@@ -757,6 +757,7 @@ Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, 
         & P = { \
         & quad V -> bot, V -> top, \
         & quad V -> "a", V -> "b", ..., V -> "z" \
+        & quad S -> V, \
         & quad S -> S => S, \
         & quad S -> not S, \
         & quad S -> epsilon \
@@ -824,6 +825,7 @@ Dla niejednoznacznych gramatyk z zadania wyżej zapisz gramatyki równoważne, k
         & P = { \
         & quad V -> bot, V -> top, \
         & quad V -> "a", V -> "b", ..., V -> "z" \
+        & quad S -> V, \
         & quad S -> S => S, \
         & quad S -> not S, \
         & quad S -> epsilon \
