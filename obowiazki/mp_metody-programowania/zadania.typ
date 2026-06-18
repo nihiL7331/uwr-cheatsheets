@@ -263,6 +263,115 @@ Dla poniższych wyrażeń w języku OCaml podaj ich (najogólniejszy) typ, lub n
 
 #pagebreak()
 
+#card[
+  *Wskazówki do typowania w OCamlu*
+
+
+  + *Brak niejawnego rzutowania typów:* OCaml jest niezwykle rygorystyczny i nigdy nie zamienia automatycznie typu `int` na `float`.
+  + *Problem nieskończonego typu (Occurs check):* Zmienna typowa nie może zawierać samej siebie. Jeśli przy rozwiązywaniu równań wyjdzie, że np. funkcja wymaga, aby typ $tau$ był jednocześnie typem $tau -> alpha$ (co zdarza się np. przy aplikowaniu zmiennej do samej siebie, jak w `x x`), oznacza to, że w standardowym OCamlu takie wyrażenie po prostu *nie typuje się*.
+  + *Nieużywane argumenty:* Jeśli funkcja przyjmuje argument, ale w ogóle go nie wykorzystuje w swoim ciele, jego typ nie jest niczym ograniczony. Taki argument przyjmuje najbardziej ogólną postać – osobną zmienną typową (np. `'a`, `'b`, itd.).
+  + *Wymuszanie struktury przez operatory:* Operatory narzucają konkretne wymagania na swoje argumenty. Operator `!` natychmiast wymusza, by jego argument był referencją (`'a ref`). Z kolei operatory porównania (np. `>`, `=`) wymagają, aby typy po obu ich stronach były *identyczne*. Jeśli z jednej strony znajduje się krotka o konkretnych typach, to wyrażenie z drugiej strony musi odpowiadać tej samej krotce.
+  + *Efekty uboczne a typ zwracany:* Pamiętaj o różnicy między funkcjami transformującymi (rodzina `map`, `fold`), a iterującymi (rodzina `iter`). Funkcje zdefiniowane wyłącznie dla wywołania efektów ubocznych (jak wypisywanie na ekran) zwracają na końcu typ pusty, czyli `unit`.
+  + Jak zapamiętać `List.fold_left` i `List.fold_right`? Skojarz `left` i `right` z tym, po której stronie stoi akumulator w funkcji transformującej oraz kolejnych argumentach:
+    - `List.fold_left:`
+
+      Akumulator stoi po lewej stronie w lambdzie i argumentach po niej
+
+      `('acc -> 'a -> 'acc) -> 'acc -> 'a list -> 'acc`
+    - `List.fold_right:`
+
+      Akumulator stoi po prawej stronie w lambdzie i argumentach po niej
+
+      `('a -> 'acc -> 'acc) -> 'a list -> 'acc -> 'acc`
+]
+
+#pagebreak()
+
+*Rozwiązania*
+
+#table(
+  columns: (20pt, 1fr, 1fr),
+  stroke: 0.5pt,
+  [Lp], [Wyrażenie], [Typ],
+
+  [1.],
+  ```ml
+  fun x -> x
+  ```,
+  [`'a -> 'a`],
+
+  [2.],
+  ```ml
+  fun x -> x *. 2
+  ```,
+  [`BŁĄD TYPU` – $2$ nie jest typu `float`],
+
+  [3.],
+  ```ml
+  fun x y -> !x > (y+2,10)
+  ```,
+  [`(int * int) ref -> int -> bool`],
+
+  [4.],
+  ```ml
+  let rec add a b =
+    if b = 0 then a
+    else add (a + 1) (b-1)
+  ```,
+  [`int -> int -> int`],
+
+  [5.],
+  ```ml
+  fun f x -> f (f x)
+  ```,
+  [`('a -> 'a) -> 'a -> 'a`],
+
+  [6.],
+  ```ml
+  fun f -> (fun x -> f x x)(fun y -> f y y)
+  ```,
+  [`BRAK TYPU` – `'a` występuje w `'a -> 'b`],
+
+  [7.],
+  ```ml
+  fun f x -> f (f x) > x
+  ```,
+  [`('a -> 'a) -> 'a -> bool`],
+
+  [8.],
+  ```ml
+  fun a b c f d g e -> f b d c (g a)
+  ```,
+  [`'a -> 'b -> 'c -> ('b -> 'd -> 'c -> 'g -> 'f) -> 'd -> ('a -> 'g) -> 'e -> 'f`],
+
+  [9.],
+  ```ml
+  List.fold_right
+  ```,
+  [`('a -> 'acc -> 'acc) -> 'a list -> 'acc -> 'acc`],
+
+  [10.],
+  ```ml
+  List.map
+  ```,
+  [`('a -> 'b) -> 'a list -> 'b list`],
+
+  [11.],
+  ```ml
+  List.iter2
+  ```,
+  [`('a -> 'b -> unit) -> 'a list -> 'b list -> unit`],
+
+  [12.],
+  ```ml
+  fun f x y -> f
+  ```,
+  [`'a -> 'b -> 'c -> 'a`],
+)
+
+
+#pagebreak()
+
 = Rekurencja ogonowa
 
 Określ czy definicje poniższych funkcji rekurencyjnych są ogonowe. Jeżeli tak, wpisz w komórce obok `TAK`, jeżeli nie – przepisz je na ogonowe, lub uzasadnij, dlaczego to niemożliwe.
