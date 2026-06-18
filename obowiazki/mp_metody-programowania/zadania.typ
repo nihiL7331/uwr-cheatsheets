@@ -779,6 +779,121 @@ W szczególności nie możesz definiować kolejnych funkcji rekurencyjnych.
 
 #pagebreak()
 
+// Aby się mieściło na jednej stronie
+#place(dy: -14pt)[*Rozwiązania*]
+
+#table(
+  columns: (20pt, 0.6fr, 1fr, 1fr),
+  stroke: 0.5pt,
+  inset: (5pt, 20pt, 20pt, 5pt),
+  align: horizon,
+
+  table.cell(inset: 4pt)[Lp],
+  table.cell(inset: 4pt)[Nazwa funkcji],
+  table.cell(inset: 4pt)[Typ funkcji],
+  table.cell(inset: 4pt)[Definicja funkcji],
+
+  [1.],
+  underline[`List.fold_left`],
+  [`('acc -> 'a -> 'acc) -> 'acc -> 'a list -> 'acc`],
+  [```ml
+  let rec fold_left f acc xs =
+    match xs with
+    | [] -> acc
+    | x :: xs -> fold_left f (f acc x) xs
+  ```],
+
+  [2.],
+  [`List.fold_right`],
+  [`('a -> 'acc -> 'acc) -> 'a list -> 'acc -> 'acc`],
+  [```ml
+  let rec fold_right f xs acc =
+    match xs with
+    | [] -> acc
+    | x :: xs -> f x (fold_right f xs acc)
+  ```],
+
+  [3.],
+  [`List.map`],
+  [`('a -> 'b) -> 'a list -> 'b list`],
+  [```ml
+  let rec map f xs =
+    match xs with
+    | [] -> []
+    | x :: xs -> (f x) :: map f xs
+  ```],
+
+  [4.],
+  [`List.filter`],
+  [`('a -> bool) -> 'a list -> 'a list`],
+  [```ml
+  let rec filter f xs =
+    match xs with
+    | [] -> []
+    | x :: xs -> if f x then x :: filter f xs else filter f xs
+  ```],
+)
+
+#table(
+  columns: (20pt, 0.6fr, 1fr),
+  stroke: 0.5pt,
+  inset: (5pt, 20pt, 20pt, 5pt),
+  align: horizon,
+
+  table.cell(inset: 4pt)[Lp],
+  table.cell(inset: 4pt)[Opis słowny],
+  table.cell(inset: 4pt)[Definicja funkcji],
+
+  [1.],
+  table.cell(inset: 4pt)[Funkcja przyjmująca listę liczb całkowitych, licząca ich sumę.],
+  [```ml
+  let sum xs =
+    fold_left (fun acc x -> x + acc) 0 xs
+  ```],
+
+  [2.],
+  table.cell(inset: 4pt)[Funkcja przyjmująca listę list liczb całkowitych, licząca maksimum sum podlist.],
+  [```ml
+  let max xss =
+    fold_left
+      (fun acc xs ->
+        let sum = (fold_left
+          (fun acc x -> acc + x) 0 xs
+        ) in if sum > acc then sum else acc) 0 xss
+  ```],
+
+  [3.],
+  table.cell(
+    inset: 4pt,
+  )[Funkcja przyjmująca listę list zwracająca `true` wtw. gdy długości tych podlist są w kolejności rosnącej.
+    (np. `[(4);(5);(100)]`, gdzie `(x)` oznacza listę o długości $x$ zwróci `true`, a `[(3);(5);(4)]` zwróci `false`)],
+  [```ml
+  let incr_lengths xss =
+    let lengths =
+      map (fun xs ->
+        fold_left (fun acc x -> acc + 1) 0 xs) xss in
+          ( fold_left (fun acc x ->
+            if acc = -2 then -2
+            else if x > acc
+            then x else -2)
+          (-1) lengths ) <> -2
+  ```],
+
+  [4.],
+  table.cell(
+    inset: 4pt,
+  )[Funkcja przyjmująca listę par typu `(('a -> 'b) * 'a list)`, zwracająca listę list w których każdy element został zaaplikowany do odpowiedniej funkcji w pierwszej współrzędnej pary. (np. wynikiem `[((fun x -> x * x), 2;3;4)]` będzie `[[4;9;16]]`)],
+  [```ml
+  let map_map xss =
+    map (fun (f, xs) ->
+      map f xs
+    ) xss
+  ```],
+)
+
+
+#pagebreak()
+
 #let te(body) = highlight(fill: red.transparentize(80%))[
   #text(fill: fuchsia)[#body]
 ]
