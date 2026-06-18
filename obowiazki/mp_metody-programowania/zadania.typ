@@ -587,6 +587,168 @@ Dla niejednoznacznych gramatyk z zadania wyżej zapisz gramatyki równoważne, k
 
 #pagebreak()
 
+= Abstrakcyjne typy danych
+
+== Rozwinięcie typów języka
+
+=== Język arytmetycznych wyrażeń
+
+Rozważamy język wyrażeń arytmetycznych na liczbach całkowitych z dodawaniem, odejmowaniem, dzieleniem, mnożeniem. Rozwiń następujące typy:
+
+#grid(
+  columns: 1,
+  row-gutter: 4pt,
+
+  ```ml
+  type binop =
+  ```,
+  box(width: 100%, height: 60pt, stroke: 0.5pt),
+  ```ml
+  type expr =
+  ```,
+  box(width: 100%, height: 100pt, stroke: 0.5pt),
+)
+
+#pagebreak()
+
+=== Język `calc_let`
+
+Rozważamy język gdzie wartości mogą wartościami algebry Boole'a, liczbami całkowitymi, parami i listami wartości.
+Napisz typ dla `value`:
+
+#grid(
+  columns: 1,
+  row-gutter: 4pt,
+
+  ```ml
+  type value =
+  ```,
+  box(width: 100%, height: 60pt, stroke: 0.5pt),
+)
+
+Dla liczb całkowitych deifniujemy operację dodawania, odejmowania, mnożenia, dzielenia. Dla takich samych typów definiujemy relacje $<, >, >=, <=, =$.
+Poza tym definiujemy następujące wyrażenia:
+- związanie wyrażenia do zmiennej w wyrażeniu: `let x = e1 in e2`,
+- operator `cons` do dostawienia wartości na początku listy,
+- `fst` i `snd` dla list.
+
+#grid(
+  columns: (1fr, 1fr),
+  align: (left, right),
+  [
+    Dany jest następujący typ składni abstrakcyjnej:
+    ```ml
+    type bop = Mult | Div | Add | Sub
+
+    type var = string
+
+    type expr =
+      | Var   of var
+      | Int   of int
+      | Binop of bop * expr * expr
+      | Let   of var * expr * expr
+      | Pair  of expr * expr
+      | Fst   of expr
+      | Snd   of  expr
+    ```
+  ],
+  [
+    Dane są następujące tokeny:
+    ```
+    IDENT
+    MULT DIV ADD SUB EQ
+    LPAR RPAR COMMA
+    FST SND
+    LET IN
+    EOF
+    ```
+  ],
+)
+
+
+Uzupełnij brakującą definicję gramatyki w menhir:
+
+```ml
+main:
+  | e = expr; EOF { e }
+  ;
+
+expr:
+  | LET;
+
+
+  | e = opexpr { e }
+  ;
+
+opexpr:
+  | i = INT { Int i }
+
+
+
+
+
+  | LPAR; e = expr; RPAR { e }
+  | LPAR; e1 = expr; COMMA; e2 = expr; RPAR { Pair(e1, e2) }
+
+
+  | SND; e = expr; { Snd(e) }
+  | x = IDENT { Var x }
+  ;
+```
+
+
+
+#pagebreak()
+
+== Monady
+
+#box(fill: lime.transparentize(90%), inset: 10pt)[
+  *Informacja*
+
+  Monady w tak bezpośredni sposób jak poniżej się nie pojawiły na wykładzie lub ćwiczeniach, ale takie pytanie ma szansę się pojawić na egzaminie.
+
+  Czym jest monada? Najprościej wyjaśnić monadę jako sposób pisania kodu w którym mamy jakiś abstrakcyjny typ `'a monada`, funkcję `return` która zamienia typ `'a` na `'a monada`, która podnosi wartość do kontekstu monady, oraz funkcję `bind` typu `'a monada -> ('a -> 'b monada) -> 'b monada`, która wyciąga wartość z kontekstu monady i aplikuje ją na funkcję.
+
+  #underline[#link("https://pl.wikipedia.org/wiki/Monada_(programowanie)")[Wikipedia]]
+]
+
+Rozważmy monadę typu `option`, zdefiniowaną następująco:
+
+```ml
+type 'a option =
+  | Some of 'a
+  | None
+```
+
+Napisz funkcje `return` i `bind`.
+
+
+#grid(
+  columns: (auto, 1fr),
+  column-gutter: 4pt,
+  align: horizon,
+  ```ml
+  let return v =
+  ```,
+  box(width: 10em, height: 20pt, stroke: 0.5pt),
+)
+
+#grid(
+  columns: 1,
+  row-gutter: 4pt,
+
+  ```ml
+  let bind m f =
+  ```,
+  box(width: 100%, height: 60pt, stroke: 0.5pt),
+)
+
+#pagebreak()
+
+
+
+#pagebreak()
+
 = Indukcja strukturalna
 
 == Formułowanie zasady indukcji
