@@ -1480,7 +1480,7 @@ type 'a tree =
 
 Sformułuj zasadę indukcji dla tego typu danych.
 
-#box(width: 100%, height: 200pt, stroke: 0.5pt)
+#box(width: 100%, height: 100pt, stroke: 0.5pt)
 
 Dla tego typu danych definiujemy dwa warianty funkcji `flatten`, spłaszczającej drzewo do listy w kolejności (wynikiem będzie posortowana lista):
 
@@ -1500,3 +1500,77 @@ let flatten2 t =
 
 Udowodnij indukcyjnie, że dla każdego drzewa `t: 'a tree` zachodzi własnosć $"flatten1" t equiv "flatten2" t$.
 Aby to zrobić, najpierw sformułuj i udowodnij lemat na temat funkcji `flatten1` i `flatten2_aux`.
+
+#box(width: 100%, height: 280pt, stroke: 0.5pt)
+#box(width: 100%, height: 600pt, stroke: 0.5pt)
+
+#pagebreak()
+
+*Rozwiązanie*
+
+*Zasada indukcji*
+
+#box(width: 100%, stroke: 0.5pt, inset: 10pt)[
+  Niech $P: #`'a tree -> bool`$, t.ż.:
+  - $P("Leaf")$,
+  - $forall t_1, t_2: #`'a tree`. P(t_1) and P(t_2) => (forall x: #`'a` P("Node"(t_1, x, t_2))$)
+  , wtedy $forall t: #`'a tree`. P(t)$.
+]
+
+*Lemat pomocniczy*
+
+
+#box(width: 100%, stroke: 0.5pt, inset: 10pt)[
+  *Lemma*: $forall x s: #`'a list`, t: #`'a tree`. #`flatten1 t @ xs` equiv #`flatten2_aux t xs`$
+
+  *Proof*
+
+
+  + `Leaf`
+
+    Weźmy dowolny `xs : 'a list`.
+
+    $#`flatten1 Leaf @ xs` attach(equiv, t: #`DEF`) #`[] @ xs` attach(equiv, t: #`APP`) #`xs` attach(equiv, t: #`DEF`) #`flatten2_aux Leaf xs`$
+
+  + `Node(t1, x, t2)`
+
+    Weźmy dowolny `xs : 'a list`.
+
+    Weźmy dowolny $x: #`'a`$.
+
+    $#`flatten1 Node(t1, x, t2) @ xs` attach(equiv, t: #`DEF`)
+    #`flatten1 t1 @ x :: flatten1 t2 @ xs` attach(equiv, t: #`ASSOC`)
+    #`flatten1 t1 @ x :: (flatten1 t2 @ xs)` attach(equiv, t: #`IND`)
+    #`flatten1 t1 @ x :: (flatten2_aux t2 xs)` attach(equiv, t: #`ASSOC`)
+    #`flatten1 t1 @ (x :: (flatten2_aux t2 xs))` attach(equiv, t: #`IND`)
+    #`flatten2_aux t1 x :: (flatten2_aux t2 xs)` attach(equiv, t: #`ASSOC`)
+    #`flatten2_aux t1 (x :: flatten2_aux t2 xs)` attach(equiv, t: #`DEF`)
+    #`flatten2_aux Node(t1, x, t2) xs`$
+
+  Z zasady indukcji $#`flatten1 t @ xs` equiv #`flatten2_aux t xs`$ dla każdego `xs: 'a list`, `t: 'a tree`.
+]
+
+*Dowód twierdzenia*
+
+
+```ml
+let rec flatten1 t = match t with
+  | Leaf -> []
+  | Node(t1, x, t2) -> flatten1 t1 @ x :: flatten1 t2
+```
+
+```ml
+let flatten2 t =
+  let rec flatten2_aux t xs = match t with
+    | Node(t1, x, t2) -> flatten2_aux t1 (x :: flatten2_aux t2 xs)
+    | Leaf -> xs
+  in flatten2_aux t []
+```
+
+#box(width: 100%, stroke: 0.5pt, inset: 10pt)[
+  *Teza*: $forall t: #`'a tree`. #`flatten1 t` equiv #`flatten2 t`$.
+
+  Weźmy dowolne $t: #`'a tree`$.
+
+  $#`flatten1 t` attach(equiv, t: #`DEF`) #`flatten1 t @ []` attach(equiv, t: #`LEM`) #`flatten2_aux t []` attach(equiv, t: #`DEF`) #`flatten2 t`$
+]
