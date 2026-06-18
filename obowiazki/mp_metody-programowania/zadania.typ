@@ -1,5 +1,6 @@
 #import "@preview/pinit:0.2.2": *
 
+#show link: underline
 #align(center + horizon)[
   #text(size: 18pt)[*Metody Programowania*]
 
@@ -437,6 +438,128 @@ Określ czy definicje poniższych funkcji rekurencyjnych są ogonowe. Jeżeli ta
       | x :: xs -> f g xs (g acc x)
   ```,
   [],
+)
+
+#pagebreak()
+
+
+#card[
+  *Wskazówki do rekurencji ogonowej*
+
+  Funkcję nazywamy *rekurencyjnie ogonową*, *ogonową*, *tail call* wtedy, gdy wywołanie rekurencyjne jest zwracane bezpośrednio jako wynik, nie robi nic z wynikiem wywołania rekurencyjnego. To pozwala na sporą optymalizację kompilatora, gdyż nie musi wtedy zapisywać i zwiększać stosu wywołań.
+
+  Funkcję nieogonową zazwyczaj da się przekształcić na ogonową przez dodanie akumulatora który gromadzi aktualny stan wykonania. Należy jednak mieć na uwadze, że akumulator jest wtedy komputowany w odwrotnej kolejności – od pierwszego wywołania do ostatniego, w przeciwieństwie do stosu wywołań i obliczeń na wyniku wywołania funkcji rekurencyjnej.
+]
+
+#pagebreak()
+
+#table(
+  columns: (20pt, 1fr, 1fr),
+  stroke: 0.5pt,
+  inset: (5pt, 20pt, 20pt, 5pt),
+  align: horizon,
+
+  table.cell(inset: 4pt)[Lp], table.cell(inset: 4pt)[Definicja funkcji], table.cell(inset: 4pt)[Odpowiedź],
+
+  [1.],
+  ```ml
+  let rec f a =
+    if a < 0 then -1
+    else if a = 0 then a
+    else a + f (a-1)
+  ```,
+  [
+    ```ml
+    let f a =
+      let rec aux a acc =
+        if a < 0 then acc - 1 (* acc będzie zawsze 0 *)
+        else if a = 0 then a + acc
+        else aux (a-1) (acc + a)
+      in aux a 0
+    ```
+  ],
+
+  [2.],
+  ```ml
+  let rec comp f fil a =
+    if fil a
+      then a
+      else comp f fil (f a)
+  ```,
+  [`TAK`],
+
+  [3.],
+  ```ml
+  let rec f g xs =
+    match xs with
+      | [] -> [g 0]
+      | x :: xs -> (g x) :: (f g xs)
+  ```,
+  [
+    Ta funkcja nie jest ogonowa. W klasycznym, czysto funkcyjnym ujęciu nie da się jej przekształcić w funkcję ogonową bez ponoszenia dodatkowych kosztów wydajnościowych. `@`, `List.fold_right` same nie są ogonowe (wg. domyślnej implementacji OCaml'a). Najczęstszą metodą stosowaną w takich sytuacjach, jeśli naprawdę potrzebujemy ogonowej funkcji ze względu na olbrzymią długość przekazywanej listy jest tzw. `two-pass`. Najpierw odwracamy listę, a później traktujemy ją w standardowy sposób, tak jak `List.fold_left`. Jest też inny sposób, wykorzystujący #link("https://pl.wikipedia.org/wiki/Kontynuacja_(informatyka)")[kontynuacje], ale to jest daleko poza zakresem tego przedmiotu.
+    ```ml
+    let f g xs =
+      let xs = List.rev xs in
+      let rec aux xs acc =
+      (
+        match xs with
+          | [] -> acc
+          | x :: xs -> aux xs ((g x) :: acc)
+      )
+      in aux xs [g 0]
+    ```
+    #linebreak()
+  ],
+
+  [4.],
+  ```ml
+  let rec app xs ys =
+    match xs with
+      | [] -> ys
+      | x :: xs -> x :: (app xs ys)
+  ```,
+  [
+    Z tych samych względów co wyżej, musimy użyć najpierw `List.rev`
+    ```ml
+    let app xs ys =
+      let xs = List.rev xs in
+      let rec aux xs ys =
+      (
+        match xs with
+          | [] -> ys
+          | x :: xs -> aux xs ( x :: ys )
+      )
+      in
+      aux xs ys
+    ```
+  ],
+
+  [5.],
+  ```ml
+  let rec comp f fil a =
+    if fil a
+    then a
+    else 1 + comp f fil (f a)
+  ```,
+  [
+    ```ml
+    let comp f fil a =
+      let rec aux a acc =
+        if fil a
+        then acc + a
+        else aux (f a) (1 + acc)
+      in aux a 0
+    ```
+  ],
+
+  [6.],
+  ```ml
+  let rec f g xs acc =
+    match xs with
+      | [] -> acc
+      | x :: xs -> f g xs (g acc x)
+  ```,
+  [Tak. To jest `List.fold_left`, tylko z inną kolejnością argumentów.],
 )
 
 #pagebreak()
