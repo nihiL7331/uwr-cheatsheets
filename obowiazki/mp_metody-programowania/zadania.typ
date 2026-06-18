@@ -669,10 +669,6 @@ Poza tym definiujemy następujące wyrażenia:
 Uzupełnij brakującą definicję gramatyki w menhir:
 
 ```ml
-main:
-  | e = expr; EOF { e }
-  ;
-
 expr:
   | LET;
 
