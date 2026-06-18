@@ -941,8 +941,7 @@ Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, 
         & quad D -> 1, D -> 2, D -> 3, \
         & quad S -> D, \
         & quad S -> S + S, \
-        & quad S -> S - S, \
-        & quad S -> epsilon \
+        & quad S -> S - S \
       }
     $]
     #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
@@ -958,8 +957,7 @@ Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, 
         & quad V -> "a", V -> "b", ..., V -> "z", \
         & quad S -> V, \
         & quad S -> S => S, \
-        & quad S -> not S, \
-        & quad S -> epsilon \
+        & quad S -> not S \
       }
     $]
     #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
@@ -1009,8 +1007,7 @@ Dla niejednoznacznych gramatyk z zadania wyżej zapisz gramatyki równoważne, k
         & quad D -> 1, D -> 2, D -> 3, \
         & quad S -> D, \
         & quad S -> S + S, \
-        & quad S -> S - S, \
-        & quad S -> epsilon \
+        & quad S -> S - S \
       }
     $]
     #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
@@ -1026,8 +1023,7 @@ Dla niejednoznacznych gramatyk z zadania wyżej zapisz gramatyki równoważne, k
         & quad V -> "a", V -> "b", ..., V -> "z", \
         & quad S -> V, \
         & quad S -> S => S, \
-        & quad S -> not S, \
-        & quad S -> epsilon \
+        & quad S -> not S \
       }
     $]
     #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
