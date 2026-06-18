@@ -1,4 +1,5 @@
 #import "@preview/pinit:0.2.2": *
+#import "@preview/syntree:0.3.1": syntree
 
 #show link: underline
 #align(center + horizon)[
@@ -22,7 +23,7 @@
   numbering: "1",
 )
 
-#let card(body) = box(fill: lime.transparentize(90%), inset: 10pt)[
+#let card(body) = block(fill: lime.transparentize(90%), inset: 10pt)[
   #body
 ]
 
@@ -992,6 +993,271 @@ Tam gdzie wpiszesz kontrprzykład, zapisz zbiór produkcji aby gramatyka była r
       }
     $]
     #boxes()
+  ]
+
+
+#pagebreak()
+
+#card[
+  *Wskazówki*
+
+  - Staraj się znaleźć produkcje które generują ten sam nieterminal w izolacji, np dla
+    #align(left)[$P = { \
+      quad V -> epsilon \
+      quad S -> V \
+      quad S -> epsilon \
+    }$]
+
+    banalnym źródłem niejednoznaczności będzie wyprowadzenie $epsilon$ na dwa sposoby:
+    + $S => V => epsilon$,
+    + $S => epsilon$
+
+  - Aby zbudować jednoznaczną gramatykę, najpierw uporządkuj produkcje dla tego samego nieterminala po ilości rekurencji.
+
+    Np. dla
+    $
+        & P = { \
+        & quad S -> S => S, \
+        & quad S -> not S \
+        & quad S -> V \
+      }
+    $
+
+    oddziel od siebie $S -> S => S$ oraz $S -> not S$.
+
+    Następnie, posortuj te grupy rosnąco (po ilości rekurencyjnych wystąpień):
+
+    $
+        & P = { \
+        & quad S -> not S \
+        & quad S -> S => S, \
+        & quad S -> V \
+      }
+    $
+
+    + Dla każdej grupy musisz rozdzielić jaki nieterminal ją generuje.
+      $
+          & P = { \
+          & quad V -> not S \
+          & quad S -> S => S, \
+          & quad S -> V \
+        }
+      $
+    + Po zmianie nieterminala-źródła, zmień wszystkie jego wystąpienia w środku produkcji na ten nieterminal na który zmieniłeś.
+      $
+          & P = { \
+          & quad V -> not V \
+          & quad S -> S => S, \
+          & quad S -> V \
+        }
+      $
+      #colbreak()
+    + (niemal) Każda produkcja która odwołuje się do siebie rekurencyjnie więcej niż raz ($n$ razy), jest źródłem niejednoznaczności. W tych miejscach wymień $n-1$ nieterminali na takie o wyższym priorytecie (wyższy priorytet === bliżej terminalów).
+      $
+          & P = { \
+          & quad V -> not V \
+          & quad S -> V => S, \
+          & quad S -> V \
+        }
+      $
+
+      _Najbardziej prawidłowo jest to robić według kierunku wiązania jakiegoś operatora, np. implikacja wiąże w prawo – po prawej stronie zostawiam więc rekurencyjne zawołanie do produkcji. Dla operatorów wiążących w lewo, np. dodawanie – zostawia się rekurencyjne wołanie po lewej stronie._
+
+    + Gotowe – ciesz się swoją jednoznacznie zdefiniowaną gramatyką! Jeżeli nadal nie jest jednoznaczna, trzeba pewnie powtórzyć procedurę, lub ją lekko zmodyfikować, w najgorszym przypadku dokładając kolejne stopnie priorytetów pomiędzy terminalami a nieterminalem startowym.
+
+    Pamiętaj, że (poza szczególnymi case'ami takimi jak `( expr )`) zawołania innych produkcji powinny być o priorytecie *wyższym* niż źródłowa.
+]
+
+#pagebreak()
+
+*Odpowiedzi*
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S}, \
+        & T = {a}, \
+        & P = { \
+        & quad S -> a S, \
+        & quad S -> epsilon S, \
+        & quad S -> a \
+      }
+    $]
+    #box(width: 100%, inset: 10pt, stroke: 0.5pt + black)[
+      #grid(
+        columns: (1fr, 1fr),
+        align: center,
+        syntree[
+          [S [
+          [
+          $epsilon$
+          ]
+          [ S [
+          a
+          ] ]
+          ]]
+        ],
+        syntree[
+          [S [
+          a
+          ]]
+        ],
+      )
+    ]
+    #box(width: 100%, inset: 10pt, stroke: 0.5pt + black)[
+      $
+        P = { \
+              & quad S -> a S, \
+              & quad S -> epsilon \
+            }
+      $
+    ]
+  ]
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S}, \
+        & T = {(, )}, \
+        & P = { \
+        & quad S -> S S, \
+        & quad S -> (S), \
+        & quad S -> epsilon \
+      }
+    $]
+    #box(width: 100%, inset: 10pt, stroke: 0.5pt + black)[
+      #grid(
+        columns: (1fr, 1fr),
+        align: center,
+        syntree[
+          [S [
+          $epsilon$
+          ]
+          ]
+        ],
+        syntree[
+          [S [
+          [S [
+          $epsilon$
+          ]]
+          [S [
+          $epsilon$
+          ]]
+          ]]
+        ],
+      )
+    ]
+    #box(width: 100%, inset: 10pt, stroke: 0.5pt + black)[
+      $
+        P = { \
+              & quad S -> (S) S, \
+              & quad S -> epsilon \
+            }
+      $
+    ]
+  ]
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S, D}, \
+        & T = {1,2,3,+,-}, \
+        & P = { \
+        & quad D -> 1, D -> 2, D -> 3, \
+        & quad S -> D, \
+        & quad S -> S + S, \
+        & quad S -> S - S \
+      }
+    $]
+    #box(width: 100%, inset: 10pt, stroke: 0.5pt + black)[
+      #grid(
+        columns: (1fr, 1fr),
+        align: center,
+        syntree[
+          [S [S [S [D 2]]
+          \+
+          [ S [D 3] ]]
+          \+
+          [ S [D [1] ]
+          ]
+          ]
+        ],
+        syntree[
+          [S [
+          S [[S [D 2]]
+          \+
+          [ S [D [3] ]] ]]
+          \+
+          [ S [D 1] ]
+          ]
+        ],
+      )
+    ]
+    #box(width: 100%, inset: 10pt, stroke: 0.5pt + black)[
+      $
+        P = { \
+              & quad D -> 1, D -> 2, D -> 3, \
+              & quad S -> D, \
+              & quad S -> S + D, \
+              & quad S -> S - D \
+            }
+      $
+    ]
+  ]
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S, V}, \
+        & T = {top, bot, =>, not, "a", "b", ..., "z"}, \
+        & P = { \
+        & quad V -> bot, V -> top, \
+        & quad V -> "a", V -> "b", ..., V -> "z", \
+        & quad S -> V, \
+        & quad S -> S => S, \
+        & quad S -> not S \
+      }
+    $]
+    #box(width: 100%, inset: 10pt, stroke: 0.5pt + black)[
+      #grid(
+        columns: (1fr, 1fr),
+        align: center,
+        syntree[
+          [S
+          [S [ V [a] ]]
+          $=>$
+          [S
+          [S [V [b]]]
+          $=>$
+          [S [V [c]]]
+          ]
+          ]
+        ],
+        syntree[
+          [S
+          [S
+          [S [V [a]]]
+          $=>$
+          [S [V [b]]]
+          ]
+          $=>$
+          [S [V [c]]]
+
+          ]
+        ],
+      )
+    ]
+    #box(width: 100%, inset: 10pt, stroke: 0.5pt + black)[
+      $
+        P = { \
+              & quad V -> not V \
+              & quad V -> bot, V -> top, \
+              & quad V -> "a", V -> "b", ..., V -> "z", \
+              & quad S -> V, \
+              & quad S -> V => S, \
+            }
+      $
+    ]
   ]
 
 
