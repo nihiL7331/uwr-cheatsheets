@@ -619,6 +619,90 @@ Pierwszy wpis (dla `square`) jest podany jako przykład.
 
 #pagebreak()
 
+*Rozwiązania*
+
+#let mo(body) = table.cell(body, fill: lime.transparentize(85%))
+
+#table(
+  columns: (20pt, 0.6fr, 1fr, 1fr),
+  stroke: 0.5pt,
+  inset: (5pt, 20pt, 20pt, 5pt),
+  align: horizon,
+
+  table.cell(inset: 4pt)[Lp],
+  table.cell(inset: 4pt)[Typ funkcji],
+  table.cell(inset: 4pt)[Definicja funkcji],
+  table.cell(inset: 4pt)[Opis funkcji],
+
+  [1.],
+  [`int -> int`],
+  [```ml fun a -> a * a```],
+  [Podnosi argument $a$ do kwadratu.],
+
+  [2.],
+  [`int -> 'a -> 'a list -> 'a list`],
+  mo[```ml
+  let rec conss n x xs =
+    if n = 0 then xs
+    else conss (n-1) x (x :: xs)
+
+  ```],
+  [Wstawia $n$ elementów $a$ na początek listy $x s$.],
+
+  [3.],
+  table.cell(inset: 4pt, fill: lime.transparentize(85%))[```
+  int ->
+  (int -> 'a) ->
+  (int -> 'a) ->
+  'a
+  ```],
+  [
+    ```ml
+    fun a b c ->
+      if a > 0 then b a
+      else c a
+    ```
+  ],
+  mo[$"fun" "a b c" = cases(
+    "b a"", jeśli" a > 0,
+    "c a"", w.p.p"
+  )$],
+
+  [4.],
+  table.cell(inset: 4pt)[```
+  (ident * expr) list -> ident -> expr
+  -> (ident * expr) list
+  ```],
+  mo[ Zakładamy, że klucz w pierwszej współrzędnej pary może wystąpić tylko raz w liście.
+
+    ```ml
+    let update xs k v =
+      let rec aux xs k v =
+        (
+        match xs with
+        | [] -> []
+        | (k',v') :: xs ->
+          if k' = k then (k,v) :: xs
+          else (k',v') :: aux xs k v
+        )
+      in aux xs k v
+    ```],
+  [Aktualizuje (jeżeli para z pierwszą współrzędną równą `ident` jest już w liście, to ją najpierw usuwa) listę par wprowadzając nową parę `(ident, expr)`.],
+
+  [5.],
+  mo[`'a option list -> 'a list`],
+  mo[```ml
+  let rec unwind xs =
+    match xs with
+    | [] -> []
+    | Some x :: xs -> x :: unwind xs
+    | None :: xs -> unwind xs
+  ```],
+  [Zamienia listę elementów typu $tau "opt"$ na listę elementów typu $tau$, pozbywając się pustych elementów.],
+)
+
+#pagebreak()
+
 = Funkcje na listach
 
 Zaimplementuj i otypuj poniższe funkcje biblioteczne. *Nie* możesz korzystać z funkcji bibliotecznych innych niż zaimplementowane.
