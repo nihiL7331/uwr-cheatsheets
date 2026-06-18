@@ -16,6 +16,7 @@
       #align(end)[#text(size: 8pt)[*Data kompilacji:* #datetime.today().display()]]
     ]
   ],
+  numbering: "1",
 )
 
 
