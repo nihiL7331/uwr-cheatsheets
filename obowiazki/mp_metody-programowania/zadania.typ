@@ -371,6 +371,82 @@ Pierwszy wpis (dla `square`) jest podany jako przykład.
 
 #pagebreak()
 
+= Funkcje na listach
+
+Zaimplementuj i otypuj poniższe funkcje biblioteczne. *Nie* możesz korzystać z funkcji bibliotecznych innych niż zaimplementowane.
+
+#underline("Podkreśl") nazwy funkcji które są rekurencyjne ogonowo.
+
+#table(
+  columns: (20pt, 0.6fr, 1fr, 1fr),
+  stroke: 0.5pt,
+  inset: (5pt, 20pt, 20pt, 5pt),
+  align: horizon,
+
+  table.cell(inset: 4pt)[Lp],
+  table.cell(inset: 4pt)[Nazwa funkcji],
+  table.cell(inset: 4pt)[Typ funkcji],
+  table.cell(inset: 4pt)[Definicja funkcji],
+
+  [1.],
+  [`List.fold_left`],
+  [],
+  [#v(100pt)],
+
+  [2.],
+  [`List.fold_right`],
+  [],
+  [#v(100pt)],
+
+  [3.],
+  [`List.map`],
+  [],
+  [#v(100pt)],
+
+  [4.],
+  [`List.filter`],
+  [],
+  [#v(100pt)],
+)
+
+Zaimplementuj funkcje opisane słownie poniżej, korzystając wyłącznie z powyżej wymienionych funkcji. (Jeżeli nie zaimplementowałeś danej funkcji, ale wiesz co ona robi, nadal możesz z niej skorzystać – poprawność przekazywania argumentów nie będzie wtedy brana pod uwagę)
+
+W szczególności nie możesz definiować kolejnych funkcji rekurencyjnych.
+
+#table(
+  columns: (20pt, 0.6fr, 1fr),
+  stroke: 0.5pt,
+  inset: (5pt, 20pt, 20pt, 5pt),
+  align: horizon,
+
+  table.cell(inset: 4pt)[Lp],
+  table.cell(inset: 4pt)[Opis słowny],
+  table.cell(inset: 4pt)[Definicja funkcji],
+
+  [1.],
+  table.cell(inset: 4pt)[Funkcja przyjmująca listę liczb całkowitych, licząca ich sumę.],
+  [],
+
+  [2.],
+  table.cell(inset: 4pt)[Funkcja przyjmująca listę list liczb całkowitych, licząca maksimum sum podlist.],
+  [#v(100pt)],
+
+  [3.],
+  table.cell(
+    inset: 4pt,
+  )[Funkcja przyjmująca listę list zwracająca `true` wtw. gdy długości tych podlist są w kolejności rosnącej.
+    (np. `[(4);(5);(100)]`, gdzie `(x)` oznacza listę o długości $x$ zwróci `true`, a `[(3);(5);(4)]` zwróci `false`)],
+  [#v(80pt)],
+
+  [4.],
+  table.cell(
+    inset: 4pt,
+  )[Funkcja przyjmująca listę par typu `(('a -> 'b) * 'a list)`, zwracająca listę list w których każdy element został zaaplikowany do odpowiedniej funkcji w pierwszej współrzędnej pary. (np. wynikiem `[((fun x -> x * x), 2;3;4)]` będzie `[[4;9;16]]`)],
+  [#v(100pt)],
+)
+
+#pagebreak()
+
 = Indukcja strukturalna
 
 == Formułowanie zasady indukcji
