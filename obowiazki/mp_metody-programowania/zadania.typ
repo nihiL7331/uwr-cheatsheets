@@ -1436,4 +1436,30 @@ type expr =
 
 Sformułuj zasadę indukcji dla tego typu danych.
 
+#pagebreak()
 
+```ml
+type expr =
+  | Zero
+  | Succ of expr
+  | Add of expr * expr
+```
+
+*Rozwiązanie*
+
+Niech $P$ będzie predykatem dotyczącym wartości typu `expr`.
+Jeżeli zachodzą następujące warunki:
+- $P("Zero")$,
+- dla każdego $e$ typu `expr` jeśli $P(e)$ to $P("Succ"(e))$,
+- dla każdego $e_1, e_2$ typu `expr` jeśli $P(e_1)$ oraz $P(e_2)$, to $P("Add"(e_1, e_2))$,
+to dla każdego $e: #`expr`)$ zachodzi predykat $P(e)$.
+
+#line(length: 100%)
+
+*Skrócony zapis:*
+
+Niech $P : #`expr` -> #`bool`$:
+- $P("Zero")$,
+- $forall e : #`expr`. P(e) => P("Succ"(e))$,
+- $forall e_1,e_2 : #`expr`. P(e_1) and P(e_2) => P("Add"(e_1,e_2))$,
+, wtedy $forall e: #`expr`. P(e)$
