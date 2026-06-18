@@ -1,3 +1,5 @@
+#import "@preview/pinit:0.2.2": *
+
 #align(center + horizon)[
   #text(size: 18pt)[*Metody Programowania*]
 
@@ -18,6 +20,10 @@
   ],
   numbering: "1",
 )
+
+#let card(body) = box(fill: lime.transparentize(90%), inset: 10pt)[
+  #body
+]
 
 
 #outline(title: [
@@ -157,6 +163,16 @@ W poniższych wyrażeniach podkreśl wolne wystąpienia zmiennych. Dla każdego 
       (f xs) * (f ys)
     ```,
   )
+]
+
+#pagebreak()
+
+#card[
+  *Wskazówki do analizy zasięgu zmiennych:*
+
+  - *Symultaniczne wiązanie (`and`):* W konstrukcji `let x = e1 and y = e2 in e3`, wyrażenia `e1` i `e2` są ewaluowane w tym samym, *zewnętrznym* środowisku (nie widzą siebie nawzajem). Zmienne `x` i `y` są widoczne dopiero w ciele `e3`.
+  - *Przesłanianie (shadowing):* Najbardziej wewnętrzne wiązanie danej nazwy zawsze wygrywa. Pamiętaj, że nowe wiązania wprowadzają nie tylko konstrukcje `let`, ale też argumenty funkcji (`fun x -> ...`) oraz dopasowania do wzorca (np. `| a :: b -> ...`).
+  - *Zasięg a rekurencja:* Jeśli konstrukcja to zwykłe `let` (bez `rec`), nazwa definiowanej funkcji/zmiennej nie jest widoczna w jej własnym ciele. Wszelkie odwołania do niej będą szukać definicji w środowisku zewnętrznym.
 ]
 
 #pagebreak()
@@ -698,7 +714,7 @@ opexpr:
 
 == Monady
 
-#box(fill: lime.transparentize(90%), inset: 10pt)[
+#card[
   *Informacja*
 
   Monady w tak bezpośredni sposób jak poniżej nie pojawiły się na wykładzie ani ćwiczeniach, ale takie pytanie ma szansę pojawić się na egzaminie.
