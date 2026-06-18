@@ -1425,6 +1425,8 @@ Napisz funkcje `return` i `bind`.
 
 == Formułowanie zasady indukcji
 
+=== Zadanie A.
+
 Rozważmy następujący typ danych reprezentujący wyrażenia złożone z zer, operacji następnika i dodawań.
 
 ```ml
@@ -1438,14 +1440,14 @@ Sformułuj zasadę indukcji dla tego typu danych.
 
 #pagebreak()
 
+*Rozwiązanie*
+
 ```ml
 type expr =
   | Zero
   | Succ of expr
   | Add of expr * expr
 ```
-
-*Rozwiązanie*
 
 Niech $P$ będzie predykatem dotyczącym wartości typu `expr`.
 Jeżeli zachodzą następujące warunki:
@@ -1463,3 +1465,38 @@ Niech $P : #`expr` -> #`bool`$:
 - $forall e : #`expr`. P(e) => P("Succ"(e))$,
 - $forall e_1,e_2 : #`expr`. P(e_1) and P(e_2) => P("Add"(e_1,e_2))$,
 , wtedy $forall e: #`expr`. P(e)$
+
+#pagebreak()
+
+=== Zadanie B.
+
+Definiujemy następujący typ dla drzew:
+
+```ml
+type 'a tree =
+  | Leaf
+  | Node of 'a tree * 'a * 'a tree
+```
+
+Sformułuj zasadę indukcji dla tego typu danych.
+
+#box(width: 100%, height: 200pt, stroke: 0.5pt)
+
+Dla tego typu danych definiujemy dwa warianty funkcji `flatten`, spłaszczającej drzewo do listy w kolejności (wynikiem będzie posortowana lista):
+
+```ml
+let rec flatten1 t = match t with
+  | Leaf -> []
+  | Node(t1, x, t2) -> flatten1 t1 @ x :: flatten1 t2
+```
+
+```ml
+let flatten2 t =
+  let rec flatten2_aux t xs = match t with
+    | Node(t1, x, t2) -> flatten2_aux t1 (x :: flatten2_aux t2 xs)
+    | Leaf -> xs
+  in flatten2_aux t []
+```
+
+Udowodnij indukcyjnie, że dla każdego drzewa `t: 'a tree` zachodzi własnosć $"flatten1" t equiv "flatten2" t$.
+Aby to zrobić, najpierw sformułuj i udowodnij lemat na temat funkcji `flatten1` i `flatten2_aux`.
