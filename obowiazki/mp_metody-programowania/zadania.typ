@@ -447,6 +447,146 @@ W szczególności nie możesz definiować kolejnych funkcji rekurencyjnych.
 
 #pagebreak()
 
+#let te(body) = highlight(fill: red.transparentize(80%))[
+  #text(fill: fuchsia)[#body]
+]
+
+= Gramatyki
+
+== Zadanie 1.
+
+Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, napisz kontrprzykład w ramce.
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S}, \
+        & T = {a}, \
+        & P = { \
+        & quad S -> a S, \
+        & quad S -> epsilon S, \
+        & quad S -> a \
+      }
+    $]
+    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+  ]
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S}, \
+        & T = {(, )}, \
+        & P = { \
+        & quad S -> S S, \
+        & quad S -> (S), \
+        & quad S -> epsilon \
+      }
+    $]
+    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+  ]
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S, D}, \
+        & T = {1,2,3,+,-}, \
+        & P = { \
+        & quad D -> 1, D -> 2, D -> 3 \
+        & quad S -> D, \
+        & quad S -> S + S, \
+        & quad S -> S - S, \
+        & quad S -> epsilon \
+      }
+    $]
+    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+  ]
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S, V}, \
+        & T = {top, bot, =>, not, "a", "b", ..., "z"}, \
+        & P = { \
+        & quad V -> bot, V -> top, \
+        & quad V -> "a", V -> "b", ..., V -> "z" \
+        & quad S -> S => S, \
+        & quad S -> not S, \
+        & quad S -> epsilon \
+      }
+    $]
+    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+  ]
+
+#pagebreak()
+
+== Zadanie 2.
+
+Dla niejednoznacznych gramatyk z zadania wyżej zapisz gramatyki równoważne, które są jednoznaczne. Tam gdzie gramatyka już była jednoznaczna, zostaw pole puste.
+
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S}, \
+        & T = {a}, \
+        & P = { \
+        & quad S -> a S, \
+        & quad S -> epsilon S, \
+        & quad S -> a \
+      }
+    $]
+    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+  ]
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S}, \
+        & T = {(, )}, \
+        & P = { \
+        & quad S -> S S, \
+        & quad S -> (S), \
+        & quad S -> epsilon \
+      }
+    $]
+    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+  ]
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S, D}, \
+        & T = {1,2,3,+,-}, \
+        & P = { \
+        & quad D -> 1, D -> 2, D -> 3 \
+        & quad S -> D, \
+        & quad S -> S + S, \
+        & quad S -> S - S, \
+        & quad S -> epsilon \
+      }
+    $]
+    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+  ]
+
++ #box(width: 100%)[
+    #align(left)[$
+      G & = (N, T, P, S), quad "gdzie:" \
+        & N = {S, V}, \
+        & T = {top, bot, =>, not, "a", "b", ..., "z"}, \
+        & P = { \
+        & quad V -> bot, V -> top, \
+        & quad V -> "a", V -> "b", ..., V -> "z" \
+        & quad S -> S => S, \
+        & quad S -> not S, \
+        & quad S -> epsilon \
+      }
+    $]
+    #box(width: 100%, height: 140pt, stroke: 0.5pt + black)
+  ]
+
+
+#pagebreak()
+
 = Indukcja strukturalna
 
 == Formułowanie zasady indukcji
