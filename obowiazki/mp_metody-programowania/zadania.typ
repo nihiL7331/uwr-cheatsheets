@@ -938,7 +938,7 @@ Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, 
         & N = {S, D}, \
         & T = {1,2,3,+,-}, \
         & P = { \
-        & quad D -> 1, D -> 2, D -> 3 \
+        & quad D -> 1, D -> 2, D -> 3, \
         & quad S -> D, \
         & quad S -> S + S, \
         & quad S -> S - S, \
@@ -955,7 +955,7 @@ Dla poniżej zapisanych gramatyk określ czy są one jednoznaczne. Jeżeli nie, 
         & T = {top, bot, =>, not, "a", "b", ..., "z"}, \
         & P = { \
         & quad V -> bot, V -> top, \
-        & quad V -> "a", V -> "b", ..., V -> "z" \
+        & quad V -> "a", V -> "b", ..., V -> "z", \
         & quad S -> V, \
         & quad S -> S => S, \
         & quad S -> not S, \
@@ -1006,7 +1006,7 @@ Dla niejednoznacznych gramatyk z zadania wyżej zapisz gramatyki równoważne, k
         & N = {S, D}, \
         & T = {1,2,3,+,-}, \
         & P = { \
-        & quad D -> 1, D -> 2, D -> 3 \
+        & quad D -> 1, D -> 2, D -> 3, \
         & quad S -> D, \
         & quad S -> S + S, \
         & quad S -> S - S, \
@@ -1023,7 +1023,7 @@ Dla niejednoznacznych gramatyk z zadania wyżej zapisz gramatyki równoważne, k
         & T = {top, bot, =>, not, "a", "b", ..., "z"}, \
         & P = { \
         & quad V -> bot, V -> top, \
-        & quad V -> "a", V -> "b", ..., V -> "z" \
+        & quad V -> "a", V -> "b", ..., V -> "z", \
         & quad S -> V, \
         & quad S -> S => S, \
         & quad S -> not S, \
