@@ -12,11 +12,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout source branch
         uses: actions/checkout@v6
         with:
           lfs: true
-          fetch-depth: 0
 
       - name: Typst
         uses: typst-community/setup-typst@v5
@@ -34,9 +33,26 @@ jobs:
       - name: Compile
         run: python3 .github/scripts/build.py
 
+      - name: Temporarily store artifacts
+        run: |
+          mkdir -p /tmp/pdf-artifacts
+          find letnie obowiazki -name "*.pdf" -exec cp --parents {} /tmp/pdf-artifacts/ \; 2>/dev/null || true
+
+      - name: Checkout main branch
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          lfs: true
+
+      - name: Restore artifacts
+        run: |
+          if [ -d /tmp/pdf-artifacts ]; then
+            cp -r /tmp/pdf-artifacts/* ./
+            rm -rf /tmp/pdf-artifacts
+          fi
+
       - name: Commit
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          branch: main
           commit_message: "chore: build pdf artifacts"
           file_pattern: "*/**/*.pdf"
