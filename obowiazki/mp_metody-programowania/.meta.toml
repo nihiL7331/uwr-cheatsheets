@@ -1,8 +1,0 @@
-[cheatsheet]
-source = "cheatsheet.typ"
-output = "cheatsheet/w{n}.pdf"
-range = "1..2"
-
-[zadania]
-source = "zadania.typ"
-output = "zadania.pdf"
