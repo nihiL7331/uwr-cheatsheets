@@ -1,4 +1,5 @@
 #let scheme = sys.inputs.at("scheme", default: "light")
+#set math.mat(delim: "[")
 
 #let bg-color = if scheme == "dark" { rgb("1e1e1e") } else { white }
 #let fg-color = if scheme == "dark" { rgb("e0e0e0") } else { black }
@@ -67,7 +68,7 @@
 #let LECTURE-NUM-TO = int(sys.inputs.at("do", default: "15"))
 #let from(n, body) = if LECTURE-NUM-TO >= n and n >= LECTURE-NUM-FROM { body }
 
-= Algebra: Reference
+= Algebra: spakowany materiał z wykładu
 
 *Data:* #datetime.today().display() \
 
@@ -135,4 +136,83 @@
   $
     alpha_1 = alpha_2 = ... alpha_k = 0
   $
+]
+
+#from(2)[
+  = Metoda eliminacji Gaussa
+
+  Układ wektorów $[arrow(v_1), arrow(v_2), ..., arrow(v_k)]$ jesteśmy w stanie zapisać w postaci macierzy:
+  $
+    mat(
+      arrow(v_1);
+      arrow(v_2);
+      ...;
+      arrow(v_k)
+    )
+  $
+
+  Na rzędach $arrow(v_1), arrow(v_2), ..., arrow(v_k)$ możemy wykonywać operację dodawania: $arrow(v_k) := arrow(v_k) + alpha arrow(v_i)$ dla $i != k$ i $alpha in FF$, co zapisujemy jako $(k) + alpha (i)$. W szczególności, $alpha < 0$, wtedy mamy odejmowanie. Możemy również zamieniać wektory ze sobą: $(i)"/"(k)$
+
+  Wykonując te operacje na układzie wektorów nie zmienia się zależność wektorów. W ten sposób sprawdzamy, czy układ jest *liniowo niezależny*.
+
+  Układ jest liniowo niezależny, jeżeli jest w postaci schodkowej:
+
+  $
+    mat(
+      v_11, v_12, v_13, v_14, ..., v_( 1k );
+      0, v_22, v_23, v_24, ..., v_( 2k );
+      0, 0, v_33, v_34, ..., v_( 3k );
+      0, 0, 0, v_44, ..., v_( 4k );
+      0, 0, 0, v_54, ..., v_( 5k );
+      dots.v, dots.v, dots.v, dots.v, dots.down, dots.v;
+      0, 0, 0, 0, underbrace(..., "same zera"), v_( i k );
+    )
+  $
+
+  Jeżeli jesteśmy w stanie narysować "schodki" wokół niezerowych elementów idąc tylko w prawo i w dół, oraz nie ma żadnego wektora zerowego $arrow(0)$ (cały rząd wypełniony zerami), to układ jest w postaci schodkowej, więc jest liniowo niezależny.
+
+
+  = Baza przestrzeni liniowej
+
+  $B$ jest bazą przestrzeni liniowej $VV$, gdy $"LIN"(B) = VV$ oraz $B$ jest liniowo niezależny.
+
+  - Eliminacja Gaussa zastosowana do układu wektorów $U$ zwraca bazę $"LIN"(U)$
+
+  - Wyrażanie wektora w bazie
+
+    Jeśli $B = {arrow(v_1), arrow(v_2), ..., arrow(v_n)}$ jest bazą przestrzeni $VV$ i $arrow(v) in VV$, jest wektorem, to wyrażeniem wektora $arrow(v)$ w bazie $B$ nazywamy reprezentację $arrow(v)$ jako
+    $
+      arrow(v) = sum_(i=1)^n alpha_i arrow(v_i)
+    $
+  - Każdy wektor ma jednoznaczne przedstawienie w bazie.
+  - Jeśli $B = {arrow(v_1), arrow(v_2), ..., arrow(v_n)}$ jest bazą przestrzeni liniowej $VV$ oraz $arrow(v) in VV$, to
+    $
+      (arrow(v))_B = (alpha_1, alpha_2, ..., alpha_n)
+    $
+    gdzie $arrow(v) = sum_(i=1)^n alpha_i arrow(v_i)$
+  - Izomorfizm przestrzeni liniowych
+
+    Dwie przestrzenie liniowe $VV, WW$ są izomorficzne nad ciałem $FF$, jeśli istnieją dwie bijekcje: $phi: VV -> WW, psi: WW -> VV$ które zachowują działania, tj. $phi(arrow(v) attach(+, b: VV) arrow(v')) = phi(arrow(v)) attach(+, b: WW) phi(arrow(v'))$ oraz $phi(alpha attach(dot, b: VV) arrow(v)) = alpha attach(dot, b: VV) phi(arrow(v))$ i analogicznie dla $psi$.
+
+  - Każda przestrzeń (skończenie wymiarowa) ma bazę.
+  - Każda baza danej przestrzeni (skończenie wymiarowej) ma taką samą moc.
+
+  == Lemat Steinitza
+
+  - $VV$ - przestrzeń liniowa,
+  - $A subset.eq VV$ - układ liniowo niezależny,
+  - $B$ - układ rozpinający $VV$ ($"LIN"(B) = VV$)
+
+  Albo $A$ jest bazą, albo istnieje $arrow(v) in B$ taki, że $A union { arrow(v) }$ jest liniowo niezależny.
+
+  - Jeśli $VV$ jest _przestrzenią skończenie wymiarową_ to:
+
+    - Dowolny układ niezależny $A subset.eq VV$ można rozszerzyć do bazy.
+    - Z każdego układu wektorów $A subset.eq VV$ można wybrać bazę przestrzeni $"LIN"(A)$
+
+
+  = Wymiar przestrzeni liniowej
+
+  Dla przestrzeni liniowej $VV$, _wymiar_ $VV$ to moc jej bazy. Oznaczamy to jako $dim(VV)$.
+
 ]
