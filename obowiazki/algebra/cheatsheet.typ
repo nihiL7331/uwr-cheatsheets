@@ -1,13 +1,26 @@
+#let scheme = sys.inputs.at("scheme", default: "light")
+
+#let bg-color = if scheme == "dark" { rgb("1e1e1e") } else { white }
+#let fg-color = if scheme == "dark" { rgb("e0e0e0") } else { black }
+#let footer-color = if scheme == "dark" { rgb("808080") } else { luma(65%) }
+
+#let heading-bg-1 = if scheme == "dark" { rgb("1c2d5a") } else { blue.transparentize(80%) }
+#let heading-bg-2 = if scheme == "dark" { rgb("162447") } else { blue.transparentize(90%) }
+#let heading-text-color = if scheme == "dark" { rgb("e0ebff") } else { black }
+
 #set page(
   paper: "us-letter",
   margin: 0.25in,
+  fill: bg-color,
   footer: align(right)[
-    #text(fill: luma(65%), size: 8pt)[
+    #text(fill: footer-color, size: 8pt)[
       `Michał Kosior | gh: @crqch`
     ]
   ],
   numbering: "1",
 )
+
+#set text(fill: fg-color)
 
 
 #show raw: set text(font: "CMU Typewriter Text", fallback: false)
@@ -30,9 +43,9 @@
       inset: (x: 12pt, y: 10pt),
       width: 100%,
       radius: 2pt,
-      fill: blue.transparentize(80%),
+      fill: heading-bg-1,
     )[
-      #text(size: size, font: "CMU Classical Serif")[
+      #text(size: size, font: "CMU Classical Serif", fill: heading-text-color)[
         #it.body
       ]
     ]
@@ -41,9 +54,9 @@
       inset: (x: 12pt, y: 4pt),
       width: 100%,
       radius: 2pt,
-      fill: blue.transparentize(90%),
+      fill: heading-bg-2,
     )[
-      #text(size: size, font: "CMU Classical Serif")[
+      #text(size: size, font: "CMU Classical Serif", fill: heading-text-color)[
         #it.body
       ]
     ]

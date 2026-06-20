@@ -155,42 +155,25 @@ def main():
                     failures.append(err_msg)
                     continue
 
+            # Parse and validate schemes key
+            schemes = target_config.get("schemes")
+            if schemes is None:
+                schemes = [None]
+            else:
+                if not isinstance(schemes, list) or not all(isinstance(x, str) for x in schemes):
+                    err_msg = f"[{subject_dir.name} : {
+                        target_name}] 'schemes' must be a list of strings"
+                    print(f"Validation Error: {err_msg}", file=sys.stderr)
+                    failures.append(err_msg)
+                    continue
+
             # 4. Compilation execution
             if not is_ranged:
                 # Single compile target
-                output_path = subject_dir / output
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-
-                cmd = [
-                    "typst", "compile",
-                    "--ignore-system-fonts",
-                    "--font-path", str(fonts_dir),
-                    str(source_path),
-                    str(output_path)
-                ]
-
-                print(f"Compiling: {' '.join(cmd)}")
-                res = subprocess.run(cmd, capture_output=True, text=True)
-
-                if res.stdout:
-                    print(res.stdout, end="")
-                if res.stderr:
-                    print(res.stderr, end="", file=sys.stderr)
-
-                if "unknown font family" in res.stderr:
-                    err_msg = f"[{subject_dir.name} : {
-                        target_name}] Compilation failed due to unknown font family"
-                    failures.append(err_msg)
-                elif res.returncode != 0:
-                    err_msg = f"[{subject_dir.name} : {
-                        target_name}] Compilation failed with exit code {res.returncode}"
-                    failures.append(err_msg)
-            else:
-                # Ranged compile target
-                for n in range(lo, hi + 1):
-                    n_padded = f"{n:02d}"
-                    output_resolved = output.replace("{n}", n_padded)
-                    output_path = subject_dir / output_resolved
+                for scheme in schemes:
+                    output_path = subject_dir / output
+                    if scheme is not None:
+                        output_path = output_path.parent / f"{scheme}_{output_path.name}"
                     output_path.parent.mkdir(parents=True, exist_ok=True)
 
                     cmd = [
@@ -198,17 +181,11 @@ def main():
                         "--ignore-system-fonts",
                         "--font-path", str(fonts_dir),
                     ]
-
-                    # Add input flags
-                    for param in inputs:
-                        if param == "od":
-                            cmd.extend(["--input", "od=1"])
-                        elif param == "do":
-                            cmd.extend(["--input", f"do={n}"])
-
+                    if scheme is not None:
+                        cmd.extend(["--input", f"scheme={scheme}"])
                     cmd.extend([str(source_path), str(output_path)])
 
-                    print(f"Compiling (n={n_padded}): {' '.join(cmd)}")
+                    print(f"Compiling{f' (scheme={scheme})' if scheme is not None else ''}: {' '.join(cmd)}")
                     res = subprocess.run(cmd, capture_output=True, text=True)
 
                     if res.stdout:
@@ -217,13 +194,65 @@ def main():
                         print(res.stderr, end="", file=sys.stderr)
 
                     if "unknown font family" in res.stderr:
-                        err_msg = f"[{subject_dir.name} : {target_name}] Compilation failed for n={
-                            n} due to unknown font family"
+                        err_msg = f"[{subject_dir.name} : {
+                            target_name}] Compilation failed due to unknown font family"
+                        if scheme is not None:
+                            err_msg += f" (scheme: {scheme})"
                         failures.append(err_msg)
                     elif res.returncode != 0:
-                        err_msg = f"[{subject_dir.name} : {target_name}] Compilation failed for n={
-                            n} with exit code {res.returncode}"
+                        err_msg = f"[{subject_dir.name} : {
+                            target_name}] Compilation failed with exit code {res.returncode}"
+                        if scheme is not None:
+                            err_msg += f" (scheme: {scheme})"
                         failures.append(err_msg)
+            else:
+                # Ranged compile target
+                for n in range(lo, hi + 1):
+                    n_padded = f"{n:02d}"
+                    output_resolved = output.replace("{n}", n_padded)
+                    for scheme in schemes:
+                        output_path = subject_dir / output_resolved
+                        if scheme is not None:
+                            output_path = output_path.parent / f"{scheme}_{output_path.name}"
+                        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+                        cmd = [
+                            "typst", "compile",
+                            "--ignore-system-fonts",
+                            "--font-path", str(fonts_dir),
+                        ]
+                        if scheme is not None:
+                            cmd.extend(["--input", f"scheme={scheme}"])
+
+                        # Add input flags
+                        for param in inputs:
+                            if param == "od":
+                                cmd.extend(["--input", "od=1"])
+                            elif param == "do":
+                                cmd.extend(["--input", f"do={n}"])
+
+                        cmd.extend([str(source_path), str(output_path)])
+
+                        print(f"Compiling (n={n_padded}{f', scheme={scheme}' if scheme is not None else ''}): {' '.join(cmd)}")
+                        res = subprocess.run(cmd, capture_output=True, text=True)
+
+                        if res.stdout:
+                            print(res.stdout, end="")
+                        if res.stderr:
+                            print(res.stderr, end="", file=sys.stderr)
+
+                        if "unknown font family" in res.stderr:
+                            err_msg = f"[{subject_dir.name} : {target_name}] Compilation failed for n={
+                                n} due to unknown font family"
+                            if scheme is not None:
+                                err_msg += f" (scheme: {scheme})"
+                            failures.append(err_msg)
+                        elif res.returncode != 0:
+                            err_msg = f"[{subject_dir.name} : {target_name}] Compilation failed for n={
+                                n} with exit code {res.returncode}"
+                            if scheme is not None:
+                                err_msg += f" (scheme: {scheme})"
+                            failures.append(err_msg)
 
     # 5. Report and exit
     if failures:
