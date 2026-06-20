@@ -105,9 +105,24 @@
 
   == Podprzestrzeń liniowa
 
-  Dla przestrzeni liniowej $VV$ jej podzbiór $WW subset.eq VV$ jest _podprzestrzenią liniową_, gdy jest niepusty i jest przestrzenią liniową.
+  Dla przestrzeni liniowej $VV$ jej podzbiór $WW subset.eq VV$ jest _podprzestrzenią liniową_, gdy jest niepusty i jest przestrzenią liniową. Oznaczamy to $WW <= VV$.
 
   Lemat: Podzbiór $WW subset.eq VV$ jest przestrzenią liniową wtedy i tylko wtedy gdy jest niepusty i zamknięty na działanie dodawania wektorów i mnożenia przez skalary.
+
+  == Operacje na przestrzeniach liniowych
+
+  - Dla $WW, WW' <= VV$ definiujemy ich _sumę_ jako
+    $
+      WW + WW' = { arrow(w) + arrow(w') : arrow(w) in WW, arrow(w') in WW' }
+    $
+
+  - Dla dowolnego zbioru podprzestrzeni liniowych ${WW_i}_(i in I)$, gdzie $WW_i <= V$ dla każdego $i in I$, przecięcie jest zdefiniowane naturalnie jako $inter_(i in I) WW_i$.
+
+  - Dla dowolnego zbioru przestrzeni liniowych ${VV_i}_(i in I)$, nad tym samym ciałem produkt kartezjański $product_(i in I) VV_i$ zdefiniowany jest naturalnie. Działania zdefiniowane są po współrzędnych.
+
+  - Suma, przecięcie oraz iloczyn kartezjański przestrzeni liniowych jest przestrzenią liniową.
+  - Suma przestrzeni liniowych $WW + WW'$ jest najmniejszą przestrzenią liniową zawierającą jednocze�ie $WW$ i $WW'$.
+  - Przekrój przestrzeni liniowych $inter_i WW_i$ jest największą przestrzenią liniową zawartą jednocze�ie we wszystkich podprzestrzeniach $WW_i$.
 
   = Kombinacja liniowa
 
