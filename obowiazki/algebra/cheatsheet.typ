@@ -121,8 +121,8 @@
   - Dla dowolnego zbioru przestrzeni liniowych ${VV_i}_(i in I)$, nad tym samym ciałem produkt kartezjański $product_(i in I) VV_i$ zdefiniowany jest naturalnie. Działania zdefiniowane są po współrzędnych.
 
   - Suma, przecięcie oraz iloczyn kartezjański przestrzeni liniowych jest przestrzenią liniową.
-  - Suma przestrzeni liniowych $WW + WW'$ jest najmniejszą przestrzenią liniową zawierającą jednocze�ie $WW$ i $WW'$.
-  - Przekrój przestrzeni liniowych $inter_i WW_i$ jest największą przestrzenią liniową zawartą jednocze�ie we wszystkich podprzestrzeniach $WW_i$.
+  - Suma przestrzeni liniowych $WW + WW'$ jest najmniejszą przestrzenią liniową zawierającą jednocześnie $WW$ i $WW'$.
+  - Przekrój przestrzeni liniowych $inter_i WW_i$ jest największą przestrzenią liniową zawartą jednocześnie we wszystkich podprzestrzeniach $WW_i$.
 
   = Kombinacja liniowa
 
@@ -231,3 +231,84 @@
   Dla przestrzeni liniowej $VV$, _wymiar_ $VV$ to moc jej bazy. Oznaczamy to jako $dim(VV)$.
 
 ]
+
+#from(3)[
+
+  - Dla przestrzeni _skończenie wymiarowych_ $VV_1, VV_2 <= VV$
+
+    $
+      dim(VV_1 + VV_2) = dim(VV_1) + dim(VV_2) - dim(VV_1 inter VV_2)
+    $
+
+  - Jeśli $B_1, B_2$ są bazami dla $VV_1, VV_2 <= VV$ to
+    $
+      VV_1 + VV_2 = "LIN"(B_1 union B_2)
+    $
+]
+
+= Grupy
+
+Zbiór $(G, dot)$, gdzie $dot: G times G -> G$ jest grupą, jeśli:
+- *łączność*  działanie $dot$ jest łączne ($a dot (b dot c) = (a dot b) dot c$),
+- *element neutralny*  istnieje element neutralny $e$, taki że dla każdego $g in G$ mamy $e g = g e = g$,
+- *element odwrotny*  dla każdego elementu $g in G$ istnieje element $g^(-1)$ tż. $g g^(-1) = g^(-1) g = e$
+
+Jeżeli działanie $dot$ jest przemienne, to mówimy że grupa jest _abelowa_ (przemienna).
+
+== Obserwacje
+
+- Element odwrotny w grupe $G$ jest jedyny.
+- Element prawostronnie odwrotny jest też lewostronnie odwrotny.
+- Identyczność jest jedyna.
+- Równość $a x = b$ oraz $x a = b$ mają dokładnie jedno rozwiązanie.
+
+== Półgrupa (monoid)
+
+"Grupa" w której nie zakładamy istnienia elementu odwrotnego.
+
+== Homomorfizm, izomorfizm
+
+Operację $phi: G -> H$ nazywamy _homomorfizmem grup_, jeśli zachowuje działanie grupowe, tj. $phi(a b) = phi(a) phi(b)$.
+
+$phi$ jest izomorfizmem, jeśli istnieje $phi^(-1)$ które jest przekształceniem odwrotnym i homomorfizmem ($phi, phi^(-1)$ sa bijekcjami).
+
+- Homomorfizm przeprowadza element neutralny (odwrotny) w element neutralny (odwrotny).
+
+== Rząd elementu
+
+Potęgą elementu $a$ nazywamy dowolny element postaci $a^n$, gdzie $n in ZZ$. Dla $n = 0$ oznacza on $e$, dla $n > 1$: $a^n = underbrace(a dot a dot dot dot a, n "razy")$, dla $n < 0$: $a^n = (a^(-1))^(-n)$.
+
+Rząd elementu to najmniejsza dodatnia potęga $n$ taka, że $a^n = e$. Rząd elementu jest _nieskończony_ (nieokreślony), jeśli nie ma takiego skończonego $n$.
+
+Rząd grupy to ilość jej elementów.
+
+- Rząd $a$ i $a^(-1)$ jest taki sam.
+
+== Podgrupy
+
+$H$ jest podgrupą $G$, co zapisujemy $H <= G$, jeśli $H subset.eq G$ oraz $H$ jest grupą.
+
+=== Generowanie
+
+Dla grupy $G$ oraz zbioru $A subset.eq G$ podgrupa generowana przez $A$, oznaczana jako $<A>$, to najmniejsza podgrupa $G$ zawierająca $A$. W takim wypadku mówimy, że $A$ to _zbiór generatorów_ tej podgrupy.
+
+=== Postać zredukowana
+
+Niech $a_1,...,a_k in G$. O iloczynie $a_1^(l_1)a_2^(l_2)dot dot dot a_k^(l_k)$ mówimy, że jest w _postaci zredukowanej_, jeśli $a_i in.not {a_(i+1)^(-1), a_(i+1)}$ dla każdego możliwego $i$ oraz $l_i != 0$ dla każdego $i$.
+
+== Grupa cykliczna
+
+Grupa $G$ jest _grupą cykliczną_, gdy $G = <{a}>$ dla pewnego $a in G$, tzn. jest generowana przez jeden element.
+
+- Każda grupa cykliczna jest przemienna.
+- Podgrupa grupy cyklicznej jest cykliczna.
+
+== Grupa wolna
+
+Niech $Gamma^(-1) = {a^(-1) : a in Gamma}$ będzie rozłączne z $Gamma$.
+
+Grupa $G$ o zbiorze generatorów $Gamma$ jest _wolna_ (wolnie generowana przez $Gamma$) jeśli dla dowolnego słowa $w in (Gamma union Gamma^(-1))*$ w postaci zredukowanej zachodzi
+$
+  w attach(=, b: G) e => w = epsilon
+$
+
