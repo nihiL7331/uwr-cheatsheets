@@ -8,6 +8,7 @@
 #let heading-bg-1 = if scheme == "dark" { rgb("1c2d5a") } else { blue.transparentize(80%) }
 #let heading-bg-2 = if scheme == "dark" { rgb("162447") } else { blue.transparentize(90%) }
 #let heading-text-color = if scheme == "dark" { rgb("e0ebff") } else { black }
+#set line(stroke: 1pt + footer-color)
 
 #set page(
   paper: "us-letter",
