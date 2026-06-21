@@ -73,6 +73,7 @@
 *Data:* #datetime.today().display() \
 
 #from(1)[
+  #line(length: 100%)
   = Przestrzenie liniowe
 
   Zbiór $VV$ jest _przestrzenią liniową_ nad ciałem $FF$, jesli:
@@ -186,6 +187,7 @@
 
   Jeżeli jesteśmy w stanie narysować "schodki" wokół niezerowych elementów idąc tylko w prawo i w dół, oraz nie ma żadnego wektora zerowego $arrow(0)$ (cały rząd wypełniony zerami), to układ jest w postaci schodkowej, więc jest liniowo niezależny.
 
+  #line(length: 100%)
 
   = Baza przestrzeni liniowej
 
@@ -244,7 +246,47 @@
     $
       VV_1 + VV_2 = "LIN"(B_1 union B_2)
     $
+
+  #line(length: 100%)
+
+  = Przekształcenia liniowe (homomorfizmy)
+
+  Niech $VV, WW$ będą przestrzeniami liniowymi nad tym samym ciałem $FF$. Funkcja $F: VV -> WW$ jest _przekształceniem liniowym_, jeśli spełnia następujące warunki:
+
+  - $forall_(arrow(v) in VV)forall_(alpha in FF). F(alpha arrow(v)) = alpha F(arrow(v))$
+  - $forall_(arrow(v), arrow(w) in VV). F(arrow(v) + arrow(w)) = F(arrow(v)) + F(arrow(w))$
+
+
+  Zbiór przekształceń liniowych jest przestrzenią liniową.
+  Złożenie przekształceń liniowych jest przekształceniem liniowym.
+
+  == Jądro i obraz przekształcenia liniowego
+
+  Jądro przekształcenia to zbiór wektorów przekształconych na $arrow(0)$:
+  $
+    ker(F) = {arrow(v) : F(arrow(v)) = arrow(0)}
+  $
+
+  Obraz przekształcenia to zbiór wektrorów, które są wartościami $F$:
+  $
+    "Im"(F) = { arrow(u): exists arrow(v). F(arrow(v)) = arrow(u)}
+  $
+
+  - Jądro i obraz są przestrzeniami liniowymi.
+
+  #colbreak()
+
+  #block(breakable: false)[
+    Niech $F: VV -> WW$ będzie przekształceniem liniowym, gdzie $VV, WW$: skończenie wymiarowe przestrzenie liniowe. Wtedy
+    $
+      dim(VV) = dim("Im"(F)) + dim(ker(F))
+    $
+  ]
+
+  Rząd przekształcenia liniowego $F$ to $"rk"(F) = dim("Im"(F))$
 ]
+
+#line(length: 100%)
 
 = Grupy
 
