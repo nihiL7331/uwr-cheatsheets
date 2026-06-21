@@ -8,7 +8,7 @@
 #let heading-bg-1 = if scheme == "dark" { rgb("1c2d5a") } else { blue.transparentize(80%) }
 #let heading-bg-2 = if scheme == "dark" { rgb("162447") } else { blue.transparentize(90%) }
 #let heading-text-color = if scheme == "dark" { rgb("e0ebff") } else { black }
-#set line(stroke: 1pt + footer-color)
+#set line(stroke: 1pt + footer-color, length: 100%)
 
 #set page(
   paper: "us-letter",
@@ -74,7 +74,7 @@
 *Data:* #datetime.today().display() \
 
 #from(1)[
-  #line(length: 100%)
+  #line()
   = Przestrzenie liniowe
 
   Zbiór $VV$ jest _przestrzenią liniową_ nad ciałem $FF$, jesli:
@@ -188,7 +188,7 @@
 
   Jeżeli jesteśmy w stanie narysować "schodki" wokół niezerowych elementów idąc tylko w prawo i w dół, oraz nie ma żadnego wektora zerowego $arrow(0)$ (cały rząd wypełniony zerami), to układ jest w postaci schodkowej, więc jest liniowo niezależny.
 
-  #line(length: 100%)
+  #line()
 
   = Baza przestrzeni liniowej
 
@@ -248,7 +248,7 @@
       VV_1 + VV_2 = "LIN"(B_1 union B_2)
     $
 
-  #line(length: 100%)
+  #line()
 
   = Przekształcenia liniowe (homomorfizmy)
 
@@ -287,7 +287,7 @@
   Rząd przekształcenia liniowego $F$ to $"rk"(F) = dim("Im"(F))$
 ]
 
-#line(length: 100%)
+#line()
 
 #from(4)[
   = Macierze
@@ -379,7 +379,7 @@
 ]
 
 
-#line(length: 100%)
+#line()
 
 = Izometrie
 
@@ -400,7 +400,7 @@ $M$ jest ortogonalna wtedy i tylko wtedy, gdy $M^(-1) = M^T$
 
 - Macierze ortogonalne są zamknięte na mnożenie, transponowanie i na branie macierzy odwrotnej.
 
-#line(length: 100%)
+#line()
 
 = Grupy
 
