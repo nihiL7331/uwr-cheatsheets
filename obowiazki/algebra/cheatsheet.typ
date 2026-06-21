@@ -383,9 +383,9 @@
 
 = Izometrie
 
-Przekształcenie liniowe $F: VV -> VV$ na przestrzeni liniowej $VV$ z iloczynem skalarnym $<dot, dot>$ nazywamy _izometrią_, jeśli zachowuje iloczyn skalarny, tj. dla każdych dwóch wektorów $arrow(u), arrow(v) in VV$ zachodzi:
+Przekształcenie liniowe $F: VV -> VV$ na przestrzeni liniowej $VV$ z iloczynem skalarnym $chevron.l dot, dot chevron.r$ nazywamy _izometrią_, jeśli zachowuje iloczyn skalarny, tj. dla każdych dwóch wektorów $arrow(u), arrow(v) in VV$ zachodzi:
 $
-  <F arrow(v), F arrow(u)> = <arrow(v), arrow(u)>
+  chevron.l F arrow(v), F arrow(u) chevron.r = chevron.l arrow(v), arrow(u) chevron.r
 $
 
 - Przekształcenie $F$ jest izometrią wtedy i tylko wtedy, gdy zachowuje długość, tj. dla każdego $arrow(v) in VV$ mamy $||F(arrow(v))|| = ||arrow(v)||$
