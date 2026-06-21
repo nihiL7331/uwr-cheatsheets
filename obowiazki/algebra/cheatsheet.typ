@@ -312,3 +312,57 @@ $
   w attach(=, b: G) e => w = epsilon
 $
 
+= Grupy permutacji
+
+Grupa permutacji $S_n$ to zbiór wszystkich bijekcji ze zbioru ${1,2,...,n}$ w siebie; operacją jest składanie funkcji, tj.
+$
+  (sigma' dot sigma)(i) = sigma' (sigma (i))
+$
+
+Permutację zapisujemy jako dwuwierszową tabelkę:
+
+#[
+
+  #set math.mat(delim: "(")
+
+  $
+    mat(
+      1, 2, 3, ..., n;
+      sigma(1), sigma(2), sigma(3), ..., sigma(n);
+    )
+  $
+
+]
+
+== Cykle
+
+Cykl $sigma$ to taka permutacja, że istnieją elementy $a_1,...,a_n$, że $sigma(a_i) = sigma(a_(i+1))$ (gdzie $sigma(a_n) = a_1)$, a na innych elementach jest identycznością. Cykl taki zapisujemy, jako $(a_1, a_2, ..., a_n)$.
+
+Elementy ${a_1,...,a)n}$ to _dziedzina cyklu_ lub _nośnik cyklu_.
+
+- _Długość cyklu_ ${a_1, a_2, ..., a_n}$ to $n$.
+
+- Cykle są rozłączne, gdy ich nośniki nie mają wspólnego elementu.
+
+
+Rząd cyklu długości $n$ wynosi $n$.
+
+Dla cyklów rozłącznych $c_1,c_2,...,c_k$ rząd permutacji $c_1 dot c_2 dot dot dot c_k$ to nww rzędów poszczególnych cykli $c_1,c_2,...,c_k$.
+
+== Parzystość permutacji
+
+Cykl jest *parzysty* kiedy jego długość jest *nieparzysta*.
+
+Cykl nieparzysty jest permutacją nieparzystą.
+
+Parzystość permutacji to parzystość ilości cykli nieparzystych w rozkładzie na cykle rozłączne.
+
+Na przykład:
+
+$
+  sigma = overbrace(underbrace((1,4,6), "długość nieparzysta
+  cykl parzysty")underbrace((2,3), "długość parzysta
+  cykl nieparzysty"), "permutacja nieparzysta
+  1 cykl nieparzysty")
+$
+
