@@ -381,6 +381,27 @@
 
 #line(length: 100%)
 
+= Izometrie
+
+Przekształcenie liniowe $F: VV -> VV$ na przestrzeni liniowej $VV$ z iloczynem skalarnym $<dot, dot>$ nazywamy _izometrią_, jeśli zachowuje iloczyn skalarny, tj. dla każdych dwóch wektorów $arrow(u), arrow(v) in VV$ zachodzi:
+$
+  <F arrow(v), F arrow(u)> = <arrow(v), arrow(u)>
+$
+
+- Przekształcenie $F$ jest izometrią wtedy i tylko wtedy, gdy zachowuje długość, tj. dla każdego $arrow(v) in VV$ mamy $||F(arrow(v))|| = ||arrow(v)||$
+
+- Przekształcenie $F$ jest izometrią wtedy i tylko wtedy, gdy zachowuje iloczyn skalarny elementów z bazy.
+
+== Macierze ortogonalne
+
+Macierz kwadratową nazywamy _ortogonalną_, jeśli jej kolumny są parami ortogonalne oraz są długości $1$ (w standardowym iloczynie skalarnym).
+
+$M$ jest ortogonalna wtedy i tylko wtedy, gdy $M^(-1) = M^T$
+
+- Macierze ortogonalne są zamknięte na mnożenie, transponowanie i na branie macierzy odwrotnej.
+
+#line(length: 100%)
+
 = Grupy
 
 Zbiór $(G, dot)$, gdzie $dot: G times G -> G$ jest grupą, jeśli:
