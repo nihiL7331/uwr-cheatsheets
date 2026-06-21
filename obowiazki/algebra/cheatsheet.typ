@@ -289,6 +289,98 @@
 
 #line(length: 100%)
 
+#from(4)[
+  = Macierze
+
+  Macierzą $M$ rozmiaru $m times n$ nad ciałem $FF$ nazywamy funkcję $M : {1,2,...,m} times {1,2,...,n} -> FF$.
+
+  $
+    A = mat(
+      a_(11), a_(12), ..., a_(1n);
+      a_(21), a_(22), ..., a_(2n);
+      a_(31), a_(32), ..., a_(3n);
+      dots.v, dots.v, dots.down, dots.v;
+      a_(m 1), a_(m 2), ..., a_(m n);
+    ) = (a_(i j))_(i=1,...m \
+    j=1,...n)
+  $
+
+  Indeksowanie na macierzach:
+  - od 1
+  - odwrotnie niż w układzie współrzędnych
+
+  #text(size: 18pt)[
+    $
+      (a_(underbrace(i, "kolumna") quad underbrace(j, "rząd")))
+    $
+  ]
+
+  == Operacje na macierzach
+
+  Dodawanie jest zdefiniowane po współrzędnych. $A + B$ jest określone wtedy i tylko wtedy, gdy $A$ i $B$ są tego samego rozmiaru i wtedy
+
+  $
+    (A + B)_(i j) = (A)_(i j) + (B)_(i j)
+  $
+
+  Mnożenie przez skalar jest również określone po współrzędnych, tzn. dla macierzy $A = (a_(i j))$ nad ciałem $FF$
+  $
+    (alpha A)_(i j) = alpha a_(i j)
+  $
+
+  == Ważne macierze
+
+  + Macierz zerowa, w której wszystkie elementy są zerami. Zapisujemy ją jako $bold(0)$
+  + Macierz $bold(1)_(i j)$, w której $a_(i j) = 1$ i wszystkie inne elementy są zerowe
+  + Macierz kwadratowa – rozmiaru $n times n$
+  + Macierz przekątniowa – macierz która ma same zera poza przekątną
+  + Macierz identycznościowa/jednostkowa – macierz przekątniowa, która ma same jedynki na przekątnej. Zapisujemy ją jako $"Id"_n$
+    $
+      "Id"_n = overbrace(
+        mat(
+          1, 0, ..., 0;
+          0, 1, ..., 0;
+          dots.v, dots.v, dots.down, dots.v;
+          0, 0, ..., 1;
+        ), n
+      )
+    $
+  + Macierz górnotrójkątna – macierz kwadratowa w której wszystkie elementy $(a_(i j))_(i > j)$ są zerowe
+    $
+      mat(
+        a_(1 1), a_(1 2), ..., a_(1 n);
+        0, a_(2 2), ..., a_(2 n);
+        0, 0, ..., a_(3 n);
+        dots.v, dots.v, dots.down, dots.v;
+        0, 0, ..., a_(n n)
+      )
+    $
+  + Macierz dolnotrójkątna – macierz kwadratowa w której wszystkie elementy $(a_(i j))_(i < j)$ są zerowe
+    $
+      mat(
+        a_(1 1), 0, ..., 0;
+        a_(2 1), a_(2 2), ..., 0;
+        a_(3 1), a_(3 2), ..., 0;
+        dots.v, dots.v, dots.down, dots.v;
+        a_(n 1), a_(n 2), ..., a_(n n)
+      )
+    $
+  + Macierz trójkątna – macierz górno lub dolnotrójkątna
+
+  == Mnożenie macierzy
+
+  Dla macierzy $A$ rozmiaru $n x m$ i $B$ rozmiaru $m x l$ definiujemy mnożenie następująco
+  $
+    (A B)_(i j) = sum_(k=1)^m A_(i k) B_(k j)
+  $
+
+  - Mnożenie macierzy jest łączne
+
+]
+
+
+#line(length: 100%)
+
 = Grupy
 
 Zbiór $(G, dot)$, gdzie $dot: G times G -> G$ jest grupą, jeśli:
