@@ -402,6 +402,15 @@ $M$ jest ortogonalna wtedy i tylko wtedy, gdy $M^(-1) = M^T$
 
 #line()
 
+= Macierze dodatnio określone
+
+Macierz $M$ wymiaru $n times n$ jest _dodatnio określona_, jeśli funkcja $chevron.l dot, dot chevron.r : (RR^n)^2 -> RR$ określona jako
+$
+  (arrow(u), arrow(v)) -> arrow(u)^T M arrow(v)
+$
+
+#line()
+
 = Grupy
 
 Zbiór $(G, dot)$, gdzie $dot: G times G -> G$ jest grupą, jeśli:
