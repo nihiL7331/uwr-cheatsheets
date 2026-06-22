@@ -531,3 +531,54 @@ $
   1 cykl nieparzysty")
 $
 
+#line()
+
+= Pierścienie
+
+Pierścieniem $R$ oznaczamy zbiór z dwoma działaniami $+, dot$, spełniającymi warunki:
+- $chevron R, dot chevron.r$ jest podgrupą
+- $chevron R, + chevron.r$ jest przemienną grupą
+
+Ponadto, zachodzi rozdzielność mnożenia względem dodawania:
+
+$
+  a(b+c) = a b + a c, (b + c)a = b a + c a
+$
+
+- Pierścień jest _z jednością_, jeśli ma element neutralny dla mnożenia.
+- Pierścień jest _przemienny_, jeśli $a b = b a$ (czyli półgrupa ze względu na mnożenie jest półgrupą przemienną).
+
+== Arytmetyka modularna $ZZ_m$
+
+$a$ przystaje do $b italic("modulo") m$ gdy $m|(a-b)$. Oznaczenie:
+$
+  a attach(equiv, br: m) b
+$
+
+- Reszta z dzielenia przez $m$:
+  $
+    a mod m = b <=> a attach(equiv, br: m) b and b in {0,1,...,m-1}
+  $
+
+#block(breakable: false)[
+
+  *Kongruencja* – relacja $equiv subset.eq R^2$ na pierścieniu $G$ jest _kongruencją_, jeśli:
+
+  *relacja równoważności* jest relacją równoważności oraz
+  *zachowuje działania* zachowuje działania, tzn. dla każdych $a, a', b, b' in R$ zachodzi:
+  $
+    a equiv b and a' equiv b' => a dot a' equiv b dot b' and a + a' equiv b + b'
+  $
+]
+
+Dla dowolnego $m in ZZ_+$ relacja $attach(equiv, br: m)$ jest kongruencją
+
+Produkt pierścieni definiujemy standardowo: dla pierścieni $R, R'$ ich produkt $R times R'$ ma jako zbiór iloczyn kartezjański zbiorów $R, R'$ a działania są po współrzędnych.
+
+- $R times R$ i $R' times R$ są izomorficzne
+- produkt kartezjański jest łączny (z dokładnością do izomorfizmu): $R_1 times (R_2 times R_3)$ i $(R_1 times R_2) times R_3$ są izomorficzne
+- Jeśli $R_1$ jest izomorficzne z $R'_1$ a $R_2$ z $R'_2$, to $R_1 x R_2$ jest izomorficzne z $R'1 times R'2$
+
+== Chińskie twierdzenie o resztach
+
+Jeśli $m_1, m_2, ..., m_k$ są parami względnie pierwsze, to naturalny homomorfizm z $ZZ_(m_1m_2dot dot dot m_k)$ w $product_(i = 1)^k ZZ_(m_i)$, gdzie na i-tej współrzędnej bierzemy _modulo_ $ZZ_(m_i)$ jest izomorfizmem.
